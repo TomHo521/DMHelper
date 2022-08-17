@@ -22,19 +22,21 @@ class Combat extends React.Component {
 
   componentDidMount() {
 
-    // socket.on('attack', (message) => { 
-    //   console.log('attack message received from server CDM');
-    //   document.getElementById('chatlog').appendChild(<li>attack message received from server</li>);
-    // });
+    socket.on('attack', (message) => { 
+      console.log('attack message received from server CDM');
+      //var socketMSG = document.createElement('li');
+      //socketMSG.innerHTML = 'attack message received from server CDM';
+      //document.getElementById('chatlog').appendChild(socketMSG);
+
+      let combatLog = [...this.state.combatLog];
+
+      combatLog.push({msg: 'attack message received from server CDM'});
+      this.setState({ combatLog });
+    });
 
   }
 
   componentDidUpdate() {
-    // socket.on('attack', (message) => { 
-
-    //   console.log('attack message received from server CDU');
-    //   document.getElementById('chatlog').appendChild(<li>attack message received from server</li>);
-    // });
 
   }
 
@@ -53,11 +55,8 @@ class Combat extends React.Component {
   attack = () => {
 
     // console.log('attack button pressed!!');
-    // socket.emit('attack', `client side attck button socket.emit`);
-    let combatLog = [...this.state.combatLog];
+    socket.emit('attack', `client side attck button socket.emit`);
 
-    combatLog.push({msg: 'client side attack button'});
-    this.setState({ combatLog });
   }
 
   render() {
