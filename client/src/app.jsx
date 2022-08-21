@@ -1,5 +1,6 @@
 import React from 'react';
 import Combat from './combat.jsx';
+import PartyProfiles from './partyprofiles.jsx';
 
 class App extends React.Component {
   constructor(props) {
@@ -7,6 +8,11 @@ class App extends React.Component {
     this.state = {
     };
   }
-  render() { return ( <Combat/> ); }
+  render() { return ( 
+    <div>
+        <Combat/> 
+    </div>
+
+  ); }
 }
 export default App;
