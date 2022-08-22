@@ -1,6 +1,4 @@
 import React from 'react';
-import enemy from '../../test/enemies.js';
-import player from '../../test/players.js';
 
 //const socket = io('ws://localhost:3000');
 
@@ -10,47 +8,13 @@ class Combat extends React.Component {
     
     this.attack = this.attack.bind(this);
     this.rollDice = this.rollDice.bind(this);
-    this.enemyAttack = this.enemyAttack.bind(this);
-    this.rollInitiative = this.rollInitiative.bind(this);
-
-    this.state = {
-      "enemy" : enemy,
-      "player" : player,
-      "turn": 0,
-      "combatLog" : [{msg: 'first entry'}],
-    };
+  
   }
 
   componentDidMount() {
 
-    socket.on('attack', (message) => { 
-      console.log('attack message received from server CDM');
-      //var socketMSG = document.createElement('li');
-      //socketMSG.innerHTML = 'attack message received from server CDM';
-      //document.getElementById('chatlog').appendChild(socketMSG);
-
-      let combatLog = [...this.state.combatLog];
-
-      combatLog.push({msg: 'attack message received from server CDM'});
-      this.setState({ combatLog });
-    });
-
   }
 
-  componentDidUpdate() {
-
-  }
-
-
-  enemyAttack = () => {
-
-  }
-
-  rollInitiative = () => {
-    let combatLog = [...this.state.combatLog];
-    combatLog.push({msg: 'roll Initiative!  dex check'});
-    this.setState({ combatLog });
-  }
 
   rollDice = () => {
 
@@ -82,34 +46,17 @@ class Combat extends React.Component {
       total: total,
       rolls: rolls,
     }
-
-
   }
 
-
-  attack = () => {
-
-    // console.log('attack button pressed!!');
-    socket.emit('attack', `client side attck button socket.emit`);
-
-  }
 
   render() {
 
     return ( <div>
 
-        <button onClick={this.attack}>Attack</button> 
+        <button onClick={this.props.attack}>Attack</button> 
         <button onClick={this.rollDice}>Roll Dice</button>
-        <br></br>
-        <ul>
-          {this.state.combatLog.map( (combatLogEntry, index) => {
-            console.log(combatLogEntry);
-            return (
-              <li key={index}>{combatLogEntry.msg}</li>)          
-        })}
-        </ul>
-
-
+        <br></br>  
+   
       </div>
     );
   }
