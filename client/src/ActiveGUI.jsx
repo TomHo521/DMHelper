@@ -2,6 +2,7 @@ import React from 'react';
 import PartyList from './partylist';
 import Combat from './combat.jsx';
 import adventurerList from '../../test/players.js';
+import enemyList from '../../test/enemies.js';
 import CombatLogEntry from './combatlog';
 
 //master component which wraps all components with CSS grid
@@ -16,6 +17,7 @@ class ActiveGUI extends React.Component {
     this.roll = this.roll.bind(this);
     this.state = {
       adventurerList : adventurerList,
+      enemyList : enemyList,
       turn: 0,
       activePlayer: 0,
       combatLog : [{msg: 'Combat Log:'}],
@@ -72,7 +74,7 @@ class ActiveGUI extends React.Component {
 
       let combatLog = [...this.state.combatLog];
 
-      combatLog.push({msg: `${message.attacker} has attacked!`});
+      combatLog.push({msg: `${message.attacker} has attacked! ... ${message.dmg} damage dealt!  `});
       this.setState({ combatLog });
     });
   }
@@ -82,7 +84,8 @@ class ActiveGUI extends React.Component {
 
 
     socket.emit('attack', {
-      attacker: this.state.adventurerList[this.state.activePlayer].name
+      attacker: this.state.adventurerList[this.state.activePlayer].name,
+      dmg: this.roll(this.state.adventurerList[this.state.activePlayer].weapon[1]).total,
     });
 
     if (this.state.activePlayer >= this.state.adventurerList.length - 1) {
@@ -101,7 +104,9 @@ class ActiveGUI extends React.Component {
         <div class="item1">
           <h1>Turn: {this.state.adventurerList[this.state.activePlayer].name}</h1>
         </div>
-        <div class="item2">Menu
+        <div class="item2">
+          menu
+          <PartyList adventurerList={this.state.enemyList}/>
 
         </div>
         <div class="item3">
@@ -115,7 +120,7 @@ class ActiveGUI extends React.Component {
           <table>
             <tbody>
               <tr colSpan="2">Midir's Minions</tr>  
-              <PartyList adventurerList={adventurerList}/>
+              <PartyList adventurerList={this.state.adventurerList}/>
             </tbody>
           </table>
         </div>
