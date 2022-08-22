@@ -81,10 +81,26 @@ class ActiveGUI extends React.Component {
 
       combatLog.push({msg: `${message.attacker} deals ${message.dmg} damage!  `});
       this.setState({ combatLog });
+
+      //see if we can deduct dmg.
+      let enemyList = [...this.state.enemyList];
+      enemyList[0].hp[0] -= message.dmg;
+      this.setState({ enemyList});
+
+      if (enemyList[0].hp[0] <= 0) {
+        let deadMSG = [...this.state.combatLog];
+        deadMSG.push({msg: `${this.state.enemyList[0].name} is defeated! `});
+        enemyList.shift();
+
+        this.setState({ combatLog: deadMSG,
+                        enemyList: enemyList,
+                   });
+
+      }
+      
     });
   }
 
- 
 
   attack = () => {
 
