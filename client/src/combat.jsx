@@ -1,63 +1,46 @@
 import React from 'react';
 
-//const socket = io('ws://localhost:3000');
 
 class Combat extends React.Component {
   constructor(props) {
     super(props);
-    
-    this.attack = this.attack.bind(this);
-    this.rollDice = this.rollDice.bind(this);
-  
   }
 
   componentDidMount() {
-
   }
-
-
-  rollDice = () => {
-
-    var dice = '6d6';
-    let index = dice.indexOf('d'); 
-
-    let qty = parseInt(dice.substring(0, index));
-    let diceType = parseInt(dice.substring(index+1));
-
-    var rolls = [];
-    var total = 0;
-
-    for (var i = 0; i < qty; i++) {
-      let single = Math.floor(Math.random() * diceType) + 1;
-      total += single;
-      rolls.push(single);
-    }
-    
-
-    console.log('the number of dice ', qty);
-    console.log('d:', diceType);
-
-    console.log(`your rolls were: `);
-    for (var j = 0; j < rolls.length; j++) {
-      console.log(`roll ${j+1}: ${rolls[j]}`);
-    }
-
-    return {
-      total: total,
-      rolls: rolls,
-    }
-  }
-
 
   render() {
-
-    return ( <div>
-
-        <button onClick={this.props.attack}>Attack</button> 
-        <button onClick={this.rollDice}>Roll Dice</button>
-        <br></br>  
-   
-      </div>
+    return (
+        <div class="action-menu">
+          <div class="option" onClick={this.props.attack}>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            Attack
+          </div>
+          <div class="option">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          Action
+          </div>
+          <div class="option">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          Bonus Action
+          </div>
+          <div class="option">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          Run
+          </div>
+        </div>
     );
   }
 }

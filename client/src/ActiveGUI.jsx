@@ -13,7 +13,7 @@ class ActiveGUI extends React.Component {
     super(props);
   
     this.attack = this.attack.bind(this);
-    this.rollInitiative = this.rollInitiative.bind(this);
+    this.rollInitiativeParty = this.rollInitiativeParty.bind(this);
     this.roll = this.roll.bind(this);
     this.state = {
       adventurerList : adventurerList,
@@ -21,6 +21,7 @@ class ActiveGUI extends React.Component {
       turn: 0,
       activePlayer: 0,
       combatLog : [{msg: 'Combat Log:'}],
+      headlineMessage: '',
     };
 
   }
@@ -46,26 +47,30 @@ class ActiveGUI extends React.Component {
     }
   }
 
-  rollInitiative = () => {
-    var newList = this.state.adventurerList;
-
-    for (var i = 0; i < this.state.adventurerList.length; i++) {
+  rollInitiativeEnemy = () => {
+    var newList = this.state.enemyList;
+    for (var i = 0; i < this.state.enemyList.length; i++) {
       let initRoll = this.roll('1d20').total;
-      console.log(`${this.state.adventurerList[i].name} rolled a ${initRoll}`);
       newList[i].initiative = initRoll;
     }
-
-    console.log('done adding changes to init'); 
-    newList.forEach(item => console.log(`${item.name} : ${item.initiative}`));
     newList.sort((a,b) => b.initiative - a.initiative);
-    console.log('sorted');
-    newList.forEach(item => console.log(`${item.name} : ${item.initiative}`));
+    this.setState({ enemyList:newList });
+  }
+
+  rollInitiativeParty = () => {
+    var newList = this.state.adventurerList;
+    for (var i = 0; i < this.state.adventurerList.length; i++) {
+      let initRoll = this.roll('1d20').total;
+      newList[i].initiative = initRoll;
+    }
+    newList.sort((a,b) => b.initiative - a.initiative);
     this.setState({ adventurerList:newList });
   }
 
   componentDidMount () {
 
-    this.rollInitiative();
+    this.rollInitiativeParty();
+    this.rollInitiativeEnemy();
 
     socket.on('attack', (message) => { 
       //var socketMSG = document.createElement('li');
@@ -74,19 +79,46 @@ class ActiveGUI extends React.Component {
 
       let combatLog = [...this.state.combatLog];
 
-      combatLog.push({msg: `${message.attacker} has attacked! ... ${message.dmg} damage dealt!  `});
+      combatLog.push({msg: `${message.attacker} deals ${message.dmg} damage!  `});
       this.setState({ combatLog });
     });
   }
 
+ 
+
   attack = () => {
 
+    let activeName = this.state.adventurerList[this.state.activePlayer].name;
+    console.log(`attacking ${this.state.enemyList[0].name} `);
+    let nextMessage = `${activeName} attacks ${this.state.enemyList[0].name} `;
+
+    let combatLog = [...this.state.combatLog];
+    combatLog.push({msg: nextMessage});
+    this.setState({ combatLog });
+
+    //comparing AC
+    let attackRoll = this.roll('1d20').total;
+    let ac = this.state.enemyList[0].armor_class[1];
+
+    if (attackRoll >= ac) {
+      nextMessage = `attack hits! player attack roll:${attackRoll} vs enemy AC:${ac}`;
+      socket.emit('attack', {
+        target: this.state.enemyList[0].name,
+        attacker: this.state.adventurerList[this.state.activePlayer].name,
+        dmg: this.roll(this.state.adventurerList[this.state.activePlayer].weapon[1]).total,
+      });
+
+    } else {
+      nextMessage = `attack misses! player attack roll:${attackRoll} vs enemy AC:${ac}`;
+    }
+
+    //publishing the second message
+    combatLog = [...this.state.combatLog];
+    combatLog.push({msg: nextMessage});
+    this.setState({ combatLog });
 
 
-    socket.emit('attack', {
-      attacker: this.state.adventurerList[this.state.activePlayer].name,
-      dmg: this.roll(this.state.adventurerList[this.state.activePlayer].weapon[1]).total,
-    });
+
 
     if (this.state.activePlayer >= this.state.adventurerList.length - 1) {
       console.log(`current player number: ${this.state.activePlayer + 1} / ${this.state.adventurerList.length}`);
@@ -103,6 +135,7 @@ class ActiveGUI extends React.Component {
       <div class="grid-container">
         <div class="item1">
           <h1>Turn: {this.state.adventurerList[this.state.activePlayer].name}</h1>
+          <h3>{}</h3>
         </div>
         <div class="item2">
           menu
@@ -126,39 +159,8 @@ class ActiveGUI extends React.Component {
         </div>
         <div class="item5">
           <div id="footer">
-            
+          <Combat attack={this.attack}/>
             {/* <Combat attack={this.attack}/> */}
-          </div>
-
-          <div class="action-menu">
-            <div class="option" onClick={this.attack}>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-               Attack
-            </div>
-            <div class="option">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-            Action
-            </div>
-            <div class="option">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-            Bonus Action
-            </div>
-            <div class="option">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-            Run
-            </div>
           </div>
           
         </div>
