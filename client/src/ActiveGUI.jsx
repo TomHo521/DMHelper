@@ -20,6 +20,9 @@ class ActiveGUI extends React.Component {
     this.logNext = this.logNext.bind(this);
     this.initializeTurnList = this.initializeTurnList.bind(this);
     this.determineNextPlayer = this.determineNextPlayer.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.enemyAttack = this.enemyAttack.bind(this);
 
     this.state = {
       adventurerList : adventurerList,
@@ -31,6 +34,7 @@ class ActiveGUI extends React.Component {
       headlineMessage: '',
       turnList: [],
       turnPlayer: {},
+      value: '',
     };
   }
 
@@ -84,7 +88,7 @@ class ActiveGUI extends React.Component {
     this.setState({ adventurerList:newList });
   }
 
-  enemyAttack() {
+  enemyAttack = () => {
     //enemy should select a target. 
     let enemyTarget = Math.floor(Math.random() * this.state.adventurerList.length);
 
@@ -114,7 +118,7 @@ class ActiveGUI extends React.Component {
     this.logNext(nextMessage);
   }
 
-  determineNextPlayer() {
+  determineNextPlayer = () => {
     let turnList = this.state.turnList;
 
     if (turnList.length === 0) {
@@ -126,14 +130,14 @@ class ActiveGUI extends React.Component {
     return nextPlayer;
   }
 
-  initializeTurnList () {
+  initializeTurnList = () => {
     let turnList = this.state.adventurerList;
     turnList = turnList.concat(this.state.enemyList);
     turnList.sort((a,b) => b.initiative - a.initiative);
     this.setState({ turnList });
   }
 
-  logNext(message) { // message should be of type string
+  logNext = (message) => { // message should be of type string
     let combatLog = [...this.state.combatLog];
     combatLog.push({msg: message});
     this.setState({ combatLog });
@@ -153,6 +157,8 @@ class ActiveGUI extends React.Component {
         nextPlayer = this.determineNextPlayer();
       }
     }
+
+    socket.on('chat', msg => this.logNext(msg));
     
     socket.on('attack', (msg) => { 
       this.logNext(`${msg.attacker} deals ${msg.dmg} damage to ${msg.targetName}!  `);
@@ -167,6 +173,10 @@ class ActiveGUI extends React.Component {
         enemyList.shift();
         this.setState({ enemyList: enemyList});
       }
+    });
+
+    socket.on('enemyStrike', (msg) => {
+
     });
   }
 
@@ -207,6 +217,24 @@ class ActiveGUI extends React.Component {
     }
   }
 
+  handleChange (e) {
+    const value = e.target.value;
+
+    this.setState({value});
+    //}
+    // const name = e.target.name;
+    // this.setState({ [name]: value });
+    
+  }
+
+  handleKeyPress (e) {
+   if (e.key === "Enter") {
+       socket.emit('chat', `This player says:  ${this.state.value}`);
+       this.setState({value: ''});
+    }
+  }
+
+
   render () {
     return (
       <div class="grid-container">
@@ -223,7 +251,11 @@ class ActiveGUI extends React.Component {
                 return (
                   <CombatLogEntry key={index} message={combatLogEntry.msg}/>)          
               })}
+              
         </div>  
+        <div class="item6">
+          <input type="text" onKeyPress={this.handleKeyPress} onChange={this.handleChange} value={this.state.value}></input>
+        </div>
         <div class="item4"> 
           <table>
             <tbody>
@@ -234,7 +266,8 @@ class ActiveGUI extends React.Component {
         </div>
         <div class="item5">
           <div id="footer">
-          <Combat attack={this.attack}/>
+            
+            <Combat attack={this.attack}/>
             {/* <Combat attack={this.attack}/> */}
           </div>
         </div>
