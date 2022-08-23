@@ -161,7 +161,8 @@ class ActiveGUI extends React.Component {
     socket.on('chat', msg => this.logNext(msg));
     
     socket.on('attack', (msg) => { 
-      this.logNext(`${msg.attacker} deals ${msg.dmg} damage to ${msg.targetName}!  `);
+      this.logNext(msg.msg);
+      //this.logNext(`${msg.attacker} deals ${msg.dmg} damage to ${msg.targetName}!  `);
       let target = parseInt(msg.target);
 
       let enemyList = [...this.state.enemyList];  //deduct damage
@@ -184,9 +185,9 @@ class ActiveGUI extends React.Component {
 
     let activeP = this.state.adventurerList[this.state.activePlayer];
     let activeName = this.state.adventurerList[this.state.activePlayer].name;
-    let nextMessage = `${activeName} attacks ${this.state.enemyList[0].name} `;
+    let nextMessage = `${activeName} attacks ${this.state.enemyList[0].name}!!!     ` ;
 
-    this.logNext(nextMessage);
+    //this.logNext(nextMessage);
 
     //comparing AC
     let attackRoll = this.roll('1d20').total;
@@ -196,19 +197,28 @@ class ActiveGUI extends React.Component {
     let dmgRoll = this.roll(this.state.adventurerList[this.state.activePlayer].weapon[1]).total;
 
     if ((attackRoll + pB + dexMod) >= ac) {
-      nextMessage = `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}`;
-      socket.emit('attack', {
-        targetName: this.state.enemyList[0].name,
-        attacker: this.state.adventurerList[this.state.activePlayer].name,
-        dmg: dmgRoll,
-        target: 0,
-      });
+      nextMessage += `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}`;
+      // socket.emit('attack', {
+      //   targetName: this.state.enemyList[0].name,
+      //   attacker: this.state.adventurerList[this.state.activePlayer].name,
+      //   dmg: dmgRoll,
+      //   target: 0,
+      //   msg: nextMessage,
+      // });
     } else {
-      nextMessage = `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}`;
+      nextMessage += `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}`;
     }
 
+    socket.emit('attack', {
+      targetName: this.state.enemyList[0].name,
+      attacker: this.state.adventurerList[this.state.activePlayer].name,
+      dmg: dmgRoll,
+      target: 0,
+      msg: nextMessage,
+    });
+
     //publishing the second message
-    this.logNext(nextMessage);
+    //this.logNext(nextMessage);
 
     if (this.state.activePlayer >= this.state.adventurerList.length - 1) {
       this.setState({activePlayer: 0});
