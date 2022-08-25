@@ -1,5 +1,6 @@
 import React from 'react';
 import ActiveGUI from './ActiveGUI';
+import InitiativeCheck from './InitiativeCheck';
 
 class App extends React.Component {
   constructor(props) {
@@ -9,7 +10,13 @@ class App extends React.Component {
     this.proficiencyBonus = this.proficiencyBonus.bind(this);
     this.savingThrow = this.savingThrow.bind(this);
     this.abilityCheck = this.abilityCheck.bind(this);
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
 
+    this.state = {
+       login: 'zomho',
+       playerList: ['Midir', 'Lia', 'Pergilius von Waxilium', 'Zovinar', 'Cassian', 'Po'],
+    }
   }
 
   savingThrow = () => {
@@ -53,8 +60,23 @@ class App extends React.Component {
      return Math.floor((2 + (level - 1))/4);
   }
 
+  openModal() {
+    let modal = document.getElementById("initWindow");
+    modal.style.display = "block";
+
+    console.log('openModal being called');
+  }
+
+  closeModal() {
+    let modal = document.getElementById("initWindow");
+    modal.style.display = "none";
+  }
+
   render() { return ( 
-    <ActiveGUI/>
+    <div>
+      <InitiativeCheck closeModal={this.closeModal} playerList={this.state.playerList}/>
+      <ActiveGUI login={this.state.login} openModal={this.openModal}/>
+    </div>
   ); }
 }
 export default App;

@@ -23,6 +23,7 @@ class ActiveGUI extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.enemyAttack = this.enemyAttack.bind(this);
+    this.handleClickRoll = this.handleClickRoll.bind(this);
 
     this.state = {
       adventurerList : adventurerList,
@@ -158,8 +159,11 @@ class ActiveGUI extends React.Component {
       }
     }
 
-    socket.on('chat', msg => this.logNext(msg));
+    socket.on('initRollDone' , msg => this.logNext('All Players have completed their rolls'));
     
+    socket.on('chat', msg => this.logNext(msg));
+  
+    //upon receiving the attack message from server client does computations
     socket.on('attack', (msg) => { 
       this.logNext(msg.msg);
       //this.logNext(`${msg.attacker} deals ${msg.dmg} damage to ${msg.targetName}!  `);
@@ -198,17 +202,11 @@ class ActiveGUI extends React.Component {
 
     if ((attackRoll + pB + dexMod) >= ac) {
       nextMessage += `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}`;
-      // socket.emit('attack', {
-      //   targetName: this.state.enemyList[0].name,
-      //   attacker: this.state.adventurerList[this.state.activePlayer].name,
-      //   dmg: dmgRoll,
-      //   target: 0,
-      //   msg: nextMessage,
-      // });
     } else {
       nextMessage += `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}`;
     }
 
+    //after performing relevant computations, upload to server
     socket.emit('attack', {
       targetName: this.state.enemyList[0].name,
       attacker: this.state.adventurerList[this.state.activePlayer].name,
@@ -217,9 +215,7 @@ class ActiveGUI extends React.Component {
       msg: nextMessage,
     });
 
-    //publishing the second message
-    //this.logNext(nextMessage);
-
+    //increment the turns
     if (this.state.activePlayer >= this.state.adventurerList.length - 1) {
       this.setState({activePlayer: 0});
     } else {
@@ -229,21 +225,32 @@ class ActiveGUI extends React.Component {
 
   handleChange (e) {
     const value = e.target.value;
-
-    this.setState({value});
-    //}
-    // const name = e.target.name;
-    // this.setState({ [name]: value });
-    
+    const name = e.target.name;
+    this.setState({ [name]: value });
   }
 
   handleKeyPress (e) {
    if (e.key === "Enter") {
-       socket.emit('chat', `This player says:  ${this.state.value}`);
+       socket.emit('chat', `${this.props.login}: ${this.state.value}`);
        this.setState({value: ''});
     }
   }
 
+  handleClickRoll () {
+
+    let roll = this.roll('1d20').total;
+    console.log(`you rolled a ${roll}`);
+    
+    socket.emit('rollInitiative', {
+      login:this.state.character,
+      roll: roll,
+    })
+
+    this.logNext(`${this.state.character} sent off with roll ${roll}`);
+
+    this.setState({character:''});
+
+  }
 
   render () {
     return (
@@ -264,7 +271,10 @@ class ActiveGUI extends React.Component {
               
         </div>  
         <div class="item6">
-          <input type="text" onKeyPress={this.handleKeyPress} onChange={this.handleChange} value={this.state.value}></input>
+          <button onClick={this.props.openModal}>Engage Initiative</button>
+          <button onClick={this.handleClickRoll}>Roll Intiative</button> <input type="text" name="character" onChange={this.handleChange} value={this.state.character}></input>
+          <br></br>
+          <input type="text" name="chatBox" onKeyPress={this.handleKeyPress} onChange={this.handleChange} value={this.state.chatBox}></input>
         </div>
         <div class="item4"> 
           <table>

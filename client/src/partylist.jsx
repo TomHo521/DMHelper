@@ -1,11 +1,9 @@
 import React from 'react';
-
 // the goal is to render members of the party;
 class PartyList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      
     };
   }
 
@@ -13,11 +11,7 @@ class PartyList extends React.Component {
 
     return (<div>
       {
-      
-
-      this.props.adventurerList.map( (mem) => {
-       
-        // console.log('adventurer list: ', mem.name);
+      this.props.adventurerList.map( (mem) => {   
       return (
            <tr className="adventurer"> 
             <th>
