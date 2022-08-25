@@ -1,1 +1,4 @@
 node_modules
+FECDeploy.pem
+DNDkey.pem
+SDC_Redis.pem

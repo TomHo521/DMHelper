@@ -15,7 +15,6 @@ class App extends React.Component {
 
     this.state = {
        login: 'zomho',
-       playerList: ['Midir', 'Lia', 'Pergilius von Waxilium', 'Zovinar', 'Cassian', 'Po'],
     }
   }
 
@@ -74,7 +73,7 @@ class App extends React.Component {
 
   render() { return ( 
     <div>
-      <InitiativeCheck closeModal={this.closeModal} playerList={this.state.playerList}/>
+      <InitiativeCheck closeModal={this.closeModal}/>
       <ActiveGUI login={this.state.login} openModal={this.openModal}/>
     </div>
   ); }
