@@ -21,6 +21,7 @@ var generateIndex = (list) => {
 
 var rollEnemyInitiative = () => {
   let enemyInitRolls = [];
+  let enemyInitObj = {};
 
   for (var i = 0; i < enemyList.length; i++) {
     let initObj = {
@@ -29,8 +30,12 @@ var rollEnemyInitiative = () => {
       roll: Math.floor(Math.random() * 20) + 1,
     }
     enemyInitRolls.push(initObj);
+    enemyInitObj[enemyList[i].name] = initObj.roll;
   }
-  return enemyInitRolls; //returns array
+  return {
+    array: enemyInitRolls,
+    obj: enemyInitObj,
+  }; //returns array
 }
 
 
@@ -38,6 +43,10 @@ var rollEnemyInitiative = () => {
 var printTurnListObj = (turnListObj) => {
   console.log(`current turn is ${turnListObj.currentTurn}`);
   turnListObj.turnList.forEach(element => console.log(`${element.name}: ${element.roll}`));
+  // console.log('adventurer turn order: ');
+  // turnListObj.adventurerTurnList.forEach(element => console.log(`${element.name}: ${element.roll}`));
+  // console.log('enemy turn order: ')
+  // turnListObj.enemyTurnList.forEach(element => console.log(`${element.name}: ${element.roll}`));
   console.log(`total entities in combat: ${turnListObj.turnList.length}`);
 }
 
@@ -72,15 +81,25 @@ io.on('connection', (socket) => {
           roll: initiativeList[element],
         }});
 
-        let enemyTurnArray = rollEnemyInitiative();
+        
+        let enemyTurn = rollEnemyInitiative();
+        
+
+        // sort the intermediate arrays.  May remove if the server burden gets large
+        adventurerTurnArray.sort((a,b) => b.roll - a.roll);
+        enemyTurn.array = enemyTurn.array.sort((a,b) => b.roll - a.roll);
 
         let turnListObj = { 
           currentTurn: 0,
-          turnList: adventurerTurnArray.concat(enemyTurnArray).sort((a,b) => b.roll - a.roll),
+          turnList: adventurerTurnArray.concat(enemyTurn.array).sort((a,b) => b.roll - a.roll),
+          //adventurerTurnList: adventurerTurnArray,
+          adventurerTurnObj: initiativeList,
+          //enemyTurnList: enemyTurn.array,
+          enemyTurnObj: enemyTurn.obj,
         }
         printTurnListObj(turnListObj);
 
-        io.emit('initRollDone', initiativeList);
+        io.emit('initRollDone', turnListObj);
       }
 
       io.emit('rollReceived', message);

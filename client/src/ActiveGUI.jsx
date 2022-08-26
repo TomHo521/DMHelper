@@ -20,6 +20,7 @@ class ActiveGUI extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.enemyAttack = this.enemyAttack.bind(this);
+    this.populateCombatInitiatives = this.populateCombatInitiatives.bind(this);
 
     this.state = {
       adventurerList : adventurerList,
@@ -99,14 +100,31 @@ class ActiveGUI extends React.Component {
     this.setState({ combatLog });
   }
 
+  populateCombatInitiatives = (msg) => {
+
+    var newList = this.state.adventurerList;
+    for (var i = 0; i < this.state.adventurerList.length; i++) {
+      newList[i].initiative = msg.adventurerTurnObj[newList[i].name];
+    }
+    newList.sort((a,b) => b.initiative - a.initiative);
+
+    var newEnemyList = this.state.enemyList;
+    for (var i = 0; i < this.state.enemyList.length; i++) {
+      newEnemyList[i].initiative = msg.enemyTurnObj[newEnemyList[i].name];
+    }
+
+    newEnemyList.sort((a,b) => b.initiative - a.initiative);
+
+    this.setState({ adventurerList:newList,
+                    enemyList: newEnemyList});
+
+  }
+
   componentDidMount () {
     socket.on('initRollDone' , msg => {
-      var newList = this.state.adventurerList;
-      for (var i = 0; i < this.state.adventurerList.length; i++) {
-        newList[i].initiative = msg[newList[i].name];
-      }
-      newList.sort((a,b) => b.initiative - a.initiative);
-      this.setState({ adventurerList:newList });
+
+      this.populateCombatInitiatives(msg);
+
 
       this.logNext('All Players have completed their rolls')
     });
