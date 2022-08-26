@@ -272,6 +272,19 @@ tbody:after {
   font-size: larger;
 }
 
+.alignCenterLogin {
+
+  background-color: wheat;
+  color:#6d4827;
+  justify-content: center;
+  text-align: left;
+
+}
+
+.login {
+  max-width: 200px;
+}
+
 
  /* MODAL WINDOW CSS  */
 

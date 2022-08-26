@@ -32,7 +32,7 @@ class ActiveGUI extends React.Component {
       headlineMessage: '',
       turnList: [],
       turnPlayer: {},
-      value: '',
+      chatBox: '',
     };
   }
 
@@ -197,7 +197,7 @@ class ActiveGUI extends React.Component {
   handleKeyPress = (e) => {
    if (e.key === "Enter") {
        socket.emit('chat', `${this.props.login}: ${this.state.chatBox}`);
-       this.setState({value: ''});
+       this.setState({chatBox: ''});
     }
   }
 
