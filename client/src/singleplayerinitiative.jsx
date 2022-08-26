@@ -8,8 +8,6 @@ class SinglePlayerInitiative extends React.Component {
     }
   }
   
-
-
   componentDidMount () {
 
   }
@@ -24,8 +22,6 @@ class SinglePlayerInitiative extends React.Component {
     } else {
       status ='✅';
     }
-
-    console.log('singleplayerinitiative: ', this.props.player.name);
     
     let firstName = this.props.player.name.substring(0, 9);
     return (

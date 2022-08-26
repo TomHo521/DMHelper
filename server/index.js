@@ -7,12 +7,43 @@ const { Server } = require('socket.io');
 var adventurerList = require('../test/players');
 var enemyList = require('../test/enemies');
 
-
 const io = new Server(server);
+
+
+var generateIndex = (list) => {
+  let indexObj = {}
+  for (var i = 0; i < list.length; i++) {
+    indexObj[list[i].name] = i;
+  }
+  return indexObj;
+}
+
+
+var rollEnemyInitiative = () => {
+  let enemyInitRolls = [];
+
+  for (var i = 0; i < enemyList.length; i++) {
+    let initObj = {
+      name: enemyList[i].name,
+      index: i,
+      roll: Math.floor(Math.random() * 20) + 1,
+    }
+    enemyInitRolls.push(initObj);
+  }
+  return enemyInitRolls; //returns array
+}
+
+
+
+var printTurnListObj = (turnListObj) => {
+  console.log(`current turn is ${turnListObj.currentTurn}`);
+  turnListObj.turnList.forEach(element => console.log(`${element.name}: ${element.roll}`));
+  console.log(`total entities in combat: ${turnListObj.turnList.length}`);
+}
+
 
 io.on('connection', (socket) => {
     console.log(`a user connected on ${PORT}`);
-    //setInterval(() => { io.emit('attack', 'the server has a new msg')}, 3000);
 
     let initiativeList = {};
     let checkList = {};
@@ -20,14 +51,11 @@ io.on('connection', (socket) => {
     adventurerList.forEach(element => checkList[element.name] = true);
     adventurerList.forEach(element => initiativeList[element.name] = false);
 
+    var adventurerIndex = generateIndex(adventurerList);
+    var enemyIndex = generateIndex(enemyList);
+       
     socket.on('initRoll', (message) => {
-
-      //console.log(Object.keys(initiativeList));
-
       delete checkList[message.name];
-
-      console.log('deleting ', message.name);
-      console.log(`status of checklist is: ${Object.keys(checkList)}`);
 
       if (initiativeList[message.name] === false) {
         initiativeList[message.name] = message.roll;
@@ -35,29 +63,31 @@ io.on('connection', (socket) => {
         socket.emit('already rolled!', message);
       }
 
+      // upon init Roll Done...
       if (Object.keys(checkList).length === 0) {
+
+        let adventurerTurnArray = Object.keys(initiativeList).map(element => {return {
+          name: element,
+          index: adventurerIndex[element],
+          roll: initiativeList[element],
+        }});
+
+        let enemyTurnArray = rollEnemyInitiative();
+
+        let turnListObj = { 
+          currentTurn: 0,
+          turnList: adventurerTurnArray.concat(enemyTurnArray).sort((a,b) => b.roll - a.roll),
+        }
+        printTurnListObj(turnListObj);
+
         io.emit('initRollDone', initiativeList);
-        Object.keys(initiativeList).forEach(element => {
-          console.log(`${element} rolled a ${initiativeList[element]}`);
-        });
       }
 
       io.emit('rollReceived', message);
       
       io.emit('rollInitative', message );
     });
-    
-    socket.on('rollInitiative', (message) => {
-
-      initiativeList.push([message.login, message.roll]);
-
-      if (initiativeList.length === adventurerList.length) {
-        io.emit('initRollDone', {});
-      }
-
-      io.emit('rollInitative', message );
-    });
-    
+        
     socket.on('chat', (message) => {
       io.emit('chat', message );
     });
@@ -67,9 +97,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('attack', (message) => { 
-
-      //take the attack data and parse it
-      // enemyList[target].hp[0] -= dmg;
       
       io.emit('attack', message);
     });

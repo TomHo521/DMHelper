@@ -13,17 +13,13 @@ class ActiveGUI extends React.Component {
     super(props);
   
     this.attack = this.attack.bind(this);
-    this.rollInitiativeParty = this.rollInitiativeParty.bind(this);
     this.roll = this.roll.bind(this);
     this.proficiencyBonus = this.proficiencyBonus.bind(this);
     this.modifiers = this.modifiers.bind(this);
     this.logNext = this.logNext.bind(this);
-    this.initializeTurnList = this.initializeTurnList.bind(this);
-    this.determineNextPlayer = this.determineNextPlayer.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.enemyAttack = this.enemyAttack.bind(this);
-    this.handleClickRoll = this.handleClickRoll.bind(this);
 
     this.state = {
       adventurerList : adventurerList,
@@ -67,28 +63,6 @@ class ActiveGUI extends React.Component {
     }
   }
 
-  rollInitiativeEnemy = () => {
-    var newList = this.state.enemyList;
-    for (var i = 0; i < this.state.enemyList.length; i++) {
-      let initRoll = this.roll('1d20').total;
-      newList[i].initiative = initRoll;
-      newList[i].type = 'enemy';
-    }
-    newList.sort((a,b) => b.initiative - a.initiative);
-    this.setState({ enemyList:newList });
-  }
-
-  rollInitiativeParty = () => {
-    var newList = this.state.adventurerList;
-    for (var i = 0; i < this.state.adventurerList.length; i++) {
-      let initRoll = this.roll('1d20').total;
-      newList[i].initiative = initRoll;
-      newList[i].type = 'player';
-    }
-    newList.sort((a,b) => b.initiative - a.initiative);
-    this.setState({ adventurerList:newList });
-  }
-
   enemyAttack = () => {
     //enemy should select a target. 
     let enemyTarget = Math.floor(Math.random() * this.state.adventurerList.length);
@@ -119,25 +93,6 @@ class ActiveGUI extends React.Component {
     this.logNext(nextMessage);
   }
 
-  determineNextPlayer = () => {
-    let turnList = this.state.turnList;
-
-    if (turnList.length === 0) {
-      this.initializeTurnList();
-    }
-    let nextPlayer = turnList.shift();
-    this.setState({turnList});
-
-    return nextPlayer;
-  }
-
-  initializeTurnList = () => {
-    let turnList = this.state.adventurerList;
-    turnList = turnList.concat(this.state.enemyList);
-    turnList.sort((a,b) => b.initiative - a.initiative);
-    this.setState({ turnList });
-  }
-
   logNext = (message) => { // message should be of type string
     let combatLog = [...this.state.combatLog];
     combatLog.push({msg: message});
@@ -145,28 +100,23 @@ class ActiveGUI extends React.Component {
   }
 
   componentDidMount () {
-
-    this.rollInitiativeParty();
-    this.rollInitiativeEnemy();
-    this.initializeTurnList();
-
-    // waiting for when the turnList is populated
-    if (this.state.turnList.length !== 0) {
-      let nextPlayer = this.determineNextPlayer();
-      while ((nextPlayer.type === 'enemy') && (nextPlayer)) {
-        this.enemyAttack();
-        nextPlayer = this.determineNextPlayer();
+    socket.on('initRollDone' , msg => {
+      var newList = this.state.adventurerList;
+      for (var i = 0; i < this.state.adventurerList.length; i++) {
+        newList[i].initiative = msg[newList[i].name];
       }
-    }
+      newList.sort((a,b) => b.initiative - a.initiative);
+      this.setState({ adventurerList:newList });
 
-    socket.on('initRollDone' , msg => this.logNext('All Players have completed their rolls'));
+      this.logNext('All Players have completed their rolls')
+    });
     
     socket.on('chat', msg => this.logNext(msg));
   
     //upon receiving the attack message from server client does computations
     socket.on('attack', (msg) => { 
       this.logNext(msg.msg);
-      //this.logNext(`${msg.attacker} deals ${msg.dmg} damage to ${msg.targetName}!  `);
+      
       let target = parseInt(msg.target);
 
       let enemyList = [...this.state.enemyList];  //deduct damage
@@ -181,7 +131,6 @@ class ActiveGUI extends React.Component {
     });
 
     socket.on('enemyStrike', (msg) => {
-
     });
   }
 
@@ -190,8 +139,6 @@ class ActiveGUI extends React.Component {
     let activeP = this.state.adventurerList[this.state.activePlayer];
     let activeName = this.state.adventurerList[this.state.activePlayer].name;
     let nextMessage = `${activeName} attacks ${this.state.enemyList[0].name}!!!     ` ;
-
-    //this.logNext(nextMessage);
 
     //comparing AC
     let attackRoll = this.roll('1d20').total;
@@ -236,22 +183,6 @@ class ActiveGUI extends React.Component {
     }
   }
 
-  handleClickRoll () {
-
-    let roll = this.roll('1d20').total;
-    console.log(`you rolled a ${roll}`);
-    
-    socket.emit('rollInitiative', {
-      login:this.state.character,
-      roll: roll,
-    })
-
-    this.logNext(`${this.state.character} sent off with roll ${roll}`);
-
-    this.setState({character:''});
-
-  }
-
   render () {
     return (
       <div class="grid-container">
@@ -272,7 +203,7 @@ class ActiveGUI extends React.Component {
         </div>  
         <div class="item6">
           <button onClick={this.props.openModal}>Engage Initiative</button>
-          <button onClick={this.handleClickRoll}>Roll Intiative</button> <input type="text" name="character" onChange={this.handleChange} value={this.state.character}></input>
+          {/* <button onClick={this.handleClickRoll}>Roll Intiative</button> <input type="text" name="character" onChange={this.handleChange} value={this.state.character}></input> */}
           <br></br>
           <input type="text" name="chatBox" onKeyPress={this.handleKeyPress} onChange={this.handleChange} value={this.state.chatBox}></input>
         </div>
@@ -286,9 +217,7 @@ class ActiveGUI extends React.Component {
         </div>
         <div class="item5">
           <div id="footer">
-            
             <Combat attack={this.attack}/>
-            {/* <Combat attack={this.attack}/> */}
           </div>
         </div>
       </div>
@@ -297,3 +226,19 @@ class ActiveGUI extends React.Component {
 }
 
 export default ActiveGUI;
+
+
+/* removed code
+
+  rollInitiativeParty = () => {
+    var newList = this.state.adventurerList;
+    for (var i = 0; i < this.state.adventurerList.length; i++) {
+      let initRoll = this.roll('1d20').total;
+      newList[i].initiative = initRoll;
+      newList[i].type = 'player';
+    }
+    newList.sort((a,b) => b.initiative - a.initiative);
+    this.setState({ adventurerList:newList });
+  }
+
+  */
