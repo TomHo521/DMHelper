@@ -188,15 +188,15 @@ class ActiveGUI extends React.Component {
     }
   }
 
-  handleChange (e) {
+  handleChange = (e) => {
     const value = e.target.value;
     const name = e.target.name;
     this.setState({ [name]: value });
   }
 
-  handleKeyPress (e) {
+  handleKeyPress = (e) => {
    if (e.key === "Enter") {
-       socket.emit('chat', `${this.props.login}: ${this.state.value}`);
+       socket.emit('chat', `${this.props.login}: ${this.state.chatBox}`);
        this.setState({value: ''});
     }
   }
