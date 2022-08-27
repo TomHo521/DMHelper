@@ -83,14 +83,21 @@ class ActiveGUI extends React.Component {
     });
 
     socket.on('enemyAttack', msg => {
-      setInterval(this.logNext('the enemy is gathering strength...'), 500);
-      setInterval(this.logNext(`the enemy Attacks!`), 2500);
+
+      msg.msgLog.forEach(e => this.logNext(e));
+
+      this.setState({
+        enemyList: msg.mTL.enemyList,
+        adventurerList: msg.mTL.adventurerList,
+      });
+      
     });
     
     socket.on('chat', msg => this.logNext(msg));
   
     //upon receiving the attack message from server client does computations
     socket.on('attack-reply', (msg) => { 
+      
       this.logNext(msg.msg);
 
       this.setState({
