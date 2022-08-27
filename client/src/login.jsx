@@ -22,7 +22,7 @@ class Login extends React.Component {
   }
 
   saveHost () {
-    this.props.setTopLevelState('thisPlayer', this.state.thisPlayer);
+    this.props.setTopLevelState('thisPlayer', this.state.thisPlayerField);
   }
 
   render () {

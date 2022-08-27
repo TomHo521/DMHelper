@@ -19,9 +19,7 @@ class ActiveGUI extends React.Component {
     this.logNext = this.logNext.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
-    this.enemyAttack = this.enemyAttack.bind(this);
-    this.populateCombatInitiatives = this.populateCombatInitiatives.bind(this);
-
+    
     this.state = {
       adventurerList : adventurerList,
       enemyList : enemyList,
@@ -64,35 +62,7 @@ class ActiveGUI extends React.Component {
     }
   }
 
-  enemyAttack = () => {
-    //enemy should select a target. 
-    let enemyTarget = Math.floor(Math.random() * this.state.adventurerList.length);
 
-    let targetPlayer = this.state.adventurerList[enemyTarget];
-    let activeEnemy = this.state.enemyList[this.state.activeEnemy];
-    let nextMessage = `${activeEnemy.name} attacks ${targetPlayer.name} `;
-    this.logNext(nextMessage);
-
-    //compute the data!
-    let attackRoll = this.roll('1d20').total;
-    let pB = this.proficiencyBonus(activeEnemy.level);
-    let dexMod = this.modifiers(activeEnemy.stats.dex);
-    let ac = targetPlayer.armor_class[1];
-    let dmgRoll = this.roll(activeEnemy.weapon[1]).total;
-
-    if ((attackRoll + pB + dexMod) >= ac) {
-      nextMessage = `Attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs player AC:${ac}`;
-      socket.emit('attack', {
-        target: targetPlayer.name,
-        attacker: activeEnemy.name,
-        dmg: dmgRoll,
-      });
-    } else {
-      nextMessage = `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}`;
-    }
-    
-    this.logNext(nextMessage);
-  }
 
   logNext = (message) => { // message should be of type string
     let combatLog = [...this.state.combatLog];
@@ -100,60 +70,43 @@ class ActiveGUI extends React.Component {
     this.setState({ combatLog });
   }
 
-  populateCombatInitiatives = (msg) => {
-
-    var newList = this.state.adventurerList;
-    for (var i = 0; i < this.state.adventurerList.length; i++) {
-      newList[i].initiative = msg.adventurerTurnObj[newList[i].name];
-    }
-    newList.sort((a,b) => b.initiative - a.initiative);
-
-    var newEnemyList = this.state.enemyList;
-    for (var i = 0; i < this.state.enemyList.length; i++) {
-      newEnemyList[i].initiative = msg.enemyTurnObj[newEnemyList[i].name];
-    }
-
-    newEnemyList.sort((a,b) => b.initiative - a.initiative);
-
-    this.setState({ adventurerList:newList,
-                    enemyList: newEnemyList});
-
-  }
 
   componentDidMount () {
     socket.on('initRollDone' , msg => {
 
-      this.populateCombatInitiatives(msg);
-
-
       this.logNext('All Players have completed their rolls')
+      this.setState({
+        enemyList: msg.enemyList,
+        adventurerList: msg.adventurerList,
+      });
+      
+    });
+
+    socket.on('enemyAttack', msg => {
+      setInterval(this.logNext('the enemy is gathering strength...'), 500);
+      setInterval(this.logNext(`the enemy Attacks!`), 2500);
     });
     
     socket.on('chat', msg => this.logNext(msg));
   
     //upon receiving the attack message from server client does computations
-    socket.on('attack', (msg) => { 
+    socket.on('attack-reply', (msg) => { 
       this.logNext(msg.msg);
-      
-      let target = parseInt(msg.target);
 
-      let enemyList = [...this.state.enemyList];  //deduct damage
-      enemyList[target].hp[0] -= msg.dmg;
-      this.setState({ enemyList});
+      this.setState({
+        enemyList: msg.mTL.enemyList,
+        adventurerList: msg.mTL.adventurerList,
+      });
 
-      if (enemyList[target].hp[0] <= 0) {
-        this.logNext(`${enemyList[target].name} is defeated! `);
-        enemyList.shift();
-        this.setState({ enemyList: enemyList});
-      }
+      console.log(`adventurerList ${msg.adventurerList}`)
+
     });
 
-    socket.on('enemyStrike', (msg) => {
-    });
   }
 
   attack = () => {
 
+    //for now we assume the target is always 0;
     let activeP = this.state.adventurerList[this.state.activePlayer];
     let activeName = this.state.adventurerList[this.state.activePlayer].name;
     let nextMessage = `${activeName} attacks ${this.state.enemyList[0].name}!!!     ` ;
@@ -163,10 +116,12 @@ class ActiveGUI extends React.Component {
     let pB = this.proficiencyBonus(activeP.level);
     let dexMod = this.modifiers(activeP.stats.dex);
     let ac = this.state.enemyList[0].armor_class[1];
-    let dmgRoll = this.roll(this.state.adventurerList[this.state.activePlayer].weapon[1]).total;
+    var dmgRoll = 0;
+    
 
     if ((attackRoll + pB + dexMod) >= ac) {
       nextMessage += `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}`;
+      dmgRoll = this.roll(this.state.adventurerList[this.state.activePlayer].weapon[1]).total;
     } else {
       nextMessage += `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}`;
     }
@@ -180,12 +135,12 @@ class ActiveGUI extends React.Component {
       msg: nextMessage,
     });
 
-    //increment the turns
     if (this.state.activePlayer >= this.state.adventurerList.length - 1) {
       this.setState({activePlayer: 0});
     } else {
       this.setState({activePlayer: this.state.activePlayer + 1});
     }
+
   }
 
   handleChange = (e) => {
@@ -196,7 +151,8 @@ class ActiveGUI extends React.Component {
 
   handleKeyPress = (e) => {
    if (e.key === "Enter") {
-       socket.emit('chat', `${this.props.login}: ${this.state.chatBox}`);
+       console.log(`formerly login: ${this.props.thisPlayer}`)
+       socket.emit('chat', `${this.props.thisPlayer}: ${this.state.chatBox}`);
        this.setState({chatBox: ''});
     }
   }
@@ -245,18 +201,34 @@ class ActiveGUI extends React.Component {
 
 export default ActiveGUI;
 
+/*
 
-/* removed code
+  enemyAttack = () => {
+    //enemy should select a target. 
+    let enemyTarget = Math.floor(Math.random() * this.state.adventurerList.length);
 
-  rollInitiativeParty = () => {
-    var newList = this.state.adventurerList;
-    for (var i = 0; i < this.state.adventurerList.length; i++) {
-      let initRoll = this.roll('1d20').total;
-      newList[i].initiative = initRoll;
-      newList[i].type = 'player';
+    let targetPlayer = this.state.adventurerList[enemyTarget];
+    let activeEnemy = this.state.enemyList[this.state.activeEnemy];
+    let nextMessage = `${activeEnemy.name} attacks ${targetPlayer.name} `;
+    this.logNext(nextMessage);
+
+    //compute the data!
+    let attackRoll = this.roll('1d20').total;
+    let pB = this.proficiencyBonus(activeEnemy.level);
+    let dexMod = this.modifiers(activeEnemy.stats.dex);
+    let ac = targetPlayer.armor_class[1];
+    let dmgRoll = this.roll(activeEnemy.weapon[1]).total;
+
+    if ((attackRoll + pB + dexMod) >= ac) {
+      nextMessage = `Attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs player AC:${ac}`;
+      socket.emit('attack', {
+        target: targetPlayer.name,
+        attacker: activeEnemy.name,
+        dmg: dmgRoll,
+      });
+    } else {
+      nextMessage = `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}`;
     }
-    newList.sort((a,b) => b.initiative - a.initiative);
-    this.setState({ adventurerList:newList });
-  }
-
-  */
+    
+    this.logNext(nextMessage);
+  }*/

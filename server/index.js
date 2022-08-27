@@ -6,9 +6,22 @@ const server = require('http').createServer(app);
 const { Server } = require('socket.io');
 var adventurerList = require('../test/players');
 var enemyList = require('../test/enemies');
+var masterTurnList = {
+  inCombat: false,
+  currentTurn: 0,
+  turnList: [],
+};
 
 const io = new Server(server);
 
+var getIndexOf = (name, array) => {
+  for (var i = 0; i < array.length; i++) {
+    if (array.name === name) {
+      return i;
+    }
+  }
+  return -1;
+}
 
 var generateIndex = (list) => {
   let indexObj = {}
@@ -18,38 +31,33 @@ var generateIndex = (list) => {
   return indexObj;
 }
 
-
-var rollEnemyInitiative = () => {
-  let enemyInitRolls = [];
-  let enemyInitObj = {};
-
-  for (var i = 0; i < enemyList.length; i++) {
-    let initObj = {
-      name: enemyList[i].name,
-      index: i,
-      roll: Math.floor(Math.random() * 20) + 1,
-    }
-    enemyInitRolls.push(initObj);
-    enemyInitObj[enemyList[i].name] = initObj.roll;
+var incrementTurn = () => {
+  if (masterTurnList.currentTurn === (masterTurnList.turnList.length - 1)) {
+    masterTurnList.currentTurn = 0;
+  } else {
+    masterTurnList.currentTurn++;
   }
-  return {
-    array: enemyInitRolls,
-    obj: enemyInitObj,
-  }; //returns array
+}
+
+var printList = (list) => {
+  list.forEach(e => console.log(`name: ${e.name} init: ${e.initiative}`));
 }
 
 
+var initAndSort = (initiativeList) => {
 
-var printTurnListObj = (turnListObj) => {
-  console.log(`current turn is ${turnListObj.currentTurn}`);
-  turnListObj.turnList.forEach(element => console.log(`${element.name}: ${element.roll}`));
-  // console.log('adventurer turn order: ');
-  // turnListObj.adventurerTurnList.forEach(element => console.log(`${element.name}: ${element.roll}`));
-  // console.log('enemy turn order: ')
-  // turnListObj.enemyTurnList.forEach(element => console.log(`${element.name}: ${element.roll}`));
-  console.log(`total entities in combat: ${turnListObj.turnList.length}`);
+  //populate the adventurer
+  for (var i = 0; i < adventurerList.length; i++) {
+    adventurerList[i].initiative = initiativeList[adventurerList[i].name];
+  }
+  for (var i = 0; i < enemyList.length; i++) {
+    enemyList[i].initiative = Math.floor(Math.random() * 20) + 1;
+  }
+
+  //sort the arrays
+  adventurerList.sort((a,b) => b.initiative - a.initiative);
+  enemyList.sort((a,b) => b.initiative - a.initiative);
 }
-
 
 io.on('connection', (socket) => {
     console.log(`a user connected on ${PORT}`);
@@ -60,9 +68,7 @@ io.on('connection', (socket) => {
     adventurerList.forEach(element => checkList[element.name] = true);
     adventurerList.forEach(element => initiativeList[element.name] = false);
 
-    var adventurerIndex = generateIndex(adventurerList);
-    var enemyIndex = generateIndex(enemyList);
-       
+      
     socket.on('initRoll', (message) => {
       delete checkList[message.name];
 
@@ -74,32 +80,17 @@ io.on('connection', (socket) => {
 
       // upon init Roll Done...
       if (Object.keys(checkList).length === 0) {
+        initAndSort(initiativeList);
 
-        let adventurerTurnArray = Object.keys(initiativeList).map(element => {return {
-          name: element,
-          index: adventurerIndex[element],
-          roll: initiativeList[element],
-        }});
+        masterTurnList.turnList = adventurerList.concat(enemyList).sort((a,b) => b.initiative - a.initiative);
 
-        
-        let enemyTurn = rollEnemyInitiative();
-        
+        masterTurnList.adventurerList = adventurerList;
+        masterTurnList.enemyList = enemyList;
 
-        // sort the intermediate arrays.  May remove if the server burden gets large
-        adventurerTurnArray.sort((a,b) => b.roll - a.roll);
-        enemyTurn.array = enemyTurn.array.sort((a,b) => b.roll - a.roll);
+        printList(masterTurnList.turnList);
 
-        let turnListObj = { 
-          currentTurn: 0,
-          turnList: adventurerTurnArray.concat(enemyTurn.array).sort((a,b) => b.roll - a.roll),
-          //adventurerTurnList: adventurerTurnArray,
-          adventurerTurnObj: initiativeList,
-          //enemyTurnList: enemyTurn.array,
-          enemyTurnObj: enemyTurn.obj,
-        }
-        printTurnListObj(turnListObj);
-
-        io.emit('initRollDone', turnListObj);
+        //pass the global turn object to each of the logged in members
+        io.emit('initRollDone', masterTurnList);
       }
 
       io.emit('rollReceived', message);
@@ -111,13 +102,25 @@ io.on('connection', (socket) => {
       io.emit('chat', message );
     });
 
-    socket.on('message', (message) => {
-      io.emit('message', `${socket.id.substring(0,2)} from the serverside ${message}` );
-    });
-
     socket.on('attack', (message) => { 
-      
-      io.emit('attack', message);
+
+      let e_i = getIndexOf(message.targetName, enemyList);
+      let t_i = getIndexOf(message.targetName, masterTurnList.turnList);
+
+      //update dmg.  may have to update spell slots later
+      masterTurnList.enemyList[e_i] -= message.dmg;
+      masterTurnList.turnList[t_i] -= message.dmg;
+
+      message.mTL = masterTurnList;
+      if (masterTurnList.inCombat) {
+        io.emit('attack-reply', message);
+      }
+
+      incrementTurn();
+      while (masterTurnList.turnList[masterTurnList.currentTurn].type === 'enemy') {
+        io.emit('enemyAttack', `the enemy Attacks!`);
+        incrementTurn();
+      }  
     });
 });
 

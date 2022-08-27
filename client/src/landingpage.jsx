@@ -75,7 +75,7 @@ class LandingPage extends React.Component {
   render() { return ( 
     <div>
       <InitiativeCheck closeModal={this.closeModal}/>
-      <ActiveGUI login={this.props.thisPlayer} openModal={this.openModal}/>
+      <ActiveGUI thisPlayer={this.props.thisPlayer} openModal={this.openModal}/>
     </div>
   ); }
 }
