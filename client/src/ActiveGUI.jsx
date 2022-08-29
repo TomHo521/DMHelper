@@ -21,6 +21,7 @@ class ActiveGUI extends React.Component {
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.getTarget = this.getTarget.bind(this);
     this.getIndexOf = this.getIndexOf.bind(this);
+    this.sendAttack = this.sendAttack.bind(this);
 
     this.state = {
       adventurerList : adventurerList,
@@ -145,18 +146,47 @@ class ActiveGUI extends React.Component {
 
   }
 
+  sendAttack = (target) => {
+
+        //for now we assume the target is always 0;
+        let activeP = this.state.thisPlayerObj;
+        let activeName = this.state.thisPlayerObj.name;
+    
+        let nextMessage = `${activeName} attacks ${this.state.enemyList[target].name}!!!     ` ;
+    
+        //comparing AC
+        let attackRoll = this.roll('1d20').total;
+        let pB = this.proficiencyBonus(activeP.level);
+        let dexMod = this.modifiers(activeP.stats.dex);
+        let ac = this.state.enemyList[target].armor_class[1];
+        var dmgRoll = 0;
+    
+        if ((attackRoll + pB + dexMod) >= ac) {
+          dmgRoll = this.roll(activeP.weapon[1]).total;
+          nextMessage += `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+        } else {
+          nextMessage += `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+        }
+    
+        //after performing relevant computations, upload to server
+        socket.emit('attack', {
+          targetName: this.state.enemyList[target].name,
+          attacker: this.props.thisPlayer,
+          dmg: dmgRoll,
+          target: target,
+          msg: nextMessage,
+        });
+  }
+
   getTarget = (e) => {
 
     if (this.state.acquiringTarget) {
-
-      let index = this.getIndexOf(e.currentTarget.id, this.state.adventurerList.concat(this.state.enemyList));
-      return index;
+      let index = this.getIndexOf(e.currentTarget.id, this.state.enemyList);
+      console.log('index acquired was: ', index);
+      this.sendAttack(index);
     }
     
-    //this.logNext(`${e.currentTarget.id}'s icon was clicked`);
-    //have a whole new set of css renders for when its time to get target.
-    // each rendered react component should have a specific bind function?
-    //
+    this.logNext(`${e.currentTarget.id}'s icon was clicked`);
   }
 
   getIndexOf = (name, array) => {
@@ -172,38 +202,22 @@ class ActiveGUI extends React.Component {
 
   attack = () => {
 
-    //for now we assume the target is always 0;
-    let activeP = this.state.thisPlayerObj;
-    let activeName = this.state.thisPlayerObj.name;
+    // need to acquire target
 
-    console.log('does activeName exist: ', activeName);
-
-    let nextMessage = `${activeName} attacks ${this.state.enemyList[0].name}!!!     ` ;
-
-    //comparing AC
-    let attackRoll = this.roll('1d20').total;
-    let pB = this.proficiencyBonus(activeP.level);
-    let dexMod = this.modifiers(activeP.stats.dex);
-    let ac = this.state.enemyList[0].armor_class[1];
-    var dmgRoll = 0;
-
-    if ((attackRoll + pB + dexMod) >= ac) {
-      dmgRoll = this.roll(activeP.weapon[1]).total;
-      nextMessage += `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+    if (this.props.thisPlayer === this.state.activeEntity) {
+      // attack was clicked AND it is this players turn.
+      this.logNext(`${this.props.thisPlayer} is selecting their target`);
+      this.setState({ acquiringTarget: true });
     } else {
-      nextMessage += `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+
+      this.logNext('Please wait your turn');
     }
 
-    //after performing relevant computations, upload to server
-    socket.emit('attack', {
-      targetName: this.state.enemyList[0].name,
-      attacker: this.props.thisPlayer,
-      dmg: dmgRoll,
-      target: 0,
-      msg: nextMessage,
-    });
+
+//** */
 
 
+///*** */
 
   }
 
@@ -242,7 +256,7 @@ class ActiveGUI extends React.Component {
               
         </div>  
         <div class="item6">
-          <button onClick={this.props.openModal}>Engage Initiative</button>
+          <button onClick={this.props.openModal}>Roll Initiative</button>
           {/* <button onClick={this.handleClickRoll}>Roll Intiative</button> <input type="text" name="character" onChange={this.handleChange} value={this.state.character}></input> */}
           <br></br>
           <input type="text" name="chatBox" onKeyPress={this.handleKeyPress} onChange={this.handleChange} value={this.state.chatBox}></input>
@@ -269,4 +283,31 @@ export default ActiveGUI;
 
 
 
-// 
+    // //for now we assume the target is always 0;
+    // let activeP = this.state.thisPlayerObj;
+    // let activeName = this.state.thisPlayerObj.name;
+
+    // let nextMessage = `${activeName} attacks ${this.state.enemyList[0].name}!!!     ` ;
+
+    // //comparing AC
+    // let attackRoll = this.roll('1d20').total;
+    // let pB = this.proficiencyBonus(activeP.level);
+    // let dexMod = this.modifiers(activeP.stats.dex);
+    // let ac = this.state.enemyList[0].armor_class[1];
+    // var dmgRoll = 0;
+
+    // if ((attackRoll + pB + dexMod) >= ac) {
+    //   dmgRoll = this.roll(activeP.weapon[1]).total;
+    //   nextMessage += `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+    // } else {
+    //   nextMessage += `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+    // }
+
+    // //after performing relevant computations, upload to server
+    // socket.emit('attack', {
+    //   targetName: this.state.enemyList[0].name,
+    //   attacker: this.props.thisPlayer,
+    //   dmg: dmgRoll,
+    //   target: 0,
+    //   msg: nextMessage,
+    // });

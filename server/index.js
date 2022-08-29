@@ -10,7 +10,7 @@ var masterTurnList = {
   inCombat: false,
   currentTurn: 0,
   turn: '',
-  turnList: [{name: 'combat not started yet'}],
+  turnList: [{name: 'Please Roll Initiative'}],
   adventurerList: adventurerList,
   enemyList: enemyList,
 };
@@ -123,11 +123,6 @@ var enemyAttack = (activeEnemy) => {
     
     return msgLog;
   }
-
-//
-var processEnemyTurn = () => {
-
-}
 
 
 io.on('connection', (socket) => {
