@@ -162,7 +162,14 @@ class ActiveGUI extends React.Component {
         var dmgRoll = 0;
     
         if ((attackRoll + pB + dexMod) >= ac) {
-          dmgRoll = this.roll(activeP.weapon[1]).total;
+          if (attackRoll === 20) {
+            let dice = activeP.weapon[1];
+            dice[0] = 2;
+            dmgRoll = this.roll(dice).total + dexMod;
+          } else {
+            dmgRoll = this.roll(activeP.weapon[1]).total + dexMod;
+          }
+          
           nextMessage += `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
         } else {
           nextMessage += `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
