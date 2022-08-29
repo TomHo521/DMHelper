@@ -10,12 +10,14 @@ class PartyList extends React.Component {
 
   render () {
 
+    let hoverClass = (this.props.acquiringTarget) ? 'hover' : 'nohover';
+
     return (<div>
       {
       this.props.adventurerList.map( (mem, key) => {   
       return (
            <tr className="adventurer" id={mem.name} key={key} onClick={this.props.getTarget}> 
-            <th>
+            <th className={hoverClass}>
               <div>
                 {mem.name.substring(0, 5)} init: {mem.initiative}
               </div>
@@ -30,7 +32,7 @@ class PartyList extends React.Component {
               </div>   
               {(mem.hp[0] > 0) ? null : <div className='dead'> DEAD </div>}
             </th>
-            <td>
+            <td className={hoverClass}>
               <div>
                 Lvl:{mem.level} {mem.class}
               </div>

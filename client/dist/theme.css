@@ -184,13 +184,19 @@ table {
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
-th, td { 
+th.nohover, td.nohover { 
   padding: 1em 1.5em; 
   font-weight: normal;
   border: 2px solid rgb(240, 202, 12);
 }
 
-th:hover, td:hover { 
+th.hover, td.hover { 
+  padding: 1em 1.5em; 
+  font-weight: normal;
+  border: 2px solid rgb(240, 202, 12);
+}
+
+/* th.nohover:hover, td.nohover:hover { 
   padding: 1em 1.5em; 
   background-color: wheat;
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
@@ -198,6 +204,18 @@ th:hover, td:hover {
   z-index: 1;
   color: rgba(79, 79, 95); 
   border: 4px solid red;
+} */
+
+
+
+th.hover:hover, td.hover:hover { 
+  padding: 1em 1.5em; 
+  background-color: wheat;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  font-weight: normal;
+  z-index: 1;
+  color: rgba(79, 79, 95); 
+  border: 4px solid rgb(44, 239, 44);
 }
 
 thead { text-transform: uppercase; }

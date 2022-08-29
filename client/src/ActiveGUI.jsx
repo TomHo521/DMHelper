@@ -176,6 +176,7 @@ class ActiveGUI extends React.Component {
         }
     
         //after performing relevant computations, upload to server
+        this.setState({acquiringTarget : false});
         socket.emit('attack', {
           targetName: this.state.enemyList[target].name,
           attacker: this.props.thisPlayer,
@@ -242,6 +243,8 @@ class ActiveGUI extends React.Component {
   }
 
   render () {
+
+
     return (
       <div class="grid-container">
         <div class="item1">
@@ -253,7 +256,7 @@ class ActiveGUI extends React.Component {
         </div>
         <div class="item2">
           Enemy:
-          <PartyList getTarget={this.getTarget} adventurerList={this.state.enemyList}/>
+          <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.enemyList}/>
         </div>
         <div class="item3">
             {this.state.combatLog.map( (combatLogEntry, index) => {
@@ -272,7 +275,7 @@ class ActiveGUI extends React.Component {
           <table>
             <tbody>
               <tr colSpan="2">Midir's Minions</tr>  
-              <PartyList getTarget={this.getTarget} adventurerList={this.state.adventurerList}/>
+              <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.adventurerList}/>
             </tbody>
           </table>
         </div>
