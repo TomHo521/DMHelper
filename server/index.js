@@ -9,7 +9,10 @@ var enemyList = require('../test/enemies');
 var masterTurnList = {
   inCombat: false,
   currentTurn: 0,
-  turnList: [],
+  turn: '',
+  turnList: [{name: ''}],
+  adventurerList: adventurerList,
+  enemyList: enemyList,
 };
 
 const io = new Server(server);
@@ -106,20 +109,25 @@ var enemyAttack = (activeEnemy) => {
     let pB = proficiencyBonus(activeEnemy.level);
     let dexMod = modifiers(activeEnemy.stats.dex);
     let ac = targetPlayer.armor_class[1];
-    let dmgRoll = roll(activeEnemy.weapon[1]).total;
+    let dmgRoll = 0; 
     //let hit = false;
 
     if ((attackRoll + pB + dexMod) >= ac) {
+      dmgRoll = roll(activeEnemy.weapon[1]).total;
       msgLog.push(`Attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs player AC:${ac}.  ${dmgRoll} damage dealt to ${targetPlayer.name}`);
       //hit = true;
-      adventurerList[targetPlayer].hp[0] -= dmgRoll;
+      adventurerList[enemyTarget].hp[0] -= dmgRoll;
     } else {
-      msgLog.push(`${activeEnemy.name}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}`);
+      msgLog.push(`${activeEnemy.name}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}  ${dmgRoll} damage dealt`);
     }
     
     return msgLog;
   }
 
+//
+var processEnemyTurn = () => {
+
+}
 
 
 io.on('connection', (socket) => {
@@ -151,9 +159,21 @@ io.on('connection', (socket) => {
         masterTurnList.enemyList = enemyList;
 
         printList(masterTurnList.turnList);
+        //masterTurnList.turn = masterTurnList.turnList[masterTurnlist.currentTurn].name;
+        while (masterTurnList.turnList[masterTurnList.currentTurn].type === 'enemy') {
+          console.log('name ', masterTurnList.turnList[masterTurnList.currentTurn].name);
+      
+          if (masterTurnList.turnList[masterTurnList.currentTurn].hp[0] > 0) {
+            message.msgLog = enemyAttack(masterTurnList.turnList[masterTurnList.currentTurn]);
+            message.mTL = masterTurnList;
+            io.emit('enemyAttack', message);
+          }
+          incrementTurn();
+        }  
 
         //pass the global turn object to each of the logged in members
         io.emit('initRollDone', masterTurnList);
+        
       }
 
       io.emit('rollReceived', message);
@@ -165,33 +185,55 @@ io.on('connection', (socket) => {
       io.emit('chat', message );
     });
 
+
+
+    socket.on('getStatus', (message) => {
+
+      let thisPlayerObj = getIndexOf(message.thisPlayer, masterTurnList.adventurerList);
+ 
+      message.enemyList = masterTurnList.enemyList,
+      message.adventurerList = masterTurnList.adventurerList,
+      message.thisPlayerObj = masterTurnList.adventurerList[thisPlayerObj],
+      io.emit('getStatus', message );
+    })
+
     socket.on('attack', (message) => { 
 
-      let e_i = getIndexOf(message.targetName, enemyList);
-      let t_i = getIndexOf(message.targetName, masterTurnList.turnList);
-
-      //update dmg.  may have to update spell slots later
-      masterTurnList.enemyList[e_i].hp[0] -= message.dmg;
-      masterTurnList.turnList[t_i].hp[0] -= message.dmg;
-
-      message.mTL = masterTurnList;
-      if (masterTurnList.inCombat) {
-        io.emit('attack-reply', message);
-      }
-
-      incrementTurn();
-    
-
-      while (masterTurnList.turnList[masterTurnList.currentTurn].type === 'enemy') {
-        console.log('name ', masterTurnList.turnList[masterTurnList.currentTurn].name);
-  
-        message.msgLog = enemyAttack(masterTurnList.turnList[masterTurnList.currentTurn]);
+      if (message.attacker !== masterTurnList.turnList[masterTurnList.currentTurn].name) {
+        message.msg = `${message.attacker} tries to attack, but it is not their turn!`;
         message.mTL = masterTurnList;
 
-        io.emit('enemyAttack', message);
+        console.log('this damage at the server: (not added)', message.dmg);
+        message.dmg = message.dmg;
+        io.emit('attack-reply', message);
+      } else {
+        let e_i = getIndexOf(message.targetName, enemyList);
+        //let t_i = getIndexOf(message.targetName, masterTurnList.turnList);
+  
+        //update dmg.  may have to update spell slots later
+        masterTurnList.enemyList[e_i].hp[0] -= message.dmg;
+        //masterTurnList.turnList[t_i].hp[0] -= message.dmg;
+  
+        message.mTL = masterTurnList;
+        if (masterTurnList.inCombat) {
+          io.emit('attack-reply', message);
+        }
         incrementTurn();
-      }  
+
+        while (masterTurnList.turnList[masterTurnList.currentTurn].type === 'enemy') {
+          console.log('name ', masterTurnList.turnList[masterTurnList.currentTurn].name);
+      
+          if (masterTurnList.turnList[masterTurnList.currentTurn].hp[0] > 0) {
+            message.msgLog = enemyAttack(masterTurnList.turnList[masterTurnList.currentTurn]);
+            message.mTL = masterTurnList;
+            io.emit('enemyAttack', message);
+          }
+          incrementTurn();
+        }  
+
+      }
     });
+
 });
 
 app.use(express.json());
@@ -205,16 +247,8 @@ app.get('/local', function (req, res) {
   res.send('Hello World');
 });
 
-// http.listen(PORT, () => {
-//   console.log(directory);
-//   console.log(`listening on http://localhost:${PORT}`);
-// });
 
 server.listen(PORT, () => {
     console.log(directory);
     console.log(`listening on http://localhost:${PORT}`);
 });
-
-// app.listen(PORT, () => {
-//   console.log(`listening on http://localhost:${PORT}`);
-// })

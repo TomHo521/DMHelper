@@ -5,15 +5,16 @@ class PartyList extends React.Component {
     super(props);
     this.state = {
     };
+    
   }
 
   render () {
 
     return (<div>
       {
-      this.props.adventurerList.map( (mem) => {   
+      this.props.adventurerList.map( (mem, key) => {   
       return (
-           <tr className="adventurer"> 
+           <tr className="adventurer" id={mem.name} key={key} onClick={this.props.getTarget}> 
             <th>
               <div>
                 {mem.name.substring(0, 5)} init: {mem.initiative}
@@ -27,6 +28,7 @@ class PartyList extends React.Component {
               <div>
                 Spell Slots
               </div>   
+              {(mem.hp[0] > 0) ? null : <div className='dead'> DEAD </div>}
             </th>
             <td>
               <div>

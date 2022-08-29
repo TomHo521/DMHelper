@@ -1,6 +1,8 @@
 import React from 'react';
 import ActiveGUI from './ActiveGUI';
 import InitiativeCheck from './InitiativeCheck';
+import adventurerList from '../../test/players.js';
+import enemyList from '../../test/enemies.js';
 
 class LandingPage extends React.Component {
   constructor(props) {
@@ -14,7 +16,7 @@ class LandingPage extends React.Component {
     this.closeModal = this.closeModal.bind(this);
   
     this.state = {
-       
+      thisPlayerObj:{},
     }
   }
 
@@ -72,10 +74,22 @@ class LandingPage extends React.Component {
     modal.style.display = "none";
   }
 
+  componentDidMount () {
+    
+    for (var i = 0; i < adventurerList.length; i++) {
+      if (this.props.thisPlayer === adventurerList[i].name) {
+        this.setState({thisPlayerObj: adventurerList[i]});
+        return;
+      }
+    }
+
+    console.log('error!  Player login not found');
+  }
+
   render() { return ( 
     <div>
       <InitiativeCheck closeModal={this.closeModal}/>
-      <ActiveGUI thisPlayer={this.props.thisPlayer} openModal={this.openModal}/>
+      <ActiveGUI thisPlayerObj={this.state.thisPlayerObj} thisPlayer={this.props.thisPlayer} openModal={this.openModal}/>
     </div>
   ); }
 }

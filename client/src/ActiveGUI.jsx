@@ -19,17 +19,21 @@ class ActiveGUI extends React.Component {
     this.logNext = this.logNext.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
-    
+    this.getTarget = this.getTarget.bind(this);
+    this.getIndexOf = this.getIndexOf.bind(this);
+
     this.state = {
       adventurerList : adventurerList,
       enemyList : enemyList,
       turn: 0,
-      activePlayer: 0,
+      thisPlayerObj: {},
       activeEnemy: 0,
       combatLog : [{msg: 'Combat Log:'}],
       headlineMessage: '',
       turnList: [],
       turnPlayer: {},
+      acquiringTarget: false,
+      everyonesTargets: {},
       chatBox: '',
     };
   }
@@ -72,14 +76,37 @@ class ActiveGUI extends React.Component {
 
 
   componentDidMount () {
+
+    socket.emit('getStatus', {thisPlayer: this.props.thisPlayer});
+    socket.emit('chat', `${this.props.thisPlayer} has come online`);
+
+    socket.on('getStatus', msg => {
+      console.log('msg.enemyList: ',msg.enemyList);
+      console.log('msg.adveList: ',msg.adventurerList);
+      console.log('thisPlayerObj: ', msg.thisPlayerObj);
+      if (msg.thisPlayerObj.name === this.props.thisPlayer) {
+        this.setState({
+          thisPlayerObj: msg.thisPlayerObj
+        });
+      }
+      this.setState({
+        enemyList: msg.enemyList,
+        adventurerList: msg.adventurerList,
+      });
+    })
+
+
     socket.on('initRollDone' , msg => {
 
-      this.logNext('All Players have completed their rolls')
+      let turnCounter = msg.currentTurn
+
+      this.logNext(`All Players have completed their rolls: turn: ${turnCounter}`)
       this.setState({
         enemyList: msg.enemyList,
         adventurerList: msg.adventurerList,
       });
       
+      this.logNext(`now ${this.adventurerList[turnCounter].name}'s turn`);
     });
 
     socket.on('enemyAttack', msg => {
@@ -97,25 +124,50 @@ class ActiveGUI extends React.Component {
   
     //upon receiving the attack message from server client does computations
     socket.on('attack-reply', (msg) => { 
-      
       this.logNext(msg.msg);
-
       this.setState({
         enemyList: msg.mTL.enemyList,
         adventurerList: msg.mTL.adventurerList,
       });
-
-      console.log(`adventurerList ${msg.adventurerList}`)
-
+      
+      console.log('dmg at the front end: (should be zero)', msg.dmg);
     });
 
   }
 
+  getTarget = (e) => {
+
+    if (this.state.acquiringTarget) {
+
+      let index = this.getIndexOf(e.currentTarget.id, this.state.adventurerList.concat(this.state.enemyList));
+      return index;
+    }
+    
+    //this.logNext(`${e.currentTarget.id}'s icon was clicked`);
+    //have a whole new set of css renders for when its time to get target.
+    // each rendered react component should have a specific bind function?
+    //
+  }
+
+  getIndexOf = (name, array) => {
+    for (var i = 0; i < array.length; i++) {
+      if (array[i].name === name) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+
+
   attack = () => {
 
     //for now we assume the target is always 0;
-    let activeP = this.state.adventurerList[this.state.activePlayer];
-    let activeName = this.state.adventurerList[this.state.activePlayer].name;
+    let activeP = this.state.thisPlayerObj;
+    let activeName = this.state.thisPlayerObj.name;
+
+    console.log('does activeName exist: ', activeName);
+
     let nextMessage = `${activeName} attacks ${this.state.enemyList[0].name}!!!     ` ;
 
     //comparing AC
@@ -124,29 +176,24 @@ class ActiveGUI extends React.Component {
     let dexMod = this.modifiers(activeP.stats.dex);
     let ac = this.state.enemyList[0].armor_class[1];
     var dmgRoll = 0;
-    
 
     if ((attackRoll + pB + dexMod) >= ac) {
-      nextMessage += `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}`;
-      dmgRoll = this.roll(this.state.adventurerList[this.state.activePlayer].weapon[1]).total;
+      dmgRoll = this.roll(activeP.weapon[1]).total;
+      nextMessage += `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
     } else {
-      nextMessage += `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}`;
+      nextMessage += `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
     }
 
     //after performing relevant computations, upload to server
     socket.emit('attack', {
       targetName: this.state.enemyList[0].name,
-      attacker: this.state.adventurerList[this.state.activePlayer].name,
+      attacker: this.props.thisPlayer,
       dmg: dmgRoll,
       target: 0,
       msg: nextMessage,
     });
 
-    if (this.state.activePlayer >= this.state.adventurerList.length - 1) {
-      this.setState({activePlayer: 0});
-    } else {
-      this.setState({activePlayer: this.state.activePlayer + 1});
-    }
+
 
   }
 
@@ -158,7 +205,6 @@ class ActiveGUI extends React.Component {
 
   handleKeyPress = (e) => {
    if (e.key === "Enter") {
-       console.log(`formerly login: ${this.props.thisPlayer}`)
        socket.emit('chat', `${this.props.thisPlayer}: ${this.state.chatBox}`);
        this.setState({chatBox: ''});
     }
@@ -168,12 +214,12 @@ class ActiveGUI extends React.Component {
     return (
       <div class="grid-container">
         <div class="item1">
-          <h1>Turn: {this.state.adventurerList[this.state.activePlayer].name}</h1>
+          <h1>Turn: Repair this</h1>
           <h3>{}</h3>
         </div>
         <div class="item2">
           Enemy:
-          <PartyList adventurerList={this.state.enemyList}/>
+          <PartyList getTarget={this.getTarget} adventurerList={this.state.enemyList}/>
         </div>
         <div class="item3">
             {this.state.combatLog.map( (combatLogEntry, index) => {
@@ -192,7 +238,7 @@ class ActiveGUI extends React.Component {
           <table>
             <tbody>
               <tr colSpan="2">Midir's Minions</tr>  
-              <PartyList adventurerList={this.state.adventurerList} activePlayer={this.state.activePlayer}/>
+              <PartyList getTarget={this.getTarget} adventurerList={this.state.adventurerList}/>
             </tbody>
           </table>
         </div>
@@ -208,34 +254,6 @@ class ActiveGUI extends React.Component {
 
 export default ActiveGUI;
 
-/*
 
-  enemyAttack = () => {
-    //enemy should select a target. 
-    let enemyTarget = Math.floor(Math.random() * this.state.adventurerList.length);
 
-    let targetPlayer = this.state.adventurerList[enemyTarget];
-    let activeEnemy = this.state.enemyList[this.state.activeEnemy];
-    let nextMessage = `${activeEnemy.name} attacks ${targetPlayer.name} `;
-    this.logNext(nextMessage);
-
-    //compute the data!
-    let attackRoll = this.roll('1d20').total;
-    let pB = this.proficiencyBonus(activeEnemy.level);
-    let dexMod = this.modifiers(activeEnemy.stats.dex);
-    let ac = targetPlayer.armor_class[1];
-    let dmgRoll = this.roll(activeEnemy.weapon[1]).total;
-
-    if ((attackRoll + pB + dexMod) >= ac) {
-      nextMessage = `Attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs player AC:${ac}`;
-      socket.emit('attack', {
-        target: targetPlayer.name,
-        attacker: activeEnemy.name,
-        dmg: dmgRoll,
-      });
-    } else {
-      nextMessage = `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}`;
-    }
-    
-    this.logNext(nextMessage);
-  }*/
+// 

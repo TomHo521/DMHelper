@@ -189,6 +189,16 @@ th, td {
   border: 2px solid rgb(240, 202, 12);
 }
 
+th:hover, td:hover { 
+  padding: 1em 1.5em; 
+  background-color: wheat;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  font-weight: normal;
+  z-index: 1;
+  color: rgba(79, 79, 95); 
+  border: 4px solid red;
+}
+
 thead { text-transform: uppercase; }
 th { white-space: nowrap; }
 td { width: 100%; }
@@ -249,6 +259,7 @@ tbody:after {
   font-size: 15px;
   height: 100px;
   width: 250px;
+  /* border: #26d480; */
 }
 
 .alignLeft {
@@ -284,7 +295,6 @@ tbody:after {
 .login {
   max-width: 200px;
 }
-
 
  /* MODAL WINDOW CSS  */
 
@@ -394,4 +404,9 @@ tbody:after {
 
 #checkBox {
   font-size: 22px;
+}
+
+.dead {
+  font-size: 20px;
+  color: red;
 }
