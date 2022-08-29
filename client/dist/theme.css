@@ -171,6 +171,7 @@ input {
 
 
 
+
 p { max-width: 47%; }
 
 table {
@@ -292,9 +293,7 @@ tbody:after {
 
 }
 
-.login {
-  max-width: 200px;
-}
+
 
  /* MODAL WINDOW CSS  */
 
@@ -409,4 +408,17 @@ tbody:after {
 .dead {
   font-size: 20px;
   color: red;
+}
+
+.login {
+  max-width: 200px;
+}
+
+#loggedInPlayer {
+  position: absolute;
+  top: 0;
+  left: 50px;
+  color:rgb(255, 255, 255, 1);
+  font-family: Consolas;
+  font-size: medium;
 }

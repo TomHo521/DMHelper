@@ -10,7 +10,7 @@ var masterTurnList = {
   inCombat: false,
   currentTurn: 0,
   turn: '',
-  turnList: [{name: ''}],
+  turnList: [{name: 'combat not started yet'}],
   adventurerList: adventurerList,
   enemyList: enemyList,
 };
@@ -166,12 +166,14 @@ io.on('connection', (socket) => {
           if (masterTurnList.turnList[masterTurnList.currentTurn].hp[0] > 0) {
             message.msgLog = enemyAttack(masterTurnList.turnList[masterTurnList.currentTurn]);
             message.mTL = masterTurnList;
+            message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
             io.emit('enemyAttack', message);
           }
           incrementTurn();
         }  
 
         //pass the global turn object to each of the logged in members
+        masterTurnList.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
         io.emit('initRollDone', masterTurnList);
         
       }
@@ -194,6 +196,7 @@ io.on('connection', (socket) => {
       message.enemyList = masterTurnList.enemyList,
       message.adventurerList = masterTurnList.adventurerList,
       message.thisPlayerObj = masterTurnList.adventurerList[thisPlayerObj],
+      message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name,
       io.emit('getStatus', message );
     })
 
@@ -202,23 +205,24 @@ io.on('connection', (socket) => {
       if (message.attacker !== masterTurnList.turnList[masterTurnList.currentTurn].name) {
         message.msg = `${message.attacker} tries to attack, but it is not their turn!`;
         message.mTL = masterTurnList;
-
-        console.log('this damage at the server: (not added)', message.dmg);
+        message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
         message.dmg = message.dmg;
+
         io.emit('attack-reply', message);
       } else {
         let e_i = getIndexOf(message.targetName, enemyList);
-        //let t_i = getIndexOf(message.targetName, masterTurnList.turnList);
-  
+      
         //update dmg.  may have to update spell slots later
         masterTurnList.enemyList[e_i].hp[0] -= message.dmg;
-        //masterTurnList.turnList[t_i].hp[0] -= message.dmg;
-  
         message.mTL = masterTurnList;
+
+        incrementTurn();
+        message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
+
         if (masterTurnList.inCombat) {
           io.emit('attack-reply', message);
         }
-        incrementTurn();
+        
 
         while (masterTurnList.turnList[masterTurnList.currentTurn].type === 'enemy') {
           console.log('name ', masterTurnList.turnList[masterTurnList.currentTurn].name);
@@ -226,6 +230,7 @@ io.on('connection', (socket) => {
           if (masterTurnList.turnList[masterTurnList.currentTurn].hp[0] > 0) {
             message.msgLog = enemyAttack(masterTurnList.turnList[masterTurnList.currentTurn]);
             message.mTL = masterTurnList;
+            message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
             io.emit('enemyAttack', message);
           }
           incrementTurn();

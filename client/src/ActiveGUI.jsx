@@ -26,6 +26,7 @@ class ActiveGUI extends React.Component {
       adventurerList : adventurerList,
       enemyList : enemyList,
       turn: 0,
+      activeEntity: 'Combat not ready yet',
       thisPlayerObj: {},
       activeEnemy: 0,
       combatLog : [{msg: 'Combat Log:'}],
@@ -84,6 +85,8 @@ class ActiveGUI extends React.Component {
       console.log('msg.enemyList: ',msg.enemyList);
       console.log('msg.adveList: ',msg.adventurerList);
       console.log('thisPlayerObj: ', msg.thisPlayerObj);
+      console.log('ACTIVE ENTITY: ', msg.activeEntity);
+
       if (msg.thisPlayerObj.name === this.props.thisPlayer) {
         this.setState({
           thisPlayerObj: msg.thisPlayerObj
@@ -92,6 +95,7 @@ class ActiveGUI extends React.Component {
       this.setState({
         enemyList: msg.enemyList,
         adventurerList: msg.adventurerList,
+        activeEntity: msg.activeEntity,
       });
     })
 
@@ -104,6 +108,7 @@ class ActiveGUI extends React.Component {
       this.setState({
         enemyList: msg.enemyList,
         adventurerList: msg.adventurerList,
+        activeEntity: msg.activeEntity,
       });
       
       this.logNext(`now ${this.adventurerList[turnCounter].name}'s turn`);
@@ -113,10 +118,14 @@ class ActiveGUI extends React.Component {
 
       msg.msgLog.forEach(e => this.logNext(e));
 
+      console.log('data from enemy attack msg ', msg.activeEntity);
       this.setState({
         enemyList: msg.mTL.enemyList,
         adventurerList: msg.mTL.adventurerList,
+        activeEntity: msg.activeEntity,
       });
+
+      socket.emit('getStatus', {thisPlayer: this.props.thisPlayer});
       
     });
     
@@ -128,9 +137,10 @@ class ActiveGUI extends React.Component {
       this.setState({
         enemyList: msg.mTL.enemyList,
         adventurerList: msg.mTL.adventurerList,
+        activeEntity: msg.activeEntity,
       });
-      
-      console.log('dmg at the front end: (should be zero)', msg.dmg);
+
+      //console.log('dmg at the front end: (should be zero)', msg.dmg);
     });
 
   }
@@ -214,7 +224,10 @@ class ActiveGUI extends React.Component {
     return (
       <div class="grid-container">
         <div class="item1">
-          <h1>Turn: Repair this</h1>
+          <p id='loggedInPlayer'>Logged in as:
+           <br></br> {this.props.thisPlayer}
+          </p>
+          <h1>Turn: {this.state.activeEntity}</h1>
           <h3>{}</h3>
         </div>
         <div class="item2">
