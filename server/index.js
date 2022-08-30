@@ -4,6 +4,8 @@ const app = express();
 const PORT = 3000;
 const server = require('http').createServer(app);
 const { Server } = require('socket.io');
+const db = require('./dmhelper_db/dmhelper_db_routes');
+
 var adventurerList = require('../test/players');
 var enemyList = require('../test/enemies');
 var masterTurnList = {

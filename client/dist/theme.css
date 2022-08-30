@@ -153,8 +153,8 @@ a:hover span:nth-child(4) {
   
 }
 
-input {
-  width: 600px;
+.inputLogins {
+  width: 30vh;
 }
 
 .grid-container > div {
@@ -304,10 +304,15 @@ tbody:after {
 
 .alignCenterLogin {
 
-  background-color: wheat;
-  color:#6d4827;
+  display: flex;
+  max-width: 50vh;
+  font-family: consolas;
+  border: 1px white;
+  background-color: rgb(251, 203, 101, .4);
+  color: white;
   justify-content: center;
-  text-align: left;
+  align-items: center;
+  /* text-align: left; */
 
 }
 
@@ -428,9 +433,16 @@ tbody:after {
   color: red;
 }
 
-.login {
-  max-width: 200px;
+.loginOutside {
+  padding: 10px;
+  margin: 15px;
+  background-color: linear-gradient(90deg, white, green);
 }
+
+.loginHeader {
+  text-align: center;
+  font-size: 22px;
+} 
 
 #loggedInPlayer {
   position: absolute;
@@ -439,4 +451,149 @@ tbody:after {
   color:rgb(255, 255, 255, 1);
   font-family: Consolas;
   font-size: medium;
+}
+
+
+.login-button {
+  background-color: #04AA6D;
+  border: none;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+}
+
+.lgHeadline {
+  color:rgb(255, 255, 255, 1);
+  font-family: Consolas;
+  font-size: 16px;
+}
+
+
+* {
+    padding: 0px;
+    margin: 0px;
+}
+body {
+    background-color: lightgreen;
+}
+header {
+    background-color: black;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 15vh;
+    box-shadow: 5px 5px 10px rgb(0,0,0,0.3);
+}
+/* h1 {
+    letter-spacing: 1.5vw;
+    font-family: 'system-ui';
+    text-transform: uppercase;
+    text-align: center;
+} */
+main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 75vh;
+    width: 100%;
+    background: url(http://i.imgur.com/mVhm1LB.jpg);
+    /* background: url(https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Mountains-1412683.svg/1280px-Mountains-1412683.svg.png) no-repeat center center; */
+    background-size: cover;
+}
+.form_class {
+    width: 500px;
+    padding: 40px;
+    border-style: solid;
+    border-radius: 12px;
+    border-color: wheat;
+    border-width: 2px;
+    background-color: rgb(245,222,179,.4);
+    font-family: 'system-ui';
+    /* box-shadow: 5px 5px 10px rgba(255, 255, 255, 0.3); */
+}
+.form_div {
+    text-transform: uppercase;
+}
+.form_div > label {
+    letter-spacing: 3px;
+    font-size: 1rem;
+}
+.info_div {
+    text-align: center;
+    margin-top: 20px;
+}
+.info_div {
+    letter-spacing: 1px;
+}
+.field_class {
+    width: 100%;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 1px;
+    padding: 5px 0px;
+    text-indent: 6px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-family: 'system-ui';
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+}
+.submit_class {
+    border-style: none;
+    border-radius: 5px;
+    background-color: #FFE6D4;
+    padding: 8px 20px;
+    font-family: 'system-ui';
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    display: block;
+    margin: auto;
+    margin-top: 10px;
+    box-shadow: 2px 2px 5px rgb(0,0,0,0.2);
+    cursor: pointer;
+}
+footer {
+    height: 10vh;
+    background-color: black;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: -5px -5px 10px rgb(0,0,0,0.3);
+}
+footer > p {
+    text-align: center;
+    font-family: 'system-ui';
+    letter-spacing: 3px;
+}
+footer > p > a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+.radio-div {
+  flex-direction: column;
+
+  /* grid-template-areas:
+    'item '
+    'item '
+    'item '
+    'item '
+    'item '
+    'item '; */
+  /* gap: 7px;  */
+  justify-content: left;
+}
+
+.inputRadio {
+  /* grid-area:'item'; */
+  width: 10vh;
+  margin: 10px;
+  
 }
