@@ -3,6 +3,7 @@ import ActiveGUI from './ActiveGUI';
 import InitiativeCheck from './InitiativeCheck';
 import adventurerList from '../../test/players.js';
 import enemyList from '../../test/enemies.js';
+import MagicMenu from './Menus/magicmenu';
 
 class LandingPage extends React.Component {
   constructor(props) {
@@ -14,9 +15,12 @@ class LandingPage extends React.Component {
     this.abilityCheck = this.abilityCheck.bind(this);
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this.openMagicModal = this.openMagicModal.bind(this);
+    this.closeMagicModal = this.closeMagicModal.bind(this);
   
     this.state = {
       thisPlayerObj:{},
+      displayMagicMenu: false,
     }
   }
 
@@ -74,6 +78,23 @@ class LandingPage extends React.Component {
     modal.style.display = "none";
   }
 
+  openMagicModal() {
+    // this.setState({displayMagicMenu: true})
+    let modal = document.getElementById("magicWindow");
+    modal.style.display = "block";
+    
+
+    console.log('openMagicModal being called');
+  }
+
+  closeMagicModal = () => {
+    console.log('closeMagicModal being called');
+    let modal = document.getElementById("magicWindow");
+    modal.style.display = "none";
+    
+  }
+
+
   componentDidMount () {
     
     for (var i = 0; i < adventurerList.length; i++) {
@@ -86,10 +107,15 @@ class LandingPage extends React.Component {
     console.log('error!  Player login not found');
   }
 
-  render() { return ( 
+  render() { 
+
+    // let magicMenu = (this.state.displayMagicMenu) ? <MagicMenu closeMagicModal={this.closeMagicModal}/> : null;
+    
+    return ( 
     <div>
+      <MagicMenu closeMagicModal={this.closeMagicModal}/>
       <InitiativeCheck closeModal={this.closeModal}/>
-      <ActiveGUI thisPlayerObj={this.state.thisPlayerObj} thisPlayer={this.props.thisPlayer} openModal={this.openModal}/>
+      <ActiveGUI thisPlayerObj={this.state.thisPlayerObj} thisPlayer={this.props.thisPlayer} openModal={this.openModal} openMagicModal={this.openMagicModal}/>
     </div>
   ); }
 }

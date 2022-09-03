@@ -1,4 +1,5 @@
 import React from 'react';
+import SubActionMenu from './subActionMenu.jsx';
 
 class ActionMenu extends React.Component {
 
@@ -6,10 +7,15 @@ class ActionMenu extends React.Component {
     super(props);
     this.state = {
 
+      displaySubActions: false,
+
     }
   }
 
   render () {
+
+    let subActionMenu = (this.state.displaySubActions) ? <SubActionMenu/> : null;
+
     return (
       <div className="action-menu">
         <div className="option">
@@ -19,6 +25,7 @@ class ActionMenu extends React.Component {
           <span></span>
         Action
         </div>
+        {SubActionMenu}
         <div className="option">
           <span></span>
           <span></span>

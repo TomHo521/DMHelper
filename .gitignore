@@ -3,3 +3,5 @@ FECDeploy.pem
 DNDkey.pem
 SDC_Redis.pem
 .env
+./test/magic.js
+./test/fighter.js
