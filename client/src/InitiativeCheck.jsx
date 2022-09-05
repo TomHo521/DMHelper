@@ -58,7 +58,6 @@ class InitiativeCheck extends React.Component {
     } 
 
 
-
     let renderList = Object.keys(this.state.playerList).map(element => 
       <SinglePlayerInitiative player={{name: element, roll: this.state.playerList[element]}} rollInitAndSend={this.rollInitAndSend}/>
     );

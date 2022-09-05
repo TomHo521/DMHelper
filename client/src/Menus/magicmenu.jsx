@@ -12,18 +12,25 @@ class MagicMenu extends React.Component {
       spellList: spellList,
     }
 
+    this.spellClickHandler = this.spellClickHandler.bind(this);
+
   }
 
   componentDidMount(){
     
   };
 
+  spellClickHandler = (e) => {
+
+    // console.log('this.spellClickHandler clicked');
+    console.log('name of the spell that was clicked.', e.currentTarget.getAttribute('name'));
+
+  }
+
   render () {
 
-    console.log('spelllist: ', Object.keys(this.state.spellList));
-
     let spellList = Object.keys(this.state.spellList).map((element, key) => {
-      return <SpellItem spell={this.state.spellList[element]} key={key}/>
+      return <SpellItem spell={this.state.spellList[element]} key={key} spellClickHandler={this.spellClickHandler}/>
     });
     
   return (
@@ -32,7 +39,7 @@ class MagicMenu extends React.Component {
       <div className="magic-modal-content">
           <div className="magic-modal-close" onClick={this.props.closeMagicModal}>&times;</div>
           <br></br>
-          <h3 className="spellBanner" onClick={this.props.closeMagicModal}>Your Spells</h3><br></br>
+          <h3 className="spellBanner" onClick={this.props.closeMagicModal}>YOUR SPELLS</h3><br></br>
           
         <div className="magic-modal-spelldiv">
 

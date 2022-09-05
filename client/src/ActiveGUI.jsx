@@ -6,7 +6,6 @@ import enemyList from '../../test/enemies.js';
 import CombatLogEntry from './combatlog';
 
 //master component which wraps all components with CSS grid
-
 class ActiveGUI extends React.Component {
 
   constructor(props) {
@@ -61,14 +60,11 @@ class ActiveGUI extends React.Component {
       total += single;
       rolls.push(single);
     }
-    
     return {
       total: total,
       rolls: rolls,
     }
   }
-
-
 
   logNext = (message) => { // message should be of type string
     let combatLog = [...this.state.combatLog];
@@ -83,11 +79,6 @@ class ActiveGUI extends React.Component {
     socket.emit('chat', `${this.props.thisPlayer} has come online`);
 
     socket.on('getStatus', msg => {
-      console.log('msg.enemyList: ',msg.enemyList);
-      console.log('msg.adveList: ',msg.adventurerList);
-      console.log('thisPlayerObj: ', msg.thisPlayerObj);
-      console.log('ACTIVE ENTITY: ', msg.activeEntity);
-
       if (msg.thisPlayerObj.name === this.props.thisPlayer) {
         this.setState({
           thisPlayerObj: msg.thisPlayerObj
@@ -102,7 +93,6 @@ class ActiveGUI extends React.Component {
 
 
     socket.on('initRollDone' , msg => {
-
       let turnCounter = msg.currentTurn
 
       this.logNext(`All Players have completed their rolls: turn: ${turnCounter}`)
@@ -140,10 +130,7 @@ class ActiveGUI extends React.Component {
         adventurerList: msg.mTL.adventurerList,
         activeEntity: msg.activeEntity,
       });
-
-      //console.log('dmg at the front end: (should be zero)', msg.dmg);
     });
-
   }
 
   sendAttack = (target) => {
@@ -187,13 +174,11 @@ class ActiveGUI extends React.Component {
   }
 
   getTarget = (e) => {
-
     if (this.state.acquiringTarget) {
       let index = this.getIndexOf(e.currentTarget.id, this.state.enemyList);
       console.log('index acquired was: ', index);
       this.sendAttack(index);
     }
-    
     this.logNext(`${e.currentTarget.id}'s icon was clicked`);
   }
 
@@ -206,27 +191,15 @@ class ActiveGUI extends React.Component {
     return -1;
   }
 
-
-
   attack = () => {
-
     // need to acquire target
-
     if (this.props.thisPlayer === this.state.activeEntity) {
       // attack was clicked AND it is this players turn.
       this.logNext(`${this.props.thisPlayer} is selecting their target`);
       this.setState({ acquiringTarget: true });
     } else {
-
       this.logNext('Please wait your turn');
     }
-
-
-//** */
-
-
-///*** */
-
   }
 
   handleChange = (e) => {
@@ -248,7 +221,7 @@ class ActiveGUI extends React.Component {
     return (
       <div class="grid-container">
         <div class="item1">
-          <p id='loggedInPlayer'>Logged in as:
+          <p id='loggedInPlayer' onClick={this.props.openAdventurerProfileModal}>Logged in as:
            <br></br> {this.props.thisPlayer}
           </p>
           <h1>Turn: {this.state.activeEntity}</h1>
@@ -258,7 +231,7 @@ class ActiveGUI extends React.Component {
           Enemy:
           <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.enemyList}/>
         </div>
-        <div class="item3">
+        <div class="item3" id="chatWindow">
             {this.state.combatLog.map( (combatLogEntry, index) => {
                 return (
                   <CombatLogEntry key={index} message={combatLogEntry.msg}/>)          
@@ -289,35 +262,4 @@ class ActiveGUI extends React.Component {
   }
 }
 
-export default ActiveGUI;
-
-
-
-    // //for now we assume the target is always 0;
-    // let activeP = this.state.thisPlayerObj;
-    // let activeName = this.state.thisPlayerObj.name;
-
-    // let nextMessage = `${activeName} attacks ${this.state.enemyList[0].name}!!!     ` ;
-
-    // //comparing AC
-    // let attackRoll = this.roll('1d20').total;
-    // let pB = this.proficiencyBonus(activeP.level);
-    // let dexMod = this.modifiers(activeP.stats.dex);
-    // let ac = this.state.enemyList[0].armor_class[1];
-    // var dmgRoll = 0;
-
-    // if ((attackRoll + pB + dexMod) >= ac) {
-    //   dmgRoll = this.roll(activeP.weapon[1]).total;
-    //   nextMessage += `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
-    // } else {
-    //   nextMessage += `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
-    // }
-
-    // //after performing relevant computations, upload to server
-    // socket.emit('attack', {
-    //   targetName: this.state.enemyList[0].name,
-    //   attacker: this.props.thisPlayer,
-    //   dmg: dmgRoll,
-    //   target: 0,
-    //   msg: nextMessage,
-    // });
+export default ActiveGUI;  

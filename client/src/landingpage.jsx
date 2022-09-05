@@ -4,6 +4,7 @@ import InitiativeCheck from './InitiativeCheck';
 import adventurerList from '../../test/players.js';
 import enemyList from '../../test/enemies.js';
 import MagicMenu from './Menus/magicmenu';
+import AdventurerProfile from './displays/adventurerProfile';
 
 class LandingPage extends React.Component {
   constructor(props) {
@@ -17,6 +18,8 @@ class LandingPage extends React.Component {
     this.closeModal = this.closeModal.bind(this);
     this.openMagicModal = this.openMagicModal.bind(this);
     this.closeMagicModal = this.closeMagicModal.bind(this);
+    this.openAdventurerProfileModal = this.openAdventurerProfileModal.bind(this);
+    this.closeAdventurerProfileModal = this.closeAdventurerProfileModal.bind(this);
   
     this.state = {
       thisPlayerObj:{},
@@ -24,9 +27,7 @@ class LandingPage extends React.Component {
     }
   }
 
-
   savingThrow = () => {
-
   }
   
   abilityCheck = (statName, stat, checkValue) => {
@@ -69,8 +70,6 @@ class LandingPage extends React.Component {
   openModal() {
     let modal = document.getElementById("initWindow");
     modal.style.display = "block";
-
-    console.log('openModal being called');
   }
 
   closeModal() {
@@ -79,19 +78,23 @@ class LandingPage extends React.Component {
   }
 
   openMagicModal() {
-    // this.setState({displayMagicMenu: true})
     let modal = document.getElementById("magicWindow");
     modal.style.display = "block";
-    
-
-    console.log('openMagicModal being called');
   }
 
   closeMagicModal = () => {
-    console.log('closeMagicModal being called');
     let modal = document.getElementById("magicWindow");
-    modal.style.display = "none";
-    
+    modal.style.display = "none"; 
+  }
+
+  openAdventurerProfileModal() {
+    let modal = document.getElementById("adventurerProfileWindow");
+    modal.style.display = "block";
+  }
+
+  closeAdventurerProfileModal = () => {
+    let modal = document.getElementById("adventurerProfileWindow");
+    modal.style.display = "none"; 
   }
 
 
@@ -100,6 +103,8 @@ class LandingPage extends React.Component {
     for (var i = 0; i < adventurerList.length; i++) {
       if (this.props.thisPlayer === adventurerList[i].name) {
         this.setState({thisPlayerObj: adventurerList[i]});
+        this.props.setTopLevelState('thisPlayerProfile', adventurerList[i]);
+        console.log('set top level state executed');
         return;
       }
     }
@@ -109,13 +114,14 @@ class LandingPage extends React.Component {
 
   render() { 
 
-    // let magicMenu = (this.state.displayMagicMenu) ? <MagicMenu closeMagicModal={this.closeMagicModal}/> : null;
-    
     return ( 
     <div>
+      <AdventurerProfile thisPlayer={this.props.thisPlayer} thisPlayerProfile={this.props.thisPlayerProfile} closeAdventurerProfileModal={this.closeAdventurerProfileModal}/>
       <MagicMenu closeMagicModal={this.closeMagicModal}/>
       <InitiativeCheck closeModal={this.closeModal}/>
-      <ActiveGUI thisPlayerObj={this.state.thisPlayerObj} thisPlayer={this.props.thisPlayer} openModal={this.openModal} openMagicModal={this.openMagicModal}/>
+      <ActiveGUI thisPlayerObj={this.state.thisPlayerObj} 
+      thisPlayer={this.props.thisPlayer} openModal={this.openModal} 
+      openMagicModal={this.openMagicModal} openAdventurerProfileModal={this.openAdventurerProfileModal}/>
     </div>
   ); }
 }

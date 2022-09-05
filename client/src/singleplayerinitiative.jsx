@@ -8,11 +8,6 @@ class SinglePlayerInitiative extends React.Component {
     }
   }
   
-  componentDidMount () {
-
-  }
-
-
   render () {
 
     var status = false;
@@ -32,7 +27,6 @@ class SinglePlayerInitiative extends React.Component {
          <div id="checkBox">{status}</div>
       </div> 
   )
-
   }
 }
 

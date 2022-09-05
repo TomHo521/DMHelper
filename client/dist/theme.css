@@ -127,8 +127,11 @@ a:hover span:nth-child(4) {
 }
 .item3 { grid-area: main; 
   padding: 10px;
-
 }
+#chatWindow {
+  background-color: rgba(0,0,0,.1);
+}
+
 .item4 { grid-area: right; 
 }
 
@@ -702,15 +705,12 @@ a:hover span:nth-child(4) {
   font-family: consolas;
   /* justify-content: center;
   align-items: center; */
-
-
 }
 
 
 
 .magic-modal-content {
   display: fixed;
-  
   background: url(http://i.imgur.com/mVhm1LB.jpg); 
   /* background: url('nightforestcartoon.jpg'); */
   background-size: cover;
@@ -730,8 +730,6 @@ a:hover span:nth-child(4) {
 
 
 .magic-modal-close {
-  /* color: #aaa; */
-  /* color:#26d480; */
   color:white;
   float: right;
   font-size: 28px;
@@ -740,7 +738,6 @@ a:hover span:nth-child(4) {
 }
 
 .spellBanner {
-  /* display: flex; */
   font-weight: bold;
   text-align: center;
   align-items: center;
@@ -748,9 +745,6 @@ a:hover span:nth-child(4) {
 }
 
 .magic-modal-spellList {
-
-  /* clear:both; */
-  /* text-indent: -10vh; */
   margin-left: 5vh; 
   background-color: rgb(234, 228, 177, .2); 
   border-spacing: 8px;
@@ -764,11 +758,7 @@ a:hover span:nth-child(4) {
 
 
 .magic-modal-spelldiv {
-
-  /* clear:both; */
-  /* text-indent: -10vh; */
   margin-left: 5vh; 
-  /* background-color: rgb(234, 228, 177, .1);  */
   border-spacing: 8px;
   position: flex;
   vertical-align: middle; 
@@ -781,37 +771,29 @@ a:hover span:nth-child(4) {
 .spellItem {
   font-size: medium; 
   padding: 1em 1em; 
-  /* padding-top: 1em;
-  padding-bottom: 1em; */
   font-weight: normal;
   border: 2px solid rgb(240, 202, 12);
 }
 
-/* thead { text-transform: uppercase; }
-th { white-space: nowrap; }
-td { width: 100%; } */
+
 .spellItemDiv {
   background-color: rgb(67, 63, 71);
   color: rgb(255, 255, 255);
-  /* border: 3px solid rgb(244, 248, 12); */
   clear: both;
   font-family: 'Consolas', serif;
   font-size: 15px;
   height: 100px;
   width: 250px;
-  /* border: #26d480; */
 }
 
 .magic-table {
   position: relative;
   width: 60vh;
   color: #fff;
-  /* text-align: left; */
   text-align: center;
   border-collapse: collapse;
   background-color: rgba(79, 79, 95, 0.4); 
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
-  /* border: 1px solid rgb(255, 255, 255); */
   border-spacing: 30px;
 }
 
@@ -820,9 +802,7 @@ td { width: 100%; } */
 }
 
 #magic-div {
-  /* background-color: rgb(245, 222, 179, .3); */
   background-color: rgb(245, 222, 179, .2);
-  /* border: 1px solid; */
   font-size: 16px;
   max-width: 100%;
   padding: 10px;
@@ -840,3 +820,34 @@ td { width: 100%; } */
 }
 
  
+
+
+
+/* adventurer profile */
+
+.adventurer-modal {
+  display: none;
+  position: fixed; 
+  z-index: 1; /* Sit on top */
+  padding-top: 10vh;  
+  padding-left: 25vh; 
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.7); 
+  font-family: consolas;
+  /* justify-content: center;
+  align-items: center; */
+}
+
+.adventurer-modal-div {
+  margin-left: 5vh; 
+  border-spacing: 8px;
+  position: flex;
+  vertical-align: middle; 
+  display: flex;
+  column-gap: 10px;
+}

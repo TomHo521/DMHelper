@@ -1,42 +1,22 @@
 import React from 'react';
 
-
-class SpellItem extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-    }
-
-  }
-
-  componentDidMount(){
-    console.log('single item being called');
-    
-
-    };
-  render () {
-    
+function SpellItem(props) {
   return (
-     
-          <tr className="magic-modal-spellList">
-            
+          <tr name={props.spell.name} className="magic-modal-spellList" onClick={props.spellClickHandler}>
             <th className="spell-header">
-              {this.props.spell.name}
+              {props.spell.name}
             </th>
             <td className="magic-td">
             <div id="magic-div">
-                level {this.props.spell.level[0]} {this.props.spell.level[1]}
+                Level {props.spell.level[0]} {props.spell.level[1]}
               <br></br>
               <br></br>
-                effect: {this.props.spell.description}
+                effect: {props.spell.description}
             </div>
             </td>
           </tr>         
-    
   )
-
-  }
 }
+
 export default SpellItem;
 

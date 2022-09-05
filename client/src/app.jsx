@@ -10,6 +10,7 @@ class App extends React.Component {
     this.setTopLevelState = this.setTopLevelState.bind(this);
     this.state = {
        thisPlayer: '',
+       thisPlayerProfile: {}
     }
   }
 
@@ -20,7 +21,7 @@ class App extends React.Component {
   render() { return ( 
     <div>
       <Routes>
-        <Route path="/combat" element={<LandingPage thisPlayer={this.state.thisPlayer} setTopLevelState={this.setTopLevelState} />}/>
+        <Route path="/combat" element={<LandingPage thisPlayer={this.state.thisPlayer} setTopLevelState={this.setTopLevelState} thisPlayerProfile={this.state.thisPlayerProfile}/>}/>
         <Route path="/" element={<Login setTopLevelState={this.setTopLevelState} />}/>
       </Routes>
     </div>); 

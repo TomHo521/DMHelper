@@ -1,22 +1,15 @@
 import React from 'react';
 // the goal is to render members of the party;
-class PartyList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
-    
-  }
+function PartyList(props) {
 
-  render () {
 
-    let hoverClass = (this.props.acquiringTarget) ? 'hover' : 'nohover';
+    let hoverClass = (props.acquiringTarget) ? 'hover' : 'nohover';
 
     return (<div>
       {
-      this.props.adventurerList.map( (mem, key) => {   
+      props.adventurerList.map( (mem, key) => {   
       return (
-           <tr className="adventurer" id={mem.name} key={key} onClick={this.props.getTarget}> 
+           <tr className="adventurer" id={mem.name} key={key} onClick={props.getTarget}> 
             <th className={hoverClass}>
               <div>
                 {mem.name.substring(0, 5)} init: {mem.initiative}
@@ -48,6 +41,6 @@ class PartyList extends React.Component {
         </tr>)
     })}
     </div>)
-  }
 }
+
 export default PartyList;

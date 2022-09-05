@@ -16,7 +16,6 @@ class Combat extends React.Component {
 
   actionClickHandler = (e) => {
     this.setState({displaySubActions: !this.state.displaySubActions});
-
   }
 
   componentDidMount() {
@@ -28,32 +27,20 @@ class Combat extends React.Component {
     return (
         <div class="action-menu">
           <div class="option" onClick={this.props.attack}>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+            <span></span><span></span><span></span><span></span>
             Attack
           </div>
           <div class="option" onClick={this.actionClickHandler}>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+            <span></span><span></span><span></span><span></span>
           Action
           </div>
           {subActionMenu} 
           <div class="option">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+            <span></span><span></span><span></span><span></span>
           Bonus Action
           </div>
           <div class="option">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+            <span></span><span></span><span></span><span></span>
           Run
           </div>
         </div>

@@ -8,10 +8,7 @@ class SubActionMenu extends React.Component {
     }
   }
 
- 
   render () {
-
-
     return (
       <div>
         <div className="option-submenu" onClick={this.props.openMagicModal}>

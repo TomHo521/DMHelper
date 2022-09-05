@@ -23,8 +23,6 @@ class Login extends React.Component {
     this.setState({ [name]: value });
   }
 
- 
-
   saveHost () {
     this.props.setTopLevelState('thisPlayer', this.state.thisPlayerField);
   }
@@ -47,7 +45,7 @@ class Login extends React.Component {
               <input id="pass" className="field_class" name="password" placeholder="Password" value={this.state.password} onChange={this.handleChange}></input>
 
               <Link to="/combat" onClick={this.saveHost}>
-                <button className="submit_class" type="submit" form="login_form" onclick="return validarLogin()">Submit</button>
+                <button className="submit_class" type="submit" form="login_form">Submit</button>
               </Link>
         </form>
       </main>
