@@ -6,7 +6,7 @@ function AdventurerProfile(props){
       <div className="magic-modal-content">
           <div className="magic-modal-close" onClick={props.closeAdventurerProfileModal}>&times;</div>
           <br></br>
-          <h3 className="spellBanner" onClick={props.closeMagicModal}>Adventurer Profile Modal</h3><br></br>   
+          <h3 className="spellBanner">Adventurer Profile Modal</h3><br></br>   
         <div className="adventurer-modal-div">
         <table>
             <tbody>

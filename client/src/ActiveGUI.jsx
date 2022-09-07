@@ -224,6 +224,9 @@ class ActiveGUI extends React.Component {
           <p id='loggedInPlayer' onClick={this.props.openAdventurerProfileModal}>Logged in as:
            <br></br> {this.props.thisPlayer}
           </p>
+          <p id="DMCalcLink" onClick={this.props.openDMCalcModal}>
+            DM calc
+          </p>
           <h1>Turn: {this.state.activeEntity}</h1>
           <h3>{}</h3>
         </div>

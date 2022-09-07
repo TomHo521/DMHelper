@@ -45,10 +45,7 @@ class InitiativeCheck extends React.Component {
       name: e.target.name,
       roll: Math.floor(Math.random()*20) + 1,
     });
-
   }
-
-
 
   render () {
 
@@ -56,7 +53,6 @@ class InitiativeCheck extends React.Component {
     if (this.state.show) {
       doneTag = <div class="alignCenterHeader">all players accounted for!</div>
     } 
-
 
     let renderList = Object.keys(this.state.playerList).map(element => 
       <SinglePlayerInitiative player={{name: element, roll: this.state.playerList[element]}} rollInitAndSend={this.rollInitAndSend}/>

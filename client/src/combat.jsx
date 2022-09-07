@@ -6,19 +6,14 @@ import SubActionMenu from './Menus/subActionMenu';
 class Combat extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       displaySubActions: false,
     }
-
     this.actionClickHandler = this.actionClickHandler.bind(this);
   }
 
   actionClickHandler = (e) => {
     this.setState({displaySubActions: !this.state.displaySubActions});
-  }
-
-  componentDidMount() {
   }
 
   render() {
