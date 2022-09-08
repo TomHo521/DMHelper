@@ -5,3 +5,4 @@ SDC_Redis.pem
 .env
 ./test/magic.js
 ./test/fighter.js
+./test/abilityChecks.js

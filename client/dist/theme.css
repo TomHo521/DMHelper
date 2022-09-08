@@ -116,11 +116,17 @@ a:hover span:nth-child(4) {
   width: 100%;
   grid-area: header; 
   display: flex;
+
   /* text-align: center; */
   font-weight: bold;
   align-items: center;
   justify-content: center;
 } 
+
+#item1override {
+  background-color: rgba(181, 38, 38, 0.4);
+}
+
 .item2 { grid-area: menu; 
   padding: 1px;
 
@@ -728,8 +734,6 @@ a:hover span:nth-child(4) {
   height: 70vh;
   overflow: auto;
   border-radius: 25px;
-  
-
 }
 
 .magic-modal-content {
@@ -748,8 +752,8 @@ a:hover span:nth-child(4) {
 
 .spellBanner {
   font-weight: bold;
-  text-align: center;
-  align-items: center;
+  /* text-align: center;
+  align-items: center; */
   justify-content: center;
 }
 
@@ -880,9 +884,8 @@ a:hover span:nth-child(4) {
 }
 
 .DMCalc-column-container {
-  margin-left: 5vh; 
+  /* margin-left: 5vh;  */
   border-spacing: 8px;
-  /* position: flex; */
   /* vertical-align: middle;  */
   display: flex;
   column-gap: 30px;
@@ -893,17 +896,18 @@ a:hover span:nth-child(4) {
 .DMCalc-row-container {
   display: flex;
   flex-direction: row;
-  width: 410px;
-
+  gap: 30px;
 }
 
 .DMCalc-item {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 3px;
   background: rgba(245, 222, 179, .2);
-  width: 410px;
-  height: 150px;
+  /* width: 410px;
+  height: 150px; */
+  width: 800px;
+  height: 250px;
   border-radius: 10px;
   border: solid 1px white;
 }
@@ -921,8 +925,10 @@ a:hover span:nth-child(4) {
 
 .dice {
   display: flex;
-  width: 40px;
-  height: 40px;
+  /* width: 40px;
+  height: 40px; */
+  width: 80px;
+  height: 80px;
   background-color: rgb(117, 77, 2);
   border-radius: 4px;
   justify-content: center;
@@ -938,7 +944,7 @@ a:hover span:nth-child(4) {
   display: flex;
   flex-direction: row;
   width: 100%;
-  height: 50px;
+  height: 100px;
   background-color: rgba(245, 222, 179, .2);
   gap: 7px;
   justify-content: center;
@@ -947,8 +953,10 @@ a:hover span:nth-child(4) {
 
 .dice-rolled-flipbox {
   perspective: 1000px;
-  width: 40px;
-  height: 40px;
+  /* width: 40px;
+  height: 40px; */
+  width: 80px;
+  height: 80px;
   border: solid 1px white;
   border-radius: 4px;
   
@@ -999,8 +1007,10 @@ a:hover span:nth-child(4) {
 
 .dice-selected {
   display: flex;
-  width: 40px;
-  height: 40px;
+  /* width: 40px;
+  height: 40px; */
+  width: 80px;
+  height: 80px;
   color: black;
   background-color: wheat;
   border-radius: 4px;
@@ -1017,9 +1027,9 @@ a:hover span:nth-child(4) {
   align-items: center; */
   text-transform: uppercase;
   letter-spacing: 1px;
-  background-color: rgb(78, 43, 1);
-  border-radius: 15px;
-  border: solid 1px white;
+  background-color: rgba(0, 0, 0, .9);
+  /* border-radius: 15px;
+  border: solid 1px white; */
 
 
 }
@@ -1032,7 +1042,119 @@ a:hover span:nth-child(4) {
 
 #diceNumber {
   text-align: center;
-  width: 40px;
-  height: 40px;
+  /* width: 40px;
+  height: 40px; */
+  width: 80px;
+  height: 80px;
   font-size: larger;
 }
+
+.calc-modal-content {
+  /* display: fixed; */
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+  flex-direction: column;
+  /* gap: 30px; */
+  background: url(http://i.imgur.com/mVhm1LB.jpg); 
+  /* background: url('nightforestcartoon.jpg'); */
+  background-size: cover;
+  border: 3px solid rgb(255, 255, 255);
+  width: 70%; /* Could be more or less, depending on screen size */
+  height: 80vh;
+  overflow: auto;
+  border-radius: 25px;
+  gap: 0px; 
+}
+
+.calc-modal-header {
+  text-align: center;
+  background-color: rgba(165, 42, 42, .3);
+  width: 100%;
+  /* margin-bottom: auto; */
+  text-transform: uppercase;
+}
+
+.close-button {
+  color:#26d480;
+  text-align: right;
+  font-size: 30px;
+  font-weight: bold;
+  width: 100%;
+  background-color: rgba(165, 42, 42, .3);
+}
+
+.row-container-st {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+}
+
+.st-region {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100px;
+  background-color: rgba(245, 222, 179, .2);
+  gap: 1px;
+  justify-content: center;
+  align-items: center;
+  font-size: medium;
+}
+
+.st {
+  font-size: large;
+  word-spacing: 50px;
+}
+
+
+.ac-row-container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  justify-content: center;
+}
+
+.dt-type {
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 1px solid white;
+  text-transform: uppercase;
+}
+
+.dd-unselected {
+  margin-left: 10px;
+  font-size: 16px;
+}
+
+.dd-selected {
+  margin-left: 10px;
+  font-size: 16px;
+  color: rgb(16, 235, 16);
+}
+
+.AC-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: rgba(245, 222, 179, .2);
+  width: 800px;
+  height: 250px;
+  border-radius: 10px;
+  border: solid 1px white;
+}
+
+.center-container {
+  /* margin-left: 5vh;  */
+  border-spacing: 8px;
+  /* vertical-align: middle;  */
+  display: flex;
+  column-gap: 30px;
+  row-gap: 30px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+

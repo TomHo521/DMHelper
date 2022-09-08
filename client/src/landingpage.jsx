@@ -86,9 +86,11 @@ class LandingPage extends React.Component {
 
   render() { 
 
+    console.log('this.props.thisPlayerProfile: landing: ', this.props.thisPlayerProfile);
+
     return ( 
     <div>
-      <DMCalculator closeDMCalcModal={this.closeDMCalcModal}/>
+      <DMCalculator closeDMCalcModal={this.closeDMCalcModal} thisPlayerObj={this.state.thisPlayerObj} thisPlayerProfile={this.props.thisPlayerProfile} />
       <AdventurerProfile thisPlayer={this.props.thisPlayer} thisPlayerProfile={this.props.thisPlayerProfile} closeAdventurerProfileModal={this.closeAdventurerProfileModal}/>
       <MagicMenu closeMagicModal={this.closeMagicModal}/>
       <InitiativeCheck closeModal={this.closeModal}/>

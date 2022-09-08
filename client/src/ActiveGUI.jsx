@@ -220,7 +220,7 @@ class ActiveGUI extends React.Component {
 
     return (
       <div class="grid-container">
-        <div class="item1">
+        <div class="item1" id="item1override">
           <p id='loggedInPlayer' onClick={this.props.openAdventurerProfileModal}>Logged in as:
            <br></br> {this.props.thisPlayer}
           </p>
