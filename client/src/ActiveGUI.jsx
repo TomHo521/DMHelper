@@ -36,6 +36,7 @@ class ActiveGUI extends React.Component {
       acquiringTarget: false,
       everyonesTargets: {},
       chatBox: '',
+      currentlyOnline: {},
     };
   }
 
@@ -88,6 +89,7 @@ class ActiveGUI extends React.Component {
         enemyList: msg.enemyList,
         adventurerList: msg.adventurerList,
         activeEntity: msg.activeEntity,
+        currentlyOnline: msg.currentlyOnline,
       });
     })
 
@@ -216,11 +218,13 @@ class ActiveGUI extends React.Component {
   }
 
   render () {
+    let currentlyOnline = Object.keys(this.state.currentlyOnline).map(element => <div>{element.slice(0,8)}</div>)
 
 
     return (
       <div class="grid-container">
         <div class="item1" id="item1override">
+          <p id="currentlyOnline">Currently Online: {currentlyOnline} </p>
           <p id='loggedInPlayer' onClick={this.props.openAdventurerProfileModal}>Logged in as:
            <br></br> {this.props.thisPlayer}
           </p>

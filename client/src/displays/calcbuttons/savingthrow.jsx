@@ -95,6 +95,8 @@ class SavingThrow extends React.Component {
 
   render () {
     // console.log('this was sent', this.props.thisPlayerObj);
+    let nat = (this.state.roll === 20) ? <div className='nat-20'>Nat 20!!! Automatic Pass</div> : null;
+    nat = (this.state.roll === 1) ? <div className='nat-1'>Nat 1. Automatic Fail</div> : nat;
 
     let typeSelection = this.state.types.map((element, key) => {
       if (element === this.state.selected) 
@@ -111,6 +113,7 @@ class SavingThrow extends React.Component {
         <div className='st-region'> 
           <div>1d20 roll + prof bonus(if app.) + ability mod = total </div>
           <div className="st">{this.state.roll} + {this.state.pb} + {this.state.mod} = {this.state.total}</div>
+          {nat}
 
             
         </div>

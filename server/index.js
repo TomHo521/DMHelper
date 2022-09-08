@@ -15,6 +15,7 @@ var masterTurnList = {
   turnList: [{name: 'Please Roll Initiative'}],
   adventurerList: adventurerList,
   enemyList: enemyList,
+  currentlyOnline: {},
 };
 
 const io = new Server(server);
@@ -188,12 +189,15 @@ io.on('connection', (socket) => {
 
     socket.on('getStatus', (message) => {
 
+      masterTurnList.currentlyOnline[message.thisPlayer] = true;
+
       let thisPlayerObj = getIndexOf(message.thisPlayer, masterTurnList.adventurerList);
  
       message.enemyList = masterTurnList.enemyList,
       message.adventurerList = masterTurnList.adventurerList,
       message.thisPlayerObj = masterTurnList.adventurerList[thisPlayerObj],
       message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name,
+      message.currentlyOnline = masterTurnList.currentlyOnline;
       io.emit('getStatus', message );
     })
 

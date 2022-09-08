@@ -118,6 +118,9 @@ class AbilityCheck extends React.Component {
 
   render () {
 
+    let nat = (this.state.roll === 20) ? <div className='nat-20'>Nat 20!!! Automatic Pass</div> : null;
+    nat = (this.state.roll === 1) ? <div className='nat-1'>Nat 1. Automatic Fail</div> : nat;
+
     let typeKeys = Object.keys(this.state.abilityChecks.types);
     let checksList = typeKeys.map((element, index) => {
       return (
@@ -140,7 +143,7 @@ class AbilityCheck extends React.Component {
 
           <div>1d20 roll + prof bonus(if app.) + ability mod = total </div>
           <div className="st">{this.state.roll} + {this.state.pb} + {this.state.mod} = {this.state.total}</div>
-        
+          {nat}
         </div>
         <button className=".login-button" onClick={this.rollHandler}>Roll {this.state.selected}</button>
       </div>
