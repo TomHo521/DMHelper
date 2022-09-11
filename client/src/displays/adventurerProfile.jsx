@@ -29,7 +29,7 @@ class AdventurerProfile extends React.Component {
     console.log(' AdventurerProfile: ', this.props.thisPlayerProfile);
 
 
-    let {name, level, race, stats, weapon, height, weight, gold, xp, armor_class} = this.props.thisPlayerProfile;
+    let {name, level, race, stats, weapon, height, weight, gold, xp, armor_class, st, skills, weaponsProf, armorProf} = this.props.thisPlayerProfile;
     
     // to avoid the class keyword
     let playerClass = this.props.thisPlayerProfile.class;
@@ -38,6 +38,11 @@ class AdventurerProfile extends React.Component {
     let statList = (!stats)? null: Object.keys(stats).map((ele, i) => <div className="leftAlign-profile" key={i}>{ele}: {stats[ele]}</div>);
     let weaponList = (!weapon)? null: <div className="leftAlign-profile"> weapon: {weapon[0]} {weapon[1]}</div>;
     let armorList = (!armor_class)? null: <div className="leftAlign-profile">AC: {armor_class[1]} {armor_class[0]}  </div>;
+    let stList = (!st)? null: Object.keys(st).map((stType, index) => <div key={index} className="leftAlign-profile">{stType}: {Object.keys(st[stType]).map(typeOfBenefit => <span> - {typeOfBenefit} </span>)} </div>);
+    let skillsList = (!skills)? null: Object.keys(skills).map((skill, index) => <div key={index} className="leftAlign-profile">{skill}: {Object.keys(skills[skill]).map(typeOfBenefit => <span> - {typeOfBenefit} </span>)} </div>);
+
+    let weaponsProfList = (!weaponsProf)? null: Object.keys(weaponsProf).map((type, index) => <div key={index} className="leftAlign-profile">- {type} </div>);
+    let armorProfList = (!armorProf)? null: Object.keys(armorProf).map((type, index) => <div key={index} className="leftAlign-profile">- {type} </div>);
       
 
     return (
@@ -82,13 +87,32 @@ class AdventurerProfile extends React.Component {
 
             <div className='row-container-profile'>
               <div className='leftAlign-profile'>
-                proficiencies
                 saving throws
-                weapon proficiencies
-                lore elements
-
+                {stList}
               </div>
             </div> 
+
+            <div className='row-container-profile'>
+              <div className='leftAlign-profile'>
+                Skills
+                {skillsList}
+              </div>
+            </div> 
+
+            <div className='row-container-profile'>
+              <div className='leftAlign-profile'>
+                Weapon Proficiencies
+                {weaponsProfList}
+              </div>
+            </div> 
+
+            <div className='row-container-profile'>
+              <div className='leftAlign-profile'>
+                Armor Proficiencies
+                {armorProfList}
+              </div>
+            </div> 
+
 
 
            

@@ -37,8 +37,63 @@ var player1 = {
     con: 15,
   },
   inventory : {
-    'sandwich' : 1
-  }
+    'sandwich' : 1,
+    'rapier': 1,
+  },
+  st: {
+    dex: {
+      proficiency: 'bard class',
+    },
+    cha: {
+      proficiency: 'bard class',
+      advantage: 'gnome cunning racial',
+    },
+    int: {
+      advantage: 'gnome cunning racial',
+    },
+    wis: {
+      advantage: 'gnome cunning racial',
+    },
+  },
+  skills: {
+    qualifiers: {
+      'jack of all trades': 'bard class level 3',
+    },
+    performance: {
+      proficiency: 'bard class',
+      expertise: 'bard class level 3',
+    },
+    history: {
+      proficiency: 'bard class',
+      expertise: 'bard class level 3',
+    },
+    investigation: {
+      proficiency: 'bard class',
+    },
+    stealth: {
+      proficiency: 'criminal background',
+    },
+    deception: {
+      proficiency: 'criminal background',
+    },
+    history: {
+      double_prof: "artificer's lore",
+      qualifier: ['magical items', 'alchemical objects', 'technological devices'],
+    }
+  },
+  attack:{
+    archery: 'weapon style',
+  },
+  weaponsProf: {
+    simple: 'tbd',
+    'hand crossbow': '1d6',
+    'long sword': '1d8',
+    'rapier': '1d8',
+  },
+  armorProf: {
+    'light armor': 14,
+
+  },
 }
 
 
@@ -75,7 +130,61 @@ var player2 = {
   },
   inventory : {
     'jug of fire wine' : 1,
-  }
+  },
+  st: {
+    dex: {
+      proficiency: 'bard class',
+    },
+    cha: {
+      proficiency: 'bard class',
+      advantage: 'gnome cunning racial',
+    },
+    int: {
+      advantage: 'gnome cunning racial',
+    },
+    wis: {
+      advantage: 'gnome cunning racial',
+    },
+  },
+  skills: {
+    qualifiers: {
+      'jack of all trades': 'bard class level 3',
+    },
+    performance: {
+      proficiency: 'bard class',
+      expertise: 'bard class level 3',
+    },
+    history: {
+      proficiency: 'bard class',
+      expertise: 'bard class level 3',
+    },
+    investigation: {
+      proficiency: 'bard class',
+    },
+    stealth: {
+      proficiency: 'criminal background',
+    },
+    deception: {
+      proficiency: 'criminal background',
+    },
+    history: {
+      double_prof: "artificer's lore",
+      qualifier: ['magical items', 'alchemical objects', 'technological devices'],
+    }
+  },
+  attack:{
+    archery: 'weapon style',
+  },
+  weaponsProf: {
+    simple: 'tbd',
+    'hand crossbow': '1d6',
+    'long sword': '1d8',
+    'rapier': '1d8',
+  },
+  armorProf: {
+    'light armor': 14,
+
+  },
 }
 
 var player3 = {
@@ -111,7 +220,61 @@ var player3 = {
   },
   inventory : {
     'celestial locket' : 1,
-  }
+  },
+  st: {
+    dex: {
+      proficiency: 'bard class',
+    },
+    cha: {
+      proficiency: 'bard class',
+      advantage: 'gnome cunning racial',
+    },
+    int: {
+      advantage: 'gnome cunning racial',
+    },
+    wis: {
+      advantage: 'gnome cunning racial',
+    },
+  },
+  skills: {
+    qualifiers: {
+      'jack of all trades': 'bard class level 3',
+    },
+    performance: {
+      proficiency: 'bard class',
+      expertise: 'bard class level 3',
+    },
+    history: {
+      proficiency: 'bard class',
+      expertise: 'bard class level 3',
+    },
+    investigation: {
+      proficiency: 'bard class',
+    },
+    stealth: {
+      proficiency: 'criminal background',
+    },
+    deception: {
+      proficiency: 'criminal background',
+    },
+    history: {
+      double_prof: "artificer's lore",
+      qualifier: ['magical items', 'alchemical objects', 'technological devices'],
+    }
+  },
+  attack:{
+    archery: 'weapon style',
+  },
+  weaponsProf: {
+    simple: 'tbd',
+    'hand crossbow': '1d6',
+    'long sword': '1d8',
+    'rapier': '1d8',
+  },
+  armorProf: {
+    'light armor': 14,
+
+  },
 }
 
 var player4 = {
@@ -147,7 +310,61 @@ var player4 = {
   },
   inventory : {
     'bag of tricks' : 1,
-  }
+  },
+  st: {
+    dex: {
+      proficiency: 'bard class',
+    },
+    cha: {
+      proficiency: 'bard class',
+      advantage: 'gnome cunning racial',
+    },
+    int: {
+      advantage: 'gnome cunning racial',
+    },
+    wis: {
+      advantage: 'gnome cunning racial',
+    },
+  },
+  skills: {
+    qualifiers: {
+      'jack of all trades': 'bard class level 3',
+    },
+    performance: {
+      proficiency: 'bard class',
+      expertise: 'bard class level 3',
+    },
+    history: {
+      proficiency: 'bard class',
+      expertise: 'bard class level 3',
+    },
+    investigation: {
+      proficiency: 'bard class',
+    },
+    stealth: {
+      proficiency: 'criminal background',
+    },
+    deception: {
+      proficiency: 'criminal background',
+    },
+    history: {
+      double_prof: "artificer's lore",
+      qualifier: ['magical items', 'alchemical objects', 'technological devices'],
+    }
+  },
+  attack:{
+    archery: 'weapon style',
+  },
+  weaponsProf: {
+    simple: 'tbd',
+    'hand crossbow': '1d6',
+    'long sword': '1d8',
+    'rapier': '1d8',
+  },
+  armorProf: {
+    'light armor': 14,
+
+  },
 }
 
 var player5 = {
@@ -183,7 +400,61 @@ var player5 = {
   },
   inventory : {
     'comically large scabbard' : 1,
-  }
+  },
+  st: {
+    dex: {
+      proficiency: 'bard class',
+    },
+    cha: {
+      proficiency: 'bard class',
+      advantage: 'gnome cunning racial',
+    },
+    int: {
+      advantage: 'gnome cunning racial',
+    },
+    wis: {
+      advantage: 'gnome cunning racial',
+    },
+  },
+  skills: {
+    qualifiers: {
+      'jack of all trades': 'bard class level 3',
+    },
+    performance: {
+      proficiency: 'bard class',
+      expertise: 'bard class level 3',
+    },
+    history: {
+      proficiency: 'bard class',
+      expertise: 'bard class level 3',
+    },
+    investigation: {
+      proficiency: 'bard class',
+    },
+    stealth: {
+      proficiency: 'criminal background',
+    },
+    deception: {
+      proficiency: 'criminal background',
+    },
+    history: {
+      double_prof: "artificer's lore",
+      qualifier: ['magical items', 'alchemical objects', 'technological devices'],
+    }
+  },
+  attack:{
+    archery: 'weapon style',
+  },
+  weaponsProf: {
+    simple: 'tbd',
+    'hand crossbow': '1d6',
+    'long sword': '1d8',
+    'rapier': '1d8',
+  },
+  armorProf: {
+    'light armor': 14,
+
+  },
 }
 
 var player6 = {
@@ -219,7 +490,61 @@ var player6 = {
   },
   inventory : {
     'a few earrings' : 1,
-  }
+  },
+  st: {
+    dex: {
+      proficiency: 'bard class',
+    },
+    cha: {
+      proficiency: 'bard class',
+      advantage: 'gnome cunning racial',
+    },
+    int: {
+      advantage: 'gnome cunning racial',
+    },
+    wis: {
+      advantage: 'gnome cunning racial',
+    },
+  },
+  skills: {
+    qualifiers: {
+      'jack of all trades': 'bard class level 3',
+    },
+    performance: {
+      proficiency: 'bard class',
+      expertise: 'bard class level 3',
+    },
+    history: {
+      proficiency: 'bard class',
+      expertise: 'bard class level 3',
+    },
+    investigation: {
+      proficiency: 'bard class',
+    },
+    stealth: {
+      proficiency: 'criminal background',
+    },
+    deception: {
+      proficiency: 'criminal background',
+    },
+    history: {
+      double_prof: "artificer's lore",
+      qualifier: ['magical items', 'alchemical objects', 'technological devices'],
+    }
+  },
+  attack:{
+    archery: 'weapon style',
+  },
+  weaponsProf: {
+    simple: 'tbd',
+    'hand crossbow': '1d6',
+    'long sword': '1d8',
+    'rapier': '1d8',
+  },
+  armorProf: {
+    'light armor': 14,
+
+  },
 }
 
 

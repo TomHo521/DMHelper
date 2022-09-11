@@ -20,6 +20,8 @@ class LandingPage extends React.Component {
     this.closeAdventurerProfileModal = this.closeAdventurerProfileModal.bind(this);
     this.openDMCalcModal = this.openDMCalcModal.bind(this);
     this.closeDMCalcModal = this.closeDMCalcModal.bind(this);
+    this.openBonusModal = this.openBonusModal.bind(this);
+    this.closeBonusModal = this.closeBonusModal.bind(this);
     
   
     this.state = {
@@ -46,6 +48,16 @@ class LandingPage extends React.Component {
 
   closeMagicModal = () => {
     let modal = document.getElementById("magicWindow");
+    modal.style.display = "none"; 
+  }
+
+  openBonusModal = () => {
+    let modal = document.getElementById("bonusWindow");
+    modal.style.display = "block";
+  }
+
+  closeBonusModal = () => {
+    let modal = document.getElementById("bonusWindow");
     modal.style.display = "none"; 
   }
 
@@ -97,7 +109,7 @@ class LandingPage extends React.Component {
       <ActiveGUI thisPlayerObj={this.state.thisPlayerObj} 
       thisPlayer={this.props.thisPlayer} openModal={this.openModal} 
       openMagicModal={this.openMagicModal} openAdventurerProfileModal={this.openAdventurerProfileModal}
-      openDMCalcModal={this.openDMCalcModal}
+      openDMCalcModal={this.openDMCalcModal} openBonusModal={this.openBonusModal}
       />
     </div>
   ); }

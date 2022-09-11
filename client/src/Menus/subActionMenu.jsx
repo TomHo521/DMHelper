@@ -19,9 +19,17 @@ class SubActionMenu extends React.Component {
           Magic   
         </div>
         <div class="option-submenu">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
           Item
         </div>
         <div class="option-submenu">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
           Misc
         </div>
       </div> 
