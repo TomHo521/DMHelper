@@ -16,6 +16,7 @@ var masterTurnList = {
   adventurerList: adventurerList,
   enemyList: enemyList,
   currentlyOnline: {},
+  socketList:{},
 };
 
 const io = new Server(server);
@@ -185,11 +186,32 @@ io.on('connection', (socket) => {
       io.emit('chat', message );
     });
 
+    socket.on('disconnect', (msg) => {
+
+      delete masterTurnList.currentlyOnline[masterTurnList.socketList[socket.id]];
+      let newText = `${masterTurnList.socketList[socket.id]} has disconnected`;
+      console.log('who has disconnected: ', masterTurnList.socketList[socket.id]);
+
+      let craftedMSG = {
+        msg: newText,
+        currentlyOnline: masterTurnList.currentlyOnline,
+      };
+
+      delete masterTurnList.socketList[socket.id];
+
+      io.emit('playerdc', craftedMSG);
+
+    });
+
+
 
 
     socket.on('getStatus', (message) => {
 
-      masterTurnList.currentlyOnline[message.thisPlayer] = true;
+      masterTurnList.socketList[socket.id] = message.thisPlayer;
+
+      masterTurnList.currentlyOnline[message.thisPlayer] = socket.id;
+      Object.keys(masterTurnList.currentlyOnline).forEach(e => console.log(`${e}: ${masterTurnList.currentlyOnline[e]}`));
 
       let thisPlayerObj = getIndexOf(message.thisPlayer, masterTurnList.adventurerList);
  

@@ -21,6 +21,7 @@ class ActiveGUI extends React.Component {
     this.getTarget = this.getTarget.bind(this);
     this.getIndexOf = this.getIndexOf.bind(this);
     this.sendAttack = this.sendAttack.bind(this);
+    this.rightClick = this.rightClick.bind(this);
 
     this.state = {
       adventurerList : adventurerList,
@@ -37,6 +38,7 @@ class ActiveGUI extends React.Component {
       everyonesTargets: {},
       chatBox: '',
       currentlyOnline: {},
+      showOnline: false,
     };
   }
 
@@ -133,6 +135,11 @@ class ActiveGUI extends React.Component {
         activeEntity: msg.activeEntity,
       });
     });
+
+    socket.on('playerdc', (msg) => {
+      this.logNext(msg.msg);
+      this.setState({currentlyOnline: msg.currentlyOnline});
+    });
   }
 
   sendAttack = (target) => {
@@ -216,15 +223,32 @@ class ActiveGUI extends React.Component {
        this.setState({chatBox: ''});
     }
   }
+  
+  rightClick = (e) => {
+    e.preventDefault();
+
+    console.log(' e.type', e);
+
+    if (e.type === 'contextmenu') {
+      this.setState({showOnline: !this.state.showOnline});
+     
+      console.log('right mouse button clicked!');
+    } else {
+
+      console.log('left mouse button clicked!');
+
+    }
+
+  }
 
   render () {
-    let currentlyOnline = Object.keys(this.state.currentlyOnline).map(element => <div>{element.slice(0,8)}</div>)
+    let currentlyOnline = (this.state.showOnline)? Object.keys(this.state.currentlyOnline).map(element => <div>{element.slice(0,8)}</div>) : null;
 
 
     return (
       <div class="grid-container">
         <div class="item1" id="item1override">
-          <p id="currentlyOnline">Currently Online: {currentlyOnline} </p>
+          <p id="currentlyOnline" onContextMenu={this.rightClick} onClick={this.rightClick}>Currently Online: {currentlyOnline} </p>
           <p id='loggedInPlayer' onClick={this.props.openAdventurerProfileModal}>Logged in as:
            <br></br> {this.props.thisPlayer}
           </p>

@@ -32,7 +32,15 @@ body {
   letter-spacing: 4px;
   font-size: 24px;
   overflow: hidden;
- 
+  /* border: 1px rgb(240, 202, 12) dotted; */
+  box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);
+  background-color: rgb(0,0,0,0.2);
+  text-align: center;
+}
+
+.option:nth-of-type(2n) {
+  background-color: rgb(0,0,0,0.4);
+
 }
 
 .option:hover {
@@ -106,10 +114,6 @@ a:hover span:nth-child(4) {
   bottom: 100%;
   transition: 1s;
   transition-delay: .75s;
-}
-
-.action-menu {
-  background-color: #5d512d;
 }
 
 .item1 { 
