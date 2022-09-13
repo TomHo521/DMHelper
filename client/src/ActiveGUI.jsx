@@ -38,7 +38,8 @@ class ActiveGUI extends React.Component {
       everyonesTargets: {},
       chatBox: '',
       currentlyOnline: {},
-      showOnline: false,
+      showOnline: true,
+      culledList: [],
     };
   }
 
@@ -92,7 +93,11 @@ class ActiveGUI extends React.Component {
         adventurerList: msg.adventurerList,
         activeEntity: msg.activeEntity,
         currentlyOnline: msg.currentlyOnline,
+        culledList: msg.culledList,
       });
+
+      console.log('culled List received from ther server ', msg.culledList);
+
     })
 
 
@@ -138,7 +143,10 @@ class ActiveGUI extends React.Component {
 
     socket.on('playerdc', (msg) => {
       this.logNext(msg.msg);
-      this.setState({currentlyOnline: msg.currentlyOnline});
+      this.setState({
+        currentlyOnline: msg.currentlyOnline,
+        culledList: msg.culledList,
+      });
     });
   }
 
@@ -261,6 +269,7 @@ class ActiveGUI extends React.Component {
         <div class="item2">
           Enemy:
           <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.enemyList}/>
+          <button onClick={this.props.openModal}>Roll Initiative</button>
         </div>
         <div class="item3" id="chatWindow">
             {this.state.combatLog.map( (combatLogEntry, index) => {
@@ -270,18 +279,20 @@ class ActiveGUI extends React.Component {
               
         </div>  
         <div class="item6">
-          <button onClick={this.props.openModal}>Roll Initiative</button>
+          
           {/* <button onClick={this.handleClickRoll}>Roll Intiative</button> <input type="text" name="character" onChange={this.handleChange} value={this.state.character}></input> */}
-          <br></br>
-          <input type="text" name="chatBox" className='chatBox' onKeyPress={this.handleKeyPress} onChange={this.handleChange} value={this.state.chatBox}></input>
+          <input type="text" name="chatBox" className='chatbox' onKeyPress={this.handleKeyPress} onChange={this.handleChange} value={this.state.chatBox}></input>
         </div>
         <div class="item4"> 
-          <table>
+          Party:
+          <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.culledList}/> 
+          {/* <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.adventurerList}/> */}
+          {/* <table>
             <tbody>
               <tr colSpan="2">Midir's Minions</tr>  
               <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.adventurerList}/>
             </tbody>
-          </table>
+          </table> */}
         </div>
         <div class="item5">
           <div id="footer">

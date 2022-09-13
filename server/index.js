@@ -199,6 +199,16 @@ io.on('connection', (socket) => {
 
       delete masterTurnList.socketList[socket.id];
 
+      //culled adventurerList
+      let culledList = [];
+      masterTurnList.adventurerList.forEach((e) => {
+        if (masterTurnList.currentlyOnline[e.name]) {
+          culledList.push(e);
+        } 
+      });
+
+      craftedMSG.culledList = culledList;
+
       io.emit('playerdc', craftedMSG);
 
     });
@@ -220,6 +230,19 @@ io.on('connection', (socket) => {
       message.thisPlayerObj = masterTurnList.adventurerList[thisPlayerObj],
       message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name,
       message.currentlyOnline = masterTurnList.currentlyOnline;
+
+      
+
+      //culled adventurerList
+      let culledList = [];
+      masterTurnList.adventurerList.forEach((e) => {
+        if (masterTurnList.currentlyOnline[e.name]) {
+          culledList.push(e);
+        } 
+      });
+
+      message.culledList = culledList;
+
       io.emit('getStatus', message );
     })
 
