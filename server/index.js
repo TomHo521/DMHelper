@@ -173,6 +173,7 @@ io.on('connection', (socket) => {
 
         //pass the global turn object to each of the logged in members
         masterTurnList.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
+
         io.emit('initRollDone', masterTurnList);
         
       }

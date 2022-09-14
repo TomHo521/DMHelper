@@ -66,6 +66,10 @@ var player1 = {
     history: {
       proficiency: 'bard class',
       expertise: 'bard class level 3',
+      conditional: {
+        double_prof: "artificer's lore",
+        qualifier: ['magical items', 'alchemical objects', 'technological devices'],
+      },
     },
     investigation: {
       proficiency: 'bard class',
@@ -76,10 +80,6 @@ var player1 = {
     deception: {
       proficiency: 'criminal background',
     },
-    history: {
-      double_prof: "artificer's lore",
-      qualifier: ['magical items', 'alchemical objects', 'technological devices'],
-    }
   },
   attack:{
     archery: 'weapon style',
@@ -157,6 +157,10 @@ var player2 = {
     history: {
       proficiency: 'bard class',
       expertise: 'bard class level 3',
+      conditional: {
+        double_prof: "artificer's lore",
+        qualifier: ['magical items', 'alchemical objects', 'technological devices'],
+      },
     },
     investigation: {
       proficiency: 'bard class',
@@ -167,10 +171,6 @@ var player2 = {
     deception: {
       proficiency: 'criminal background',
     },
-    history: {
-      double_prof: "artificer's lore",
-      qualifier: ['magical items', 'alchemical objects', 'technological devices'],
-    }
   },
   attack:{
     archery: 'weapon style',
@@ -247,6 +247,10 @@ var player3 = {
     history: {
       proficiency: 'bard class',
       expertise: 'bard class level 3',
+      conditional: {
+        double_prof: "artificer's lore",
+        qualifier: ['magical items', 'alchemical objects', 'technological devices'],
+      },
     },
     investigation: {
       proficiency: 'bard class',
@@ -257,10 +261,6 @@ var player3 = {
     deception: {
       proficiency: 'criminal background',
     },
-    history: {
-      double_prof: "artificer's lore",
-      qualifier: ['magical items', 'alchemical objects', 'technological devices'],
-    }
   },
   attack:{
     archery: 'weapon style',
@@ -337,6 +337,10 @@ var player4 = {
     history: {
       proficiency: 'bard class',
       expertise: 'bard class level 3',
+      conditional: {
+        double_prof: "artificer's lore",
+        qualifier: ['magical items', 'alchemical objects', 'technological devices'],
+      },
     },
     investigation: {
       proficiency: 'bard class',
@@ -347,10 +351,7 @@ var player4 = {
     deception: {
       proficiency: 'criminal background',
     },
-    history: {
-      double_prof: "artificer's lore",
-      qualifier: ['magical items', 'alchemical objects', 'technological devices'],
-    }
+
   },
   attack:{
     archery: 'weapon style',
@@ -427,6 +428,10 @@ var player5 = {
     history: {
       proficiency: 'bard class',
       expertise: 'bard class level 3',
+      conditional: {
+        double_prof: "artificer's lore",
+        qualifier: ['magical items', 'alchemical objects', 'technological devices'],
+      },
     },
     investigation: {
       proficiency: 'bard class',
@@ -437,10 +442,6 @@ var player5 = {
     deception: {
       proficiency: 'criminal background',
     },
-    history: {
-      double_prof: "artificer's lore",
-      qualifier: ['magical items', 'alchemical objects', 'technological devices'],
-    }
   },
   attack:{
     archery: 'weapon style',
@@ -517,6 +518,10 @@ var player6 = {
     history: {
       proficiency: 'bard class',
       expertise: 'bard class level 3',
+      conditional: {
+        double_prof: "artificer's lore",
+        qualifier: ['magical items', 'alchemical objects', 'technological devices'],
+      },
     },
     investigation: {
       proficiency: 'bard class',
@@ -527,10 +532,6 @@ var player6 = {
     deception: {
       proficiency: 'criminal background',
     },
-    history: {
-      double_prof: "artificer's lore",
-      qualifier: ['magical items', 'alchemical objects', 'technological devices'],
-    }
   },
   attack:{
     archery: 'weapon style',

@@ -1,5 +1,6 @@
 import React from 'react';
 import abilityChecks from '../../../../test/abilitychecks';
+import SkillItem from './skillitem';
 
 class AbilityCheck extends React.Component {
   constructor(props) {
@@ -127,7 +128,7 @@ class AbilityCheck extends React.Component {
         <dl>
           <dt className="dt-type">{element}</dt>
           {this.state.abilityChecks.types[element].map(subele => 
-            (this.state.selected === subele) ? <dd name={subele} className="dd-selected" onClick={this.selectHandler}>{subele}</dd> : <dd name={subele} className="dd-unselected" onClick={this.selectHandler}>{subele}</dd>
+             <SkillItem selected={this.state.selected} skill={subele} clickHandler={this.selectHandler} player={this.props.thisPlayerProfile}/>
             )}
         </dl>
       )
@@ -153,3 +154,7 @@ class AbilityCheck extends React.Component {
 }
 
 export default AbilityCheck;
+
+
+
+// <dd name={subele} className="dd-selected" onClick={this.selectHandler}> {subele} if </dd> : <dd name={subele} className="dd-unselected" onClick={this.selectHandler}>{subele}</dd>

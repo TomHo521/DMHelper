@@ -22,6 +22,7 @@ class ActiveGUI extends React.Component {
     this.getIndexOf = this.getIndexOf.bind(this);
     this.sendAttack = this.sendAttack.bind(this);
     this.rightClick = this.rightClick.bind(this);
+    this.updateUI = this.updateUI.bind(this);
 
     this.state = {
       adventurerList : adventurerList,
@@ -76,6 +77,9 @@ class ActiveGUI extends React.Component {
     this.setState({ combatLog });
   }
 
+  updateUI = () => {
+    socket.emit('getStatus', {thisPlayer: this.props.thisPlayer});
+  }
 
   componentDidMount () {
 
@@ -103,6 +107,8 @@ class ActiveGUI extends React.Component {
 
     socket.on('initRollDone' , msg => {
       let turnCounter = msg.currentTurn
+
+      updateUI();
 
       this.logNext(`All Players have completed their rolls: turn: ${turnCounter}`)
       this.setState({
@@ -268,7 +274,7 @@ class ActiveGUI extends React.Component {
         </div>
         <div class="item2">
           Enemy:
-          <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.enemyList}/>
+          <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.enemyList} activeEntity={this.state.activeEntity}/>
           <button onClick={this.props.openModal}>Roll Initiative</button>
         </div>
         <div class="item3" id="chatWindow">
@@ -279,20 +285,11 @@ class ActiveGUI extends React.Component {
               
         </div>  
         <div class="item6">
-          
-          {/* <button onClick={this.handleClickRoll}>Roll Intiative</button> <input type="text" name="character" onChange={this.handleChange} value={this.state.character}></input> */}
           <input type="text" name="chatBox" className='chatbox' onKeyPress={this.handleKeyPress} onChange={this.handleChange} value={this.state.chatBox}></input>
         </div>
         <div class="item4"> 
           Party:
-          <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.culledList}/> 
-          {/* <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.adventurerList}/> */}
-          {/* <table>
-            <tbody>
-              <tr colSpan="2">Midir's Minions</tr>  
-              <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.adventurerList}/>
-            </tbody>
-          </table> */}
+          <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.culledList} activeEntity={this.state.activeEntity}/> 
         </div>
         <div class="item5">
           <div id="footer">

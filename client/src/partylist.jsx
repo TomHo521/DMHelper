@@ -4,15 +4,17 @@ function PartyList(props) {
 
 
     let hoverClass = (props.acquiringTarget) ? 'adventurer-hover' : 'adventurer';
+    let shiftClass = hoverClass + ' ' + 'shift-left';
+
 
     return (<div>
       {
       props.adventurerList.map( (mem, key) => {   
       return (
            <div className="adventurer-container" id={mem.name} key={key} onClick={props.getTarget}> 
-            <div className={hoverClass}>
+            <div className={(mem.name === props.activeEntity) ? shiftClass: hoverClass}>
               <div className='upperleft'>
-              Initiative: {mem.initiative}
+              Initiative: {(mem.initiative)? mem.initiative : 'error '}
               </div>
 
               <div className='parentDiv'>
