@@ -16,6 +16,10 @@ class AbilityCheck extends React.Component {
       mod: 0,
       total: 0,
       roll: 0,
+      secondRoll: 0,
+      applyProf: false,
+      disadvantage: false,
+      expertise: false,
     };
 
     this.selectHandler = this.selectHandler.bind(this);
@@ -24,36 +28,6 @@ class AbilityCheck extends React.Component {
     this.modifiers = this.modifiers.bind(this);
     this.proficiencyBonus = this.proficiencyBonus.bind(this);
   }
-
-  // abilityCheck = (statName, stat, checkValue) => {
-  //   let roll = Math.floor(Math.random() * 20);
-  //   let checkRoll = roll + computeModifiers(stat);
-  //   let pass = false;
-  //   let msg;
-
-  //   if (checkRoll >= checkValue){
-  //     pass = true;
-  //     msg = statName + 'check passed';
-  //   }
-
-  //   if (roll === 1) {
-  //     pass = false;
-  //     msg = statName + 'check failed with a Nat 1 roll.  :(';
-  //   }
-
-  //   if (roll === 20) {
-  //     pass = true;
-  //     msg = statName + 'check passed with a Nat 20 roll! :)';
-  //   }
-
-  //   return {
-  //     roll: roll,
-  //     checkRoll: roll + computeModifiers(stat),
-  //     pass: pass,
-  //     msg: msg,
-  //   }
-  // }
-
 
   modifiers = (stat) => {
     return Math.floor((stat - 10)/2);
@@ -84,8 +58,73 @@ class AbilityCheck extends React.Component {
 
 
   selectHandler = (e) => {
+    let key = e.target.getAttribute('name').toLowerCase();
+
+    let skill = this.props.thisPlayerProfile.skills[key];
+    let applyProf; 
+    let pb = 0;
+    let total = 0;
+    let secondRoll = 0;
+    
+
+    let typeOfCheck = this.state.abilityChecks[this.state.selected];
+   
+    let relevantStat = this.props.thisPlayerProfile.stats[typeOfCheck];
+    let mod = this.modifiers(relevantStat);
+    let advantage = false;
+    let disadvantage = false;
+    let expertise = false;
+
+    total += mod;
+
+    if (skill) {
+      applyProf = skill.proficiency;
+      if (applyProf) {
+        pb = this.proficiencyBonus(this.props.thisPlayerProfile.level);
+        total += pb;
+      }
+
+      expertise = skill.expertise;
+      if (expertise) {
+        total += pb;
+      }
+
+      advantage = skill.advantage;
+      if (advantage) {
+        secondRoll = this.roll('1d20').total;
+        if (secondRoll > roll) {
+          total -= roll;
+          total += secondRoll;
+        }
+      }
+
+      disadvantage = skill.disadvantage;
+      if (disadvantage) {
+        secondRoll = this.roll('1d20').total;
+        if (secondRoll < roll) {
+          total -= roll;
+          total += secondRoll;
+        }
+      }
+
+      //other conditions to go here
+
+    }
+
+    let roll = 0;
+
+
     this.setState({
       selected:  e.target.getAttribute('name'),
+      roll: roll,
+      pb: pb,
+      applyProf: applyProf,
+      mod: mod,
+      total: total,
+      secondRoll: secondRoll,
+      advantage: advantage,
+      disadvantage: disadvantage,
+      expertise: expertise,
     });
   }
 
@@ -101,9 +140,17 @@ class AbilityCheck extends React.Component {
     let mod = this.modifiers(relevantStat);
     let pb = this.proficiencyBonus(this.props.thisPlayerProfile.level);
     let roll = this.roll('1d20').total;
-    let total = mod + pb + roll;
+    let total = mod + roll;
     let nat20 = (roll === 20) ? true : false;
     let nat1 = (roll === 1) ? true : false;
+
+    if (this.state.applyProf) {
+      total += pb;
+    }
+
+    if (this.state.expertise) {
+      total += pb;
+    }
 
     this.setState({
       roll: roll,
@@ -134,6 +181,25 @@ class AbilityCheck extends React.Component {
       )
     })
 
+    let profstmt = (this.state.applyProf)? '+ Proficiency ' : '';
+   
+    if (this.state.expertise) {
+      profstmt += 'x2 (Expertise) ';
+    }
+    
+    let rollstmt = '1d20 Roll';
+    let profNumber = '';
+
+    if (this.state.pb !== 0) {
+      profNumber = `+ ${this.state.pb}`;
+
+      if (this.state.expertise) {
+        profNumber += '(2)';
+      }
+      
+    }
+
+
     return (
       <div className="AC-item">
         <div className="calc-header">Ability Check</div>
@@ -142,8 +208,9 @@ class AbilityCheck extends React.Component {
         </div>
         <div className='st-region'> 
 
-          <div>1d20 roll + prof bonus(if app.) + ability mod = total </div>
-          <div className="st">{this.state.roll} + {this.state.pb} + {this.state.mod} = {this.state.total}</div>
+          <div>{rollstmt} {profstmt} + Ability modifier = Total </div>
+          <div className="st">{this.state.roll} {profNumber} + {this.state.mod} = {this.state.total}</div>
+          {(this.state.secondRoll !== 0)? <div>Second Roll: {this.state.secondRoll}</div> : ''}
           {nat}
         </div>
         <button className=".login-button" onClick={this.rollHandler}>Roll {this.state.selected}</button>

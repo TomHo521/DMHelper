@@ -4,6 +4,7 @@ import Combat from './combat.jsx';
 import adventurerList from '../../test/players.js';
 import enemyList from '../../test/enemies.js';
 import CombatLogEntry from './combatlog';
+import MagicMenu from './Menus/magicmenu';
 
 //master component which wraps all components with CSS grid
 class ActiveGUI extends React.Component {
@@ -24,19 +25,21 @@ class ActiveGUI extends React.Component {
     this.rightClick = this.rightClick.bind(this);
     this.updateUI = this.updateUI.bind(this);
 
+    this.openMagicModal = this.openMagicModal.bind(this);
+    this.closeMagicModal = this.closeMagicModal.bind(this);
+    this.setAcquiringTarget = this.setAcquiringTarget.bind(this);
+    this.sendMagicAttack = this.sendMagicAttack.bind(this);
+    this.updateState = this.updateState.bind(this);
+
     this.state = {
       adventurerList : adventurerList,
       enemyList : enemyList,
       turn: 0,
       activeEntity: 'Combat not ready yet',
       thisPlayerObj: {},
-      activeEnemy: 0,
       combatLog : [{msg: 'Combat Log:'}],
-      headlineMessage: '',
       turnList: [],
-      turnPlayer: {},
       acquiringTarget: false,
-      everyonesTargets: {},
       chatBox: '',
       currentlyOnline: {},
       showOnline: true,
@@ -44,14 +47,19 @@ class ActiveGUI extends React.Component {
     };
   }
 
-  proficiencyBonus = (level) => {
-    return Math.floor((2 + (level - 1))/4);
+  openMagicModal = () => {
+    let modal = document.getElementById("magicWindow");
+    modal.style.display = "block";
   }
 
-  modifiers = (stat) => {
-    return Math.floor((stat - 10)/2);
+  closeMagicModal = () => {
+    let modal = document.getElementById("magicWindow");
+    modal.style.display = "none"; 
   }
 
+  proficiencyBonus = (level) => Math.floor((2 + (level - 1))/4);
+  modifiers = (stat) => Math.floor((stat - 10)/2);
+  
   roll = (dice) => {
     let index = dice.indexOf('d'); 
     let qty = parseInt(dice.substring(0, index));
@@ -81,6 +89,16 @@ class ActiveGUI extends React.Component {
     socket.emit('getStatus', {thisPlayer: this.props.thisPlayer});
   }
 
+  updateState = (stateObj) => {
+    this.setState({
+      enemyList: (stateObj.enemyList)? stateObj.enemyList: this.state.enemyList,
+      adventurerList: (stateObj.adventurerList)? stateObj.adventurerList: this.state.adventurerList,
+      activeEntity: (stateObj.activeEntity) ? stateObj.activeEntity : this.state.activeEntity,
+      currentlyOnline: (stateObj.currentlyOnline) ? stateObj.currentlyOnline: this.state.currentlyOnline,
+      culledList: (stateObj.culledList)? stateObj.culledList: this.state.culledList,
+    });
+  }
+
   componentDidMount () {
 
     socket.emit('getStatus', {thisPlayer: this.props.thisPlayer});
@@ -92,47 +110,19 @@ class ActiveGUI extends React.Component {
           thisPlayerObj: msg.thisPlayerObj
         });
       }
-      this.setState({
-        enemyList: msg.enemyList,
-        adventurerList: msg.adventurerList,
-        activeEntity: msg.activeEntity,
-        currentlyOnline: msg.currentlyOnline,
-        culledList: msg.culledList,
-      });
-
-      console.log('culled List received from ther server ', msg.culledList);
-
+      this.updateState(msg);
     })
-
 
     socket.on('initRollDone' , msg => {
       let turnCounter = msg.currentTurn
-
-      updateUI();
-
-      this.logNext(`All Players have completed their rolls: turn: ${turnCounter}`)
-      this.setState({
-        enemyList: msg.enemyList,
-        adventurerList: msg.adventurerList,
-        activeEntity: msg.activeEntity,
-      });
-      
+      this.updateUI();
+      this.logNext(`All Players have completed their rolls: turn: ${turnCounter}`)      
       this.logNext(`now ${this.adventurerList[turnCounter].name}'s turn`);
     });
 
     socket.on('enemyAttack', msg => {
-
       msg.msgLog.forEach(e => this.logNext(e));
-
-      console.log('data from enemy attack msg ', msg.activeEntity);
-      this.setState({
-        enemyList: msg.mTL.enemyList,
-        adventurerList: msg.mTL.adventurerList,
-        activeEntity: msg.activeEntity,
-      });
-
-      socket.emit('getStatus', {thisPlayer: this.props.thisPlayer});
-      
+      this.updateUI();
     });
     
     socket.on('chat', msg => this.logNext(msg));
@@ -140,67 +130,114 @@ class ActiveGUI extends React.Component {
     //upon receiving the attack message from server client does computations
     socket.on('attack-reply', (msg) => { 
       this.logNext(msg.msg);
-      this.setState({
-        enemyList: msg.mTL.enemyList,
-        adventurerList: msg.mTL.adventurerList,
-        activeEntity: msg.activeEntity,
-      });
+      this.updateState(msg);
     });
 
     socket.on('playerdc', (msg) => {
       this.logNext(msg.msg);
-      this.setState({
-        currentlyOnline: msg.currentlyOnline,
-        culledList: msg.culledList,
-      });
+      this.updateState(msg);
     });
   }
 
   sendAttack = (target) => {
+    let activeP = this.state.thisPlayerObj;
+    let activeName = this.state.thisPlayerObj.name;
+    let nextMessage = `${activeName} attacks ${this.state.enemyList[target].name}!!!     ` ;
 
-        //for now we assume the target is always 0;
-        let activeP = this.state.thisPlayerObj;
-        let activeName = this.state.thisPlayerObj.name;
-    
-        let nextMessage = `${activeName} attacks ${this.state.enemyList[target].name}!!!     ` ;
-    
-        //comparing AC
-        let attackRoll = this.roll('1d20').total;
-        let pB = this.proficiencyBonus(activeP.level);
-        let dexMod = this.modifiers(activeP.stats.dex);
-        let ac = this.state.enemyList[target].armor_class[1];
-        var dmgRoll = 0;
-    
-        if ((attackRoll + pB + dexMod) >= ac) {
-          if (attackRoll === 20) {
-            let dice = activeP.weapon[1];
-            dice[0] = 2;
-            dmgRoll = this.roll(dice).total + dexMod;
-          } else {
-            dmgRoll = this.roll(activeP.weapon[1]).total + dexMod;
-          }
-          
-          nextMessage += `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
-        } else {
-          nextMessage += `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
-        }
-    
-        //after performing relevant computations, upload to server
-        this.setState({acquiringTarget : false});
-        socket.emit('attack', {
-          targetName: this.state.enemyList[target].name,
-          attacker: this.props.thisPlayer,
-          dmg: dmgRoll,
-          target: target,
-          msg: nextMessage,
-        });
+    //comparing AC
+    let attackRoll = this.roll('1d20').total;
+    let pB = this.proficiencyBonus(activeP.level);
+    let dexMod = this.modifiers(activeP.stats.dex);
+    let ac = this.state.enemyList[target].armor_class[1];
+    var dmgRoll = 0;
+
+    if ((attackRoll + pB + dexMod) >= ac) {
+      if (attackRoll === 20) {
+        let dice = activeP.weapon[1];
+        dice[0] = 2;
+        dmgRoll = this.roll(dice).total + dexMod;
+      } else {
+        dmgRoll = this.roll(activeP.weapon[1]).total + dexMod;
+      }
+      
+      nextMessage += `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+    } else {
+      nextMessage += `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+    }
+
+    //after performing relevant computations, upload to server
+    this.setState({acquiringTarget : false});
+    socket.emit('attack', {
+      targetName: this.state.enemyList[target].name,
+      attacker: this.props.thisPlayer,
+      dmg: dmgRoll,
+      target: target,
+      msg: nextMessage,
+    });
+  }
+
+  sendMagicAttack = (magicAttackObj) => {
+    // console.log('sendMagicAttack entered');
+    // console.log('this is the spellKey in the send magic attack: ', magicAttackObj.spellKey);
+
+    let target = magicAttackObj.target;
+    //for now we assume the target is always 0;
+    let activeP = this.state.thisPlayerObj;
+    let activeName = this.state.thisPlayerObj.name;
+
+    let nextMessage = `${activeName} attacks ${this.state.enemyList[target].name}!!!     ` ;
+        
+    //comparing AC
+    let attackRoll = this.roll('1d20').total;
+    let pB = this.proficiencyBonus(activeP.level);
+    let dexMod = this.modifiers(activeP.stats.dex);
+    let ac = this.state.enemyList[target].armor_class[1];
+    var dmgRoll = 0;
+
+    if ((attackRoll + pB + dexMod) >= ac) {
+      if (attackRoll === 20) {
+        let dice = activeP.weapon[1];
+        dice[0] = 2;
+        dmgRoll = this.roll(dice).total + dexMod;
+      } else {
+        dmgRoll = this.roll(activeP.weapon[1]).total + dexMod;
+      }
+      
+      nextMessage += `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}spell Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+    } else {
+      nextMessage += `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}spell Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+    }
+
+    //after performing relevant computations, upload to server
+    this.setState({acquiringTarget : false});
+    socket.emit('spellAttack', {
+      targetName: this.state.enemyList[target].name,
+      attacker: this.props.thisPlayer,
+      damage: dmgRoll,
+      target: target,
+      msg: nextMessage,
+      action: 'spellAttack',
+      spellKey: magicAttackObj.spellKey,
+    });
+
+
   }
 
   getTarget = (e) => {
     if (this.state.acquiringTarget) {
       let index = this.getIndexOf(e.currentTarget.id, this.state.enemyList);
-      console.log('index acquired was: ', index);
-      this.sendAttack(index);
+    
+      if (this.state.acquiringTarget.action === 'spellAttack') {
+        let magicAttackObj = {
+          target: index,
+          spellKey: this.state.acquiringTarget.spellKey,
+        }
+
+        this.sendMagicAttack(magicAttackObj);
+      } else {
+        this.sendAttack(index);
+      }
+      
     }
     this.logNext(`${e.currentTarget.id}'s icon was clicked`);
   }
@@ -240,27 +277,25 @@ class ActiveGUI extends React.Component {
   
   rightClick = (e) => {
     e.preventDefault();
-
     console.log(' e.type', e);
-
     if (e.type === 'contextmenu') {
       this.setState({showOnline: !this.state.showOnline});
-     
       console.log('right mouse button clicked!');
     } else {
-
       console.log('left mouse button clicked!');
-
     }
+  }
 
+  setAcquiringTarget = (objective) => {
+    this.setState({acquiringTarget: objective});
   }
 
   render () {
     let currentlyOnline = (this.state.showOnline)? Object.keys(this.state.currentlyOnline).map(element => <div>{element.slice(0,8)}</div>) : null;
 
-
     return (
       <div class="grid-container">
+        <MagicMenu closeMagicModal={this.closeMagicModal} setAcquiringTarget={this.setAcquiringTarget} getTarget={this.getTarget} thisPlayer={this.props.thisPlayer} activeEntity={this.state.activeEntity} logNext={this.logNext}/>
         <div class="item1" id="item1override">
           <p id="currentlyOnline" onContextMenu={this.rightClick} onClick={this.rightClick}>Currently Online: {currentlyOnline} </p>
           <p id='loggedInPlayer' onClick={this.props.openAdventurerProfileModal}>Logged in as:
@@ -293,7 +328,7 @@ class ActiveGUI extends React.Component {
         </div>
         <div class="item5">
           <div id="footer">
-            <Combat attack={this.attack} openMagicModal={this.props.openMagicModal} closeMagicModal={this.props.closeMagicModal}/>
+            <Combat attack={this.attack} openMagicModal={this.openMagicModal} closeMagicModal={this.closeMagicModal} acquiringTarget={this.state.acquiringTarget} />
           </div>
         </div>
       </div>

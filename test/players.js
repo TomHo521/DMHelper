@@ -41,6 +41,12 @@ var player1 = {
     'rapier': 1,
   },
   st: {
+    str: {
+
+    },
+    con: {
+
+    },
     dex: {
       proficiency: 'bard class',
     },
@@ -132,6 +138,12 @@ var player2 = {
     'jug of fire wine' : 1,
   },
   st: {
+    str: {
+
+    },
+    con: {
+
+    },
     dex: {
       proficiency: 'bard class',
     },
@@ -222,6 +234,12 @@ var player3 = {
     'celestial locket' : 1,
   },
   st: {
+    str: {
+
+    },
+    con: {
+
+    },
     dex: {
       proficiency: 'bard class',
     },
@@ -312,6 +330,12 @@ var player4 = {
     'bag of tricks' : 1,
   },
   st: {
+    str: {
+
+    },
+    con: {
+
+    },
     dex: {
       proficiency: 'bard class',
     },
@@ -403,6 +427,12 @@ var player5 = {
     'comically large scabbard' : 1,
   },
   st: {
+    str: {
+
+    },
+    con: {
+
+    },
     dex: {
       proficiency: 'bard class',
     },
@@ -493,6 +523,12 @@ var player6 = {
     'a few earrings' : 1,
   },
   st: {
+    str: {
+
+    },
+    con: {
+
+    },
     dex: {
       proficiency: 'bard class',
     },

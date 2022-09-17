@@ -8,12 +8,15 @@ class SavingThrow extends React.Component {
       types : ['STR', 'DEX', 'CON', 'CHA', 'INT', 'WIS'],
       selected : 'STR',
       advantage: false,
+      disadvantage: false,
       nat20: false,
       nat1: false,
       roll: 0,
+      secondRoll: 0,
       pb: 0,
       mod: 0,
       total: 0,
+      applyProf: false,
     };
 
     this.typeSelect = this.typeSelect.bind(this);
@@ -50,51 +53,85 @@ class SavingThrow extends React.Component {
   }
 
 
-
   typeSelect = (e) => {
-    this.setState({selected: e.target.getAttribute('name')});
+    let selected = e.target.getAttribute('name');
+    let key = selected.toLowerCase();
+    
+    let modifierBonus = this.modifiers(this.props.thisPlayerProfile.stats[key]);
+    let total = modifierBonus;
+
+    let applyProf = this.props.thisPlayerProfile.st[key].proficiency;
+    let pb = 0;
+    if (applyProf) {
+      pb = this.proficiencyBonus(this.props.thisPlayerProfile.level);
+      total += pb;
+    }
+
+
+    this.setState({
+      selected: selected,
+      roll: 0,
+      mod: modifierBonus,
+      pb: pb,
+      total: total,
+      applyProf: applyProf,
+      advantage: this.props.thisPlayerProfile.st[key].advantage,
+      disadvantage: this.props.thisPlayerProfile.st[key].disadvantage,
+    });
   }
 
   clickHandler = () => {
 
     console.log('this was sent', this.props.thisPlayerProfile);
     let key = this.state.selected.toLowerCase();
+
+    let player = this.props.thisPlayerProfile;
     
-    console.log('this is key', key);
-
-    let statNum = this.props.thisPlayerObj.stats[key];
-
-    console.log('acquired stat num: should be 15: ',this.props.thisPlayerProfile.stats[key]);
-
     let roll = this.roll('1d20').total;
-    let proficiencyBonus = this.proficiencyBonus(this.props.thisPlayerProfile.level);
-    let modifierBonus = this.modifiers(this.props.thisPlayerProfile.stats[key]);
-    let total = roll + proficiencyBonus + modifierBonus;
+    let modifierBonus = this.modifiers(player.stats[key]);
+    let total = roll + modifierBonus;
+    let proficiencyBonus = 0;
+
+    if (this.state.applyProf) {
+      proficiencyBonus = this.proficiencyBonus(player.level);
+      total += proficiencyBonus;
+    }
+
+    let secondRoll = 0; 
+
+    if (this.state.advantage) {
+      secondRoll = this.roll('1d20').total;
+      if (secondRoll > roll) {
+        total -= roll;
+        total += secondRoll;
+      }
+    }
+
+    if (this.state.disadvantage) {
+      secondRoll = this.roll('1d20').total;
+      if (secondRoll < roll) {
+        total -= roll;
+        total += secondRoll;
+      }
+    }
+    
 
     this.setState({
       roll: roll,
       pb: proficiencyBonus,
       mod: modifierBonus,
       total: total,
+      secondRoll: secondRoll,
     });
 
 
   }
 
   componentDidMount() {
-    // let proficiencyBonus = this.proficiencyBonus(this.props.thisPlayerProfile.level);
-    // let key = this.state.selected.toLowerCase();
-    // let modifierBonus = this.modifiers(this.props.thisPlayerProfile.stats[key]);
-
-    // this.setState({
-    //   pb: proficiencyBonus,
-    //   mod: modifierBonus,
-    // })
   }
 
-
   render () {
-    // console.log('this was sent', this.props.thisPlayerObj);
+  
     let nat = (this.state.roll === 20) ? <div className='nat-20'>Nat 20!!! Automatic Pass</div> : null;
     nat = (this.state.roll === 1) ? <div className='nat-1'>Nat 1. Automatic Fail</div> : nat;
 
@@ -104,6 +141,17 @@ class SavingThrow extends React.Component {
       return <div name={element} className="dice" onClick={this.typeSelect} key={key}>{element}</div>
     });
 
+    let profstmt = (this.state.applyProf)? '+ Proficiency' : '';
+    let rollstmt = '1d20 Roll';
+
+    if (this.state.advantage) {
+      rollstmt += '(ADV) '
+    } else {
+      if (this.state.disadvantage) {
+        rollstmt += '(dADV) '
+      }
+    }
+
     return (
       <div className="DMCalc-item">
         <div className="calc-header">Saving Throw</div>
@@ -111,8 +159,9 @@ class SavingThrow extends React.Component {
           {typeSelection}
         </div>
         <div className='st-region'> 
-          <div>1d20 roll + prof bonus(if app.) + ability mod = total </div>
-          <div className="st">{this.state.roll} + {this.state.pb} + {this.state.mod} = {this.state.total}</div>
+          <div>{rollstmt} {profstmt} + Ability modifier = Total </div>
+          <div className="st">{this.state.roll} {(this.state.pb !== 0)? `+ ${this.state.pb}` : '' } + {this.state.mod} = {this.state.total}</div>
+          {(this.state.secondRoll !== 0)? <div>Second Roll: {this.state.secondRoll}</div> : ''}
           {nat}
 
             

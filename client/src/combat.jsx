@@ -24,7 +24,7 @@ class Combat extends React.Component {
   }
 
   render() {
-    let subActionMenu = (this.state.displaySubActions) ? <SubActionMenu openMagicModal={this.props.openMagicModal}/> : null;
+    let subActionMenu = (this.state.displaySubActions) ? <SubActionMenu openMagicModal={this.props.openMagicModal} /> : null;
     let bonusActionMenu = (this.state.displayBonusActions) ? <BonusActionMenu openBonusModal={this.props.openBonusModal}/> : null;
 
     return (

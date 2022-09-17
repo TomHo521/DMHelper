@@ -3,6 +3,7 @@ import SpellItem from './SpellItem';
 import spellList from '../../../test/magic';
 
 
+
 class MagicMenu extends React.Component {
 
   constructor(props) {
@@ -17,7 +18,27 @@ class MagicMenu extends React.Component {
   }
 
   spellClickHandler = (e) => {
+
     console.log('name of the spell that was clicked.', e.currentTarget.getAttribute('name'));
+
+    // attack was clicked AND it is this players turn.
+    if (this.props.thisPlayer === this.props.activeEntity) {
+      
+      this.props.logNext(`${this.props.thisPlayer} is selecting their target`);
+      // this.setState({ acquiringTarget: true });
+
+      let spellKey = e.currentTarget.getAttribute('name');
+
+      this.props.setAcquiringTarget({
+        action: 'spellAttack',
+        spellKey: spellKey,
+      });
+
+    } else {
+      this.props.logNext(`Please wait your turn -${this.props.thisPlayer}:(spell attack selected)`);      
+    }
+
+    this.props.closeMagicModal();
   }
 
   render () {

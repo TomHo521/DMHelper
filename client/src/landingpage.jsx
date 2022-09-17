@@ -3,7 +3,7 @@ import ActiveGUI from './ActiveGUI';
 import InitiativeCheck from './InitiativeCheck';
 import adventurerList from '../../test/players.js';
 import enemyList from '../../test/enemies.js';
-import MagicMenu from './Menus/magicmenu';
+//import MagicMenu from './Menus/magicmenu';
 import AdventurerProfile from './displays/adventurerProfile';
 import DMCalculator from './displays/DMCalculator';
 
@@ -14,14 +14,16 @@ class LandingPage extends React.Component {
 
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
-    this.openMagicModal = this.openMagicModal.bind(this);
-    this.closeMagicModal = this.closeMagicModal.bind(this);
+
     this.openAdventurerProfileModal = this.openAdventurerProfileModal.bind(this);
     this.closeAdventurerProfileModal = this.closeAdventurerProfileModal.bind(this);
     this.openDMCalcModal = this.openDMCalcModal.bind(this);
     this.closeDMCalcModal = this.closeDMCalcModal.bind(this);
     this.openBonusModal = this.openBonusModal.bind(this);
     this.closeBonusModal = this.closeBonusModal.bind(this);
+
+    //this.openMagicModal - this.openMagicModal.bind(this);
+    //this.closeMagicModal - this.closeMagicModal.bind(this);
     
   
     this.state = {
@@ -41,15 +43,15 @@ class LandingPage extends React.Component {
     modal.style.display = "none";
   }
 
-  openMagicModal = () => {
-    let modal = document.getElementById("magicWindow");
-    modal.style.display = "block";
-  }
+  // openMagicModal = () => {
+  //   let modal = document.getElementById("magicWindow");
+  //   modal.style.display = "block";
+  // }
 
-  closeMagicModal = () => {
-    let modal = document.getElementById("magicWindow");
-    modal.style.display = "none"; 
-  }
+  // closeMagicModal = () => {
+  //   let modal = document.getElementById("magicWindow");
+  //   modal.style.display = "none"; 
+  // }
 
   openBonusModal = () => {
     let modal = document.getElementById("bonusWindow");
@@ -104,11 +106,13 @@ class LandingPage extends React.Component {
     <div>
       <DMCalculator closeDMCalcModal={this.closeDMCalcModal} thisPlayerObj={this.state.thisPlayerObj} thisPlayerProfile={this.props.thisPlayerProfile} />
       <AdventurerProfile thisPlayer={this.props.thisPlayer} thisPlayerProfile={this.props.thisPlayerProfile} closeAdventurerProfileModal={this.closeAdventurerProfileModal}/>
-      <MagicMenu closeMagicModal={this.closeMagicModal}/>
+      
+      
       <InitiativeCheck closeModal={this.closeModal}/>
       <ActiveGUI thisPlayerObj={this.state.thisPlayerObj} 
       thisPlayer={this.props.thisPlayer} openModal={this.openModal} 
-      openMagicModal={this.openMagicModal} openAdventurerProfileModal={this.openAdventurerProfileModal}
+      // openMagicModal={this.openMagicModal} 
+      openAdventurerProfileModal={this.openAdventurerProfileModal}
       openDMCalcModal={this.openDMCalcModal} openBonusModal={this.openBonusModal}
       />
     </div>

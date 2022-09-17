@@ -23,7 +23,6 @@ class AdventurerProfile extends React.Component {
     // this.setState({weapon: weapon});
   }
 
-
   render () {
 
     console.log(' AdventurerProfile: ', this.props.thisPlayerProfile);

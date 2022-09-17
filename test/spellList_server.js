@@ -1,4 +1,4 @@
-var spellList = {
+var spellList_Server = {
   'Armor of Agathys': {
     level: [1, 'abjuration'],
     name: 'Armor of Agathys',
@@ -79,4 +79,4 @@ var spellList = {
 
 }
 
-export default spellList;
+module.exports = spellList_Server;

@@ -26,6 +26,10 @@ function SkillItem(props) {
           skillString += 'A';
         }
 
+        if (props.player.skills[props.skill].expertise) {
+          skillString += 'e';
+        }
+
         if (props.player.skills[props.skill].conditional) {
           skillString += 'c';
         }
@@ -37,11 +41,6 @@ function SkillItem(props) {
     }
 
   }
-
-
-
-
-
 
 
   return (

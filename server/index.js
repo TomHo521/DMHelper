@@ -8,6 +8,8 @@ const db = require('./dmhelper_db/dmhelper_db_routes');
 
 var adventurerList = require('../test/players');
 var enemyList = require('../test/enemies');
+var spellList = require('../test/spellList_server');
+
 var masterTurnList = {
   inCombat: false,
   currentTurn: 0,
@@ -284,6 +286,57 @@ io.on('connection', (socket) => {
         }  
 
       }
+    });
+
+    socket.on('spellAttack', (receivedMSG) => {
+
+      console.log('spellKey received from client: ', receivedMSG.spellKey);
+      console.log('type of spell received ', spellList[receivedMSG.spellKey].attackType);
+      console.log('target of said spell: ', receivedMSG.target);
+      console.log('damage to inflict: ', receivedMSG.damage);
+
+      let message = {};
+
+      if (receivedMSG.attacker !== masterTurnList.turnList[masterTurnList.currentTurn].name) {
+        message.msg = `${receivedMSG.attacker} tries to attack, but it is not their turn!`;
+        message.mTL = masterTurnList;
+        message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
+        message.dmg = receivedMSG.damage;
+
+        io.emit('attack-reply', message);
+      } else {
+        let message = {};
+        let e_i = getIndexOf(receivedMSG.targetName, enemyList);
+      
+        //update dmg.  may have to update spell slots later
+        masterTurnList.enemyList[e_i].hp[0] -= receivedMSG.damage;
+        message.mTL = masterTurnList;
+
+        incrementTurn();
+        message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
+
+        if (masterTurnList.inCombat) {
+          io.emit('attack-reply', message);
+        }
+        
+
+        while (masterTurnList.turnList[masterTurnList.currentTurn].type === 'enemy') {
+          console.log('name ', masterTurnList.turnList[masterTurnList.currentTurn].name);
+      
+          if (masterTurnList.turnList[masterTurnList.currentTurn].hp[0] > 0) {
+            message.msgLog = enemyAttack(masterTurnList.turnList[masterTurnList.currentTurn]);
+            message.mTL = masterTurnList;
+            message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
+            io.emit('enemyAttack', message);
+          }
+          incrementTurn();
+        }  
+
+      }
+
+
+
+
     });
 
 });

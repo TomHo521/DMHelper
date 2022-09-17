@@ -14,7 +14,7 @@ function PartyList(props) {
            <div className="adventurer-container" id={mem.name} key={key} onClick={props.getTarget}> 
             <div className={(mem.name === props.activeEntity) ? shiftClass: hoverClass}>
               <div className='upperleft'>
-              Initiative: {(mem.initiative)? mem.initiative : 'error '}
+              Initiative: {(mem.initiative)? mem.initiative : 'N/A '}
               </div>
 
               <div className='parentDiv'>
