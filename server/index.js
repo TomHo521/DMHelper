@@ -21,6 +21,9 @@ var masterTurnList = {
   socketList:{},
 };
 
+var initiativeList = {};
+var checkList = {};
+
 const io = new Server(server);
 
 var getIndexOf = (name, array) => {
@@ -134,11 +137,13 @@ var enemyAttack = (activeEnemy) => {
 io.on('connection', (socket) => {
     console.log(`a user connected on ${PORT}`);
 
-    let initiativeList = {};
-    let checkList = {};
+    if (Object.keys(checkList).length === 0) {
+      adventurerList.forEach(element => checkList[element.name] = true);
+    }
 
-    adventurerList.forEach(element => checkList[element.name] = true);
-    adventurerList.forEach(element => initiativeList[element.name] = false);
+    if (Object.keys(initiativeList).length === 0) {
+      adventurerList.forEach(element => initiativeList[element.name] = false);
+    }
 
       
     socket.on('initRoll', (message) => {
@@ -179,6 +184,8 @@ io.on('connection', (socket) => {
         io.emit('initRollDone', masterTurnList);
         
       }
+
+      message.initiativeList = initiativeList;
 
       io.emit('rollReceived', message);
       
@@ -246,6 +253,9 @@ io.on('connection', (socket) => {
 
       message.culledList = culledList;
 
+
+      message.initiativeList = initiativeList;
+
       io.emit('getStatus', message );
     })
 
@@ -288,30 +298,32 @@ io.on('connection', (socket) => {
       }
     });
 
-    socket.on('spellAttack', (receivedMSG) => {
+    socket.on('spellAttack', (message) => {
 
-      console.log('spellKey received from client: ', receivedMSG.spellKey);
-      console.log('type of spell received ', spellList[receivedMSG.spellKey].attackType);
-      console.log('target of said spell: ', receivedMSG.target);
-      console.log('damage to inflict: ', receivedMSG.damage);
+      console.log('spellKey received from client: ', message.spellKey);
+      console.log('type of spell received ', spellList[message.spellKey].attackType);
+      console.log('target of said spell: ', message.target);
+      console.log('damage to inflict: ', message.damage);
+      console.log('received message: ', message.msg);
 
-      let message = {};
+      
 
-      if (receivedMSG.attacker !== masterTurnList.turnList[masterTurnList.currentTurn].name) {
-        message.msg = `${receivedMSG.attacker} tries to attack, but it is not their turn!`;
+      if (message.attacker !== masterTurnList.turnList[masterTurnList.currentTurn].name) {
+        message.msg = `${message.attacker} tries to attack, but it is not their turn!`;
         message.mTL = masterTurnList;
         message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
-        message.dmg = receivedMSG.damage;
+        message.dmg = message.damage;
 
         io.emit('attack-reply', message);
       } else {
-        let message = {};
-        let e_i = getIndexOf(receivedMSG.targetName, enemyList);
+   
+        let e_i = getIndexOf(message.targetName, enemyList);
       
         //update dmg.  may have to update spell slots later
-        masterTurnList.enemyList[e_i].hp[0] -= receivedMSG.damage;
+        masterTurnList.enemyList[e_i].hp[0] -= message.damage;
         message.mTL = masterTurnList;
-
+        message.enemyList = masterTurnList.enemyList;
+        
         incrementTurn();
         message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
 

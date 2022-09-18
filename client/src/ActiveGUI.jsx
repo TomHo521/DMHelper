@@ -5,6 +5,7 @@ import adventurerList from '../../test/players.js';
 import enemyList from '../../test/enemies.js';
 import CombatLogEntry from './combatlog';
 import MagicMenu from './Menus/magicmenu';
+import InitiativeCheck from './InitiativeCheck';
 
 //master component which wraps all components with CSS grid
 class ActiveGUI extends React.Component {
@@ -27,6 +28,9 @@ class ActiveGUI extends React.Component {
 
     this.openMagicModal = this.openMagicModal.bind(this);
     this.closeMagicModal = this.closeMagicModal.bind(this);
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+
     this.setAcquiringTarget = this.setAcquiringTarget.bind(this);
     this.sendMagicAttack = this.sendMagicAttack.bind(this);
     this.updateState = this.updateState.bind(this);
@@ -44,7 +48,18 @@ class ActiveGUI extends React.Component {
       currentlyOnline: {},
       showOnline: true,
       culledList: [],
+      initiativeList: {'Midir':45, 'Lia':0, 'Zovinar':0, 'Po':0, 'Cassian':0, 'Pergilius von Waxilium':0,}
     };
+  }
+
+  openModal = () => {
+    let modal = document.getElementById("initWindow");
+    modal.style.display = "block";
+  }
+
+  closeModal = () => {
+    let modal = document.getElementById("initWindow");
+    modal.style.display = "none";
   }
 
   openMagicModal = () => {
@@ -96,6 +111,7 @@ class ActiveGUI extends React.Component {
       activeEntity: (stateObj.activeEntity) ? stateObj.activeEntity : this.state.activeEntity,
       currentlyOnline: (stateObj.currentlyOnline) ? stateObj.currentlyOnline: this.state.currentlyOnline,
       culledList: (stateObj.culledList)? stateObj.culledList: this.state.culledList,
+      initiativeList: (stateObj.initiativeList)? stateObj.initiativeList: this.state.initiativeList
     });
   }
 
@@ -110,6 +126,10 @@ class ActiveGUI extends React.Component {
           thisPlayerObj: msg.thisPlayerObj
         });
       }
+
+      console.log('initiative list in getstatus: ', msg.initiativeList);
+
+
       this.updateState(msg);
     })
 
@@ -177,14 +197,13 @@ class ActiveGUI extends React.Component {
   }
 
   sendMagicAttack = (magicAttackObj) => {
-    // console.log('sendMagicAttack entered');
-    // console.log('this is the spellKey in the send magic attack: ', magicAttackObj.spellKey);
+    console.log('sendMagicAttack entered');
+    console.log('this is the spellKey in the send magic attack: ', magicAttackObj.spellKey);
 
     let target = magicAttackObj.target;
     //for now we assume the target is always 0;
     let activeP = this.state.thisPlayerObj;
     let activeName = this.state.thisPlayerObj.name;
-
     let nextMessage = `${activeName} attacks ${this.state.enemyList[target].name}!!!     ` ;
         
     //comparing AC
@@ -194,18 +213,25 @@ class ActiveGUI extends React.Component {
     let ac = this.state.enemyList[target].armor_class[1];
     var dmgRoll = 0;
 
+    //TEMPORARY 
+    attackRoll = 20;
+
     if ((attackRoll + pB + dexMod) >= ac) {
       if (attackRoll === 20) {
         let dice = activeP.weapon[1];
-        dice[0] = 2;
+
+        console.log('this is the weapon dice', dice);
+        console.log('this dice[0]', dice[0]);
+
+        dice = '2' + dice.substring(1);
         dmgRoll = this.roll(dice).total + dexMod;
       } else {
         dmgRoll = this.roll(activeP.weapon[1]).total + dexMod;
       }
       
-      nextMessage += `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}spell Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+      nextMessage += `${activeName}'s spell attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}spell Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
     } else {
-      nextMessage += `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}spell Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+      nextMessage += `${activeName}'s spell attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}spell Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
     }
 
     //after performing relevant computations, upload to server
@@ -219,8 +245,6 @@ class ActiveGUI extends React.Component {
       action: 'spellAttack',
       spellKey: magicAttackObj.spellKey,
     });
-
-
   }
 
   getTarget = (e) => {
@@ -237,9 +261,8 @@ class ActiveGUI extends React.Component {
       } else {
         this.sendAttack(index);
       }
-      
     }
-    this.logNext(`${e.currentTarget.id}'s icon was clicked`);
+    // this.logNext(`${this.props.thisPlayer} targets ${e.currentTarget.id}`);
   }
 
   getIndexOf = (name, array) => {
@@ -296,6 +319,7 @@ class ActiveGUI extends React.Component {
     return (
       <div class="grid-container">
         <MagicMenu closeMagicModal={this.closeMagicModal} setAcquiringTarget={this.setAcquiringTarget} getTarget={this.getTarget} thisPlayer={this.props.thisPlayer} activeEntity={this.state.activeEntity} logNext={this.logNext}/>
+        <InitiativeCheck closeModal={this.closeModal} adventurerList={this.state.culledList} updateUI={this.updateUI} initiativeList={this.state.initiativeList}/>
         <div class="item1" id="item1override">
           <p id="currentlyOnline" onContextMenu={this.rightClick} onClick={this.rightClick}>Currently Online: {currentlyOnline} </p>
           <p id='loggedInPlayer' onClick={this.props.openAdventurerProfileModal}>Logged in as:
@@ -310,7 +334,7 @@ class ActiveGUI extends React.Component {
         <div class="item2">
           Enemy:
           <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.enemyList} activeEntity={this.state.activeEntity}/>
-          <button onClick={this.props.openModal}>Roll Initiative</button>
+          <button onClick={this.openModal}>Roll Initiative</button>
         </div>
         <div class="item3" id="chatWindow">
             {this.state.combatLog.map( (combatLogEntry, index) => {

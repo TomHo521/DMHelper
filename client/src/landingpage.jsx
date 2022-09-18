@@ -1,6 +1,6 @@
 import React from 'react';
 import ActiveGUI from './ActiveGUI';
-import InitiativeCheck from './InitiativeCheck';
+// import InitiativeCheck from './InitiativeCheck';
 import adventurerList from '../../test/players.js';
 import enemyList from '../../test/enemies.js';
 //import MagicMenu from './Menus/magicmenu';
@@ -12,8 +12,8 @@ class LandingPage extends React.Component {
     super(props);
 
 
-    this.openModal = this.openModal.bind(this);
-    this.closeModal = this.closeModal.bind(this);
+    // this.openModal = this.openModal.bind(this);
+    // this.closeModal = this.closeModal.bind(this);
 
     this.openAdventurerProfileModal = this.openAdventurerProfileModal.bind(this);
     this.closeAdventurerProfileModal = this.closeAdventurerProfileModal.bind(this);
@@ -33,15 +33,6 @@ class LandingPage extends React.Component {
   }
 
 
-  openModal = () => {
-    let modal = document.getElementById("initWindow");
-    modal.style.display = "block";
-  }
-
-  closeModal = () => {
-    let modal = document.getElementById("initWindow");
-    modal.style.display = "none";
-  }
 
   // openMagicModal = () => {
   //   let modal = document.getElementById("magicWindow");
@@ -108,9 +99,10 @@ class LandingPage extends React.Component {
       <AdventurerProfile thisPlayer={this.props.thisPlayer} thisPlayerProfile={this.props.thisPlayerProfile} closeAdventurerProfileModal={this.closeAdventurerProfileModal}/>
       
       
-      <InitiativeCheck closeModal={this.closeModal}/>
+      
       <ActiveGUI thisPlayerObj={this.state.thisPlayerObj} 
-      thisPlayer={this.props.thisPlayer} openModal={this.openModal} 
+      thisPlayer={this.props.thisPlayer} 
+      // openModal={this.openModal} 
       // openMagicModal={this.openMagicModal} 
       openAdventurerProfileModal={this.openAdventurerProfileModal}
       openDMCalcModal={this.openDMCalcModal} openBonusModal={this.openBonusModal}

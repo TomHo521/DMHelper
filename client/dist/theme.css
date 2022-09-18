@@ -462,18 +462,22 @@ tbody::after {
   float: right;
   font-size: 28px;
   font-weight: bold;
+  right: 10px;
 }
 
 
 .modal-content {
   /* background-color: #fefefe; */
   display: fixed;
-  background-color: rgb(132, 88, 37);
+  /* background-color: rgb(132, 88, 37); */
+  /* background-color: #321c09; */
+  background: url(http://i.imgur.com/mVhm1LB.jpg);
   border: 3px solid rgb(255, 255, 255);
   width: 70%; /* Could be more or less, depending on screen size */
-  height: 35vh;
+  height: 50vh;
   overflow: auto;
   border-radius: 25px;
+  background-size: cover;
 }
 
 .modal-content {
@@ -489,7 +493,8 @@ tbody::after {
 .flex-container {
   display: flex;
   flex-wrap: nowrap;
-  background-color: rgb(255, 221, 30);
+  /* background-color: rgb(255, 221, 30); */
+  background-color: cornflowerblue;
   justify-content: center;
 }
 
@@ -517,16 +522,7 @@ tbody::after {
   line-height: 30px;
   font-size: 30px;
   border: 3px solid rgb(255, 255, 255);
-
-  /* display: flex;
-  margin: 15px;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  text-align: center;
-  background-color: rgb(253, 251, 152);
-  color: black; */
-
+  box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
 }
 
 #checkBox {
@@ -1390,4 +1386,36 @@ a:hover span:nth-child(4) {
 
 .playerList-child:nth-of-type(2n) {
 
+}
+
+
+.initRoll-button {
+
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  background-color: #321c09;
+  /* color:rgb(0, 233, 105); */
+  color:  rgb(100, 228, 237);
+  padding: 5px;
+  margin: 12px;
+  text-align: center;
+  /* line-height: 30px; */
+  font-size: 14px;
+  border: 1px solid rgb(255, 255, 255);
+  box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);
+  border-radius: 5px;
+  font-family: "Bellefair", serif;
+  
+}
+
+.initRollTile {
+  box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);
+  border-radius: 5px;
+  border: 1px solid rgb(25, 5, 5);
+
+}
+
+.nameColor {
+  color:rgb(0, 0, 132);
 }
