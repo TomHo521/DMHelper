@@ -574,7 +574,7 @@ tbody::after {
 
 
 .login-button {
-  background-color: #04AA6D;
+  /* background-color: #04AA6D; */
   border: none;
   color: white;
   padding: 20px;
@@ -597,7 +597,7 @@ tbody::after {
     margin: 0px;
 }
 body {
-    background-color: lightgreen;
+    background-color: rgb(0, 144, 247);
 }
 header {
     background-color: black;
@@ -1418,4 +1418,130 @@ a:hover span:nth-child(4) {
 
 .nameColor {
   color:rgb(0, 0, 132);
+}
+
+.position-container {
+  position: absolute;
+  z-index: 20;
+}
+
+.contextmenu-container {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center;  */
+  /* align-items: center; */
+  border: solid 2px white;
+  border-radius: 10px;
+  font-family: "Bellefair", serif;
+  text-transform: uppercase;
+  /* height: 150px; */
+  width: 150px;
+  font-size: 14px;
+  padding: 3px;
+  background-color: rgb(89, 37, 0);
+}
+
+.contextmenu-option {
+  display: flex;
+  /* align-items: center; */
+  padding-left: 10px;
+  
+  background-color: rgba(197, 99, 0,1);
+  color: rgb(255, 235, 12);
+  border-top: solid 1px white;
+  height: 30px;
+  /* position:relative; */
+
+}
+.contextmenu-option:hover {
+  color: rgba(197, 99, 0,1 );
+  background-color: rgb(255, 235, 12);
+}
+
+.contextmenu-header, .contextmenu-footer {
+  font-family:Georgia, 'Times New Roman', Times, serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  text-align: center;
+  height: 30px;
+  color: #fff;
+  font-weight: bold;
+}
+
+
+ /* transition: transform 300ms ease-in; */
+/* .contextmenu-option:hover > .submenu{
+  transform: scaleY(1);
+  opacity: 1;
+  
+ 
+} */
+
+.relative {
+  /* position: relative; */
+}
+
+.submenu {
+  position:absolute;
+  /* left: 101%; */
+  border: 1px solid white;
+  border-radius: 10px;
+  height: 20em;
+  transform: scaleY(0);
+  opacity: 0;
+  transform-origin: top center;
+  transition-delay: 500ms;
+  z-index: 21;
+}
+
+
+
+.sub-option {
+  background-color: #21e888;
+  color:#018746;
+  width: 10em;
+  padding: 1.5em 0;
+}
+.sub-option:hover {
+  color: #21e888;
+  background-color:#018746;
+
+}
+
+.left-submenu {
+  background-color: black;
+  display: inline-block;
+  margin-right: auto;
+}
+
+
+.right-submenu {
+  background-color: black;
+  display: inline-block;
+  margin-left: auto;
+  padding: 2px;
+}
+
+.left-submenu:hover ~ .submenu, .submenu:hover {
+  position:absolute;
+  
+  /* left: -95%; */
+  transform: scaleY(1);
+  opacity: 1;
+  background-color: blue;
+  z-index: 23;
+  
+}
+
+.right-submenu:hover + .submenu {
+  position:absolute;
+  display: inline-block;
+  
+  /* left: 100%; */
+  transform: scaleY(1);
+  opacity: 1;
+  background-color: crimson;
+  z-index: 23;
 }

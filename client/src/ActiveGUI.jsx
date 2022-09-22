@@ -167,22 +167,33 @@ class ActiveGUI extends React.Component {
     //comparing AC
     let attackRoll = this.roll('1d20').total;
     let pB = this.proficiencyBonus(activeP.level);
+
+
+
     let dexMod = this.modifiers(activeP.stats.dex);
     let ac = this.state.enemyList[target].armor_class[1];
     var dmgRoll = 0;
 
-    if ((attackRoll + pB + dexMod) >= ac) {
+    let critical = '';
+    let modMessage = `+ ${dexMod} (dex) `;
+
+    if (((attackRoll + pB + dexMod >= ac) || (attackRoll === 20)) && (attackRoll !== 1)) {
       if (attackRoll === 20) {
         let dice = activeP.weapon[1];
         dice[0] = 2;
         dmgRoll = this.roll(dice).total + dexMod;
+        critical = 'Critical Hit! 2x dmg dice!'
       } else {
         dmgRoll = this.roll(activeP.weapon[1]).total + dexMod;
       }
       
-      nextMessage += `${activeName}'s attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+      nextMessage += `${activeName}'s attack hits! ${critical}  Roll: ${attackRoll} +${pB}pb ${modMessage} vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
     } else {
-      nextMessage += `${activeName}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+
+      if (attackRoll === 1) {
+        critical = 'd1 roll, auto-miss';
+      }
+      nextMessage += `${activeName}'s attack misses!  ${critical} Roll: ${attackRoll} +${pB}pb ${modMessage} vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
     }
 
     //after performing relevant computations, upload to server
@@ -209,29 +220,38 @@ class ActiveGUI extends React.Component {
     //comparing AC
     let attackRoll = this.roll('1d20').total;
     let pB = this.proficiencyBonus(activeP.level);
-    let dexMod = this.modifiers(activeP.stats.dex);
+
+    let spellMod = 0;
+    let modMessage = '';
+    if (this.state.thisPlayerObj.spellModifier !== 'none') {
+      spellMod = this.modifiers(this.state.thisPlayerObj.stats[this.state.thisPlayerObj.spellModifier]);
+      modMessage = `+ ${spellMod} (${this.state.thisPlayerObj.spellModifier}) `;
+    }
+    
     let ac = this.state.enemyList[target].armor_class[1];
     var dmgRoll = 0;
 
     //TEMPORARY 
     attackRoll = 20;
+    let critical = '';
 
-    if ((attackRoll + pB + dexMod) >= ac) {
+    if (((attackRoll + pB + spellMod >= ac) || (attackRoll === 20)) && (attackRoll !== 1)) {
       if (attackRoll === 20) {
         let dice = activeP.weapon[1];
-
-        console.log('this is the weapon dice', dice);
-        console.log('this dice[0]', dice[0]);
-
         dice = '2' + dice.substring(1);
-        dmgRoll = this.roll(dice).total + dexMod;
+        dmgRoll = this.roll(dice).total + spellMod;
+        critical = 'Critical Hit! 2x dmg dice!'
       } else {
-        dmgRoll = this.roll(activeP.weapon[1]).total + dexMod;
+        dmgRoll = this.roll(activeP.weapon[1]).total + spellMod;
       }
       
-      nextMessage += `${activeName}'s spell attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}spell Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+      nextMessage += `${activeName}'s spell attack hits! ${critical}  Roll: ${attackRoll} +${pB}pb ${modMessage} vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
     } else {
-      nextMessage += `${activeName}'s spell attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}spell Mod vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
+
+      if (attackRoll === 1) {
+        critical = 'd1 roll, auto-miss';
+      }
+      nextMessage += `${activeName}'s spell attack misses!  ${critical} Roll: ${attackRoll} +${pB}pb ${modMessage} vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
     }
 
     //after performing relevant computations, upload to server

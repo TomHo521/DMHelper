@@ -103,6 +103,11 @@ var initAndSort = (initiativeList) => {
 }
 
 
+var checkEnemiesDead = () => {
+  let enemiesStillAlive = masterTurnList.enemyList.filter(element => element.hp[0] > 0);
+  return (enemiesStillAlive.length > 0);
+}
+
 
 var enemyAttack = (activeEnemy) => {
     //enemy should select a target. 
@@ -132,6 +137,18 @@ var enemyAttack = (activeEnemy) => {
     
     return msgLog;
   }
+
+var enemyTurnLoop = (message) => {
+  while (masterTurnList.turnList[masterTurnList.currentTurn].type === 'enemy') {
+    if (masterTurnList.turnList[masterTurnList.currentTurn].hp[0] > 0) {
+      message.msgLog = enemyAttack(masterTurnList.turnList[masterTurnList.currentTurn]);
+      message.mTL = masterTurnList;
+      message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
+      io.emit('enemyAttack', message);
+    }
+    incrementTurn();
+  }  
+}
 
 
 io.on('connection', (socket) => {
@@ -166,17 +183,7 @@ io.on('connection', (socket) => {
 
         printList(masterTurnList.turnList);
         //masterTurnList.turn = masterTurnList.turnList[masterTurnlist.currentTurn].name;
-        while (masterTurnList.turnList[masterTurnList.currentTurn].type === 'enemy') {
-          console.log('name ', masterTurnList.turnList[masterTurnList.currentTurn].name);
-      
-          if (masterTurnList.turnList[masterTurnList.currentTurn].hp[0] > 0) {
-            message.msgLog = enemyAttack(masterTurnList.turnList[masterTurnList.currentTurn]);
-            message.mTL = masterTurnList;
-            message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
-            io.emit('enemyAttack', message);
-          }
-          incrementTurn();
-        }  
+        enemyTurnLoop(message);
 
         //pass the global turn object to each of the logged in members
         masterTurnList.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
@@ -263,10 +270,9 @@ io.on('connection', (socket) => {
 
       if (message.attacker !== masterTurnList.turnList[masterTurnList.currentTurn].name) {
         message.msg = `${message.attacker} tries to attack, but it is not their turn!`;
-        message.mTL = masterTurnList;
-        message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
-        message.dmg = message.dmg;
-
+        // message.mTL = masterTurnList;
+        // message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
+        // message.dmg = message.dmg;
         io.emit('attack-reply', message);
       } else {
         let e_i = getIndexOf(message.targetName, enemyList);
@@ -277,24 +283,13 @@ io.on('connection', (socket) => {
 
         incrementTurn();
         message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
+        message.enemyList =  masterTurnList.enemyList;
 
         if (masterTurnList.inCombat) {
           io.emit('attack-reply', message);
         }
         
-
-        while (masterTurnList.turnList[masterTurnList.currentTurn].type === 'enemy') {
-          console.log('name ', masterTurnList.turnList[masterTurnList.currentTurn].name);
-      
-          if (masterTurnList.turnList[masterTurnList.currentTurn].hp[0] > 0) {
-            message.msgLog = enemyAttack(masterTurnList.turnList[masterTurnList.currentTurn]);
-            message.mTL = masterTurnList;
-            message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
-            io.emit('enemyAttack', message);
-          }
-          incrementTurn();
-        }  
-
+        enemyTurnLoop(message);
       }
     });
 
@@ -305,8 +300,6 @@ io.on('connection', (socket) => {
       console.log('target of said spell: ', message.target);
       console.log('damage to inflict: ', message.damage);
       console.log('received message: ', message.msg);
-
-      
 
       if (message.attacker !== masterTurnList.turnList[masterTurnList.currentTurn].name) {
         message.msg = `${message.attacker} tries to attack, but it is not their turn!`;
@@ -331,26 +324,10 @@ io.on('connection', (socket) => {
           io.emit('attack-reply', message);
         }
         
-
-        while (masterTurnList.turnList[masterTurnList.currentTurn].type === 'enemy') {
-          console.log('name ', masterTurnList.turnList[masterTurnList.currentTurn].name);
-      
-          if (masterTurnList.turnList[masterTurnList.currentTurn].hp[0] > 0) {
-            message.msgLog = enemyAttack(masterTurnList.turnList[masterTurnList.currentTurn]);
-            message.mTL = masterTurnList;
-            message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
-            io.emit('enemyAttack', message);
-          }
-          incrementTurn();
-        }  
+        enemyTurnLoop(message);
 
       }
-
-
-
-
     });
-
 });
 
 app.use(express.json());

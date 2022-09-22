@@ -6,6 +6,7 @@ import enemyList from '../../test/enemies.js';
 //import MagicMenu from './Menus/magicmenu';
 import AdventurerProfile from './displays/adventurerProfile';
 import DMCalculator from './displays/DMCalculator';
+import ContextMenu from './Menus/contextmenu';
 
 class LandingPage extends React.Component {
   constructor(props) {
@@ -94,7 +95,8 @@ class LandingPage extends React.Component {
     console.log('this.props.thisPlayerProfile: landing: ', this.props.thisPlayerProfile);
 
     return ( 
-    <div>
+    <div className="relative">
+      <ContextMenu/>
       <DMCalculator closeDMCalcModal={this.closeDMCalcModal} thisPlayerObj={this.state.thisPlayerObj} thisPlayerProfile={this.props.thisPlayerProfile} />
       <AdventurerProfile thisPlayer={this.props.thisPlayer} thisPlayerProfile={this.props.thisPlayerProfile} closeAdventurerProfileModal={this.closeAdventurerProfileModal}/>
       

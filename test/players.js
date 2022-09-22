@@ -17,6 +17,7 @@ var player1 = {
   location: {
     Waxilium: 'Dread Dragonhide Saloon',
   },
+  spellModifier: 'cha',
   class_traits: {
     activeSpells: {
       thunderstrike: 3,
@@ -122,6 +123,7 @@ var player2 = {
   location: {
     Waxilium: 'Dread Dragonhide Saloon',
   },
+  spellModifier: 'none',
   class_traits: {
     activeSpells: {
     },
@@ -218,6 +220,7 @@ var player3 = {
   location: {
     Waxilium: 'Dread Dragonhide Saloon',
   },
+  spellModifier: 'int',
   class_traits: {
     activeSpells: {
     },
@@ -314,6 +317,7 @@ var player4 = {
   location: {
     Waxilium: 'Dread Dragonhide Saloon',
   },
+  spellModifier: 'int',
   class_traits: {
     activeSpells: {
     },
@@ -411,6 +415,7 @@ var player5 = {
   location: {
     Waxilium: 'Dread Dragonhide Saloon',
   },
+  spellModifier: 'none',
   class_traits: {
     activeSpells: {
     },
@@ -507,6 +512,7 @@ var player6 = {
   location: {
     Waxilium: 'Dread Dragonhide Saloon',
   },
+  spellModifier: 'cha',
   class_traits: {
     activeSpells: {
     },
