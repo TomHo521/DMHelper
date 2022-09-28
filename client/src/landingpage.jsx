@@ -96,7 +96,8 @@ class LandingPage extends React.Component {
 
     return ( 
     <div className="relative">
-      <ContextMenu/>
+      
+      {/* <ContextMenu/> */}
       <DMCalculator closeDMCalcModal={this.closeDMCalcModal} thisPlayerObj={this.state.thisPlayerObj} thisPlayerProfile={this.props.thisPlayerProfile} />
       <AdventurerProfile thisPlayer={this.props.thisPlayer} thisPlayerProfile={this.props.thisPlayerProfile} closeAdventurerProfileModal={this.closeAdventurerProfileModal}/>
       

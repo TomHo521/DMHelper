@@ -43,11 +43,9 @@ function SkillItem(props) {
 
 
   return (
-    <div className="sub-option" onClick={props.clickHandler} name={props.skill}> {skillString}</div>
+    <dd className={className} onClick={props.clickHandler} name={props.skill}> {skillString}</dd>
   );
 
 }
-
-// className={className}
 
 export default SkillItem;

@@ -1,5 +1,8 @@
 import React from 'react';
-
+import Draggable from "react-draggable";
+import DiceRollContextMenu from './contextmenu/diceRollContextMenu';
+import SkillCheckContextMenu from './contextmenu/skillCheckContextMenu';
+import SavingThrowContextMenu from './contextmenu/SavingThrowContextMenu';
 class ContextMenu extends React.Component {
   constructor(props) {
     super(props);
@@ -13,6 +16,7 @@ class ContextMenu extends React.Component {
 
     this.onMouseEnterLeft = this.onMouseEnterLeft.bind(this);
     this.onMouseEnterRight = this.onMouseEnterRight.bind(this);
+    this.closeMenu = this.closeMenu.bind(this);
 
   }
 
@@ -54,22 +58,39 @@ class ContextMenu extends React.Component {
     this.setState({subMenuPos: '100%'});
   }
 
+  closeMenu = () => {
+    this.setState({showMenu: false});
+  }
+
   render() {
       // ...
     const { showMenu, xPos, yPos } = this.state;
 
     if (showMenu)
       return (
+      <Draggable>
+
+        {/* This indicates the outermost element and is what the Menu "attaches to"*/}
         <div className="position-container" id="menu" style={{
           top: yPos,
           left: xPos,
         }}>
-          <div className="contextmenu-container">
-            <div className='contextmenu-header'>
-               header
-            </div>
-            <div className="contextmenu-option">
-              <div className='left-submenu' style={{left:this.state.subMenuPos}} onMouseEnter={this.onMouseEnterLeft}>←</div> option #1 <div style={{left:this.state.subMenuPos}} className='right-submenu' onMouseEnter={this.onMouseEnterRight}>→</div>
+
+          <DiceRollContextMenu thisPlayer={this.props.thisPlayer} closeMenu={this.closeMenu} logNext={this.props.logNext}/>
+          <SkillCheckContextMenu  thisPlayer={this.props.thisPlayer} thisPlayerObj={this.props.thisPlayerObj} closeMenu={this.closeMenu} logNext={this.props.logNext}/>
+          <SavingThrowContextMenu thisPlayer={this.props.thisPlayer} thisPlayerObj={this.props.thisPlayerObj} closeMenu={this.closeMenu} logNext={this.props.logNext}/>
+        </div>
+      </Draggable>
+      )
+    else return null;
+  }
+}
+
+export default ContextMenu;
+
+
+{/* <div className="contextmenu-option">
+              
               <div className="submenu" style={{left:this.state.subMenuPos}}>
                  
                   <div className="sub-option">
@@ -91,13 +112,7 @@ class ContextMenu extends React.Component {
               option #2
             </div>
             <div className='contextmenu-header'>
-              footer
+              ---
             </div>
-          </div>
-        </div>
-      )
-    else return null;
-  }
-}
-
-export default ContextMenu;
+          </div> */}
+        

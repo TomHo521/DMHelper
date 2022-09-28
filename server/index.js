@@ -21,6 +21,10 @@ var masterTurnList = {
   socketList:{},
 };
 
+var chatRoomStore = {
+
+}
+
 var initiativeList = {};
 var checkList = {};
 
@@ -200,7 +204,43 @@ io.on('connection', (socket) => {
     });
         
     socket.on('chat', (message) => {
-      io.emit('chat', message );
+      //check for private message
+      // let sender = '';
+      // let delimterBegins = message.indexOf(':');
+      // console.log('message: ', message);
+
+      // if (delimterBegins === -1) {
+      //   io.emit('chat', message );
+      // } 
+      // else {
+      //   sender = message.substring(0, delimterBegins + 2);
+      //   message = message.slice(delimterBegins+2);
+   
+        if (message.msg.substring(0,3) === '/w ') {
+          let pmDestinations = message.msg.split(" ");
+          let counter = 1;
+          //determine where the recipient list ends and where the message begins.
+          while ((pmDestinations[counter] in masterTurnList.currentlyOnline) && (counter < pmDestinations.length)) {
+            counter++;
+          }
+
+          let pmMessage = {
+              sender: masterTurnList.socketList[socket.id],
+              roomID: 'tb3',
+              chatObj: sender + '(pm): ' + pmDestinations.slice(counter).join(' '),
+            };
+
+          for (var k = 1; k < counter; k++) {
+            if (pmDestinations[k] in masterTurnList.currentlyOnline) {
+              io.to(masterTurnList.currentlyOnline[pmDestinations[k]]).emit('pm', pmMessage);
+            }
+          }
+          console.log('final pmMessage formatted: ', pmMessage.chatObj);
+          io.to(socket.id).emit('pm', pmMessage);        
+        } else {
+          io.emit('chat',message);
+        }     
+     // }
     });
 
     socket.on('disconnect', (msg) => {
@@ -328,6 +368,15 @@ io.on('connection', (socket) => {
 
       }
     });
+
+    socket.on('pm', () => {
+
+      //need a routing mechanism to route pms to their proper roomID.
+      //probably also need a mechanism to store who is in charge of which RoomID
+
+
+    });
+
 });
 
 app.use(express.json());
