@@ -21,8 +21,6 @@ class ActiveGUI extends React.Component {
     this.proficiencyBonus = this.proficiencyBonus.bind(this);
     this.modifiers = this.modifiers.bind(this);
     this.logNext = this.logNext.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
     this.getTarget = this.getTarget.bind(this);
     this.getIndexOf = this.getIndexOf.bind(this);
     this.sendAttack = this.sendAttack.bind(this);
@@ -368,23 +366,6 @@ class ActiveGUI extends React.Component {
     }
   }
 
-  handleChange = (e) => {
-    const value = e.target.value;
-    const name = e.target.name;
-    this.setState({ [name]: value });
-  }
-
-  handleKeyPress = (e) => {
-   if (e.key === "Enter") {
-      //  socket.emit('chat', `${this.props.thisPlayer}: ${this.state.chatBox}`);
-      socket.emit('chat', {
-        speaker: this.props.thisPlayer,
-        msg: this.state.chatBox,
-      });
-      this.setState({chatBox: ''});
-    }
-  }
-  
   currentlyOnlineHandler = (e) => {
     this.setState({showOnline: !this.state.showOnline});
   }
@@ -392,12 +373,6 @@ class ActiveGUI extends React.Component {
   setAcquiringTarget = (objective) => {
     this.setState({acquiringTarget: objective});
   }
-
-  openNewtab = (msg) => {
-    let newChatWindowObj = {
-    };
-  }
-
 
   render () {
     let currentlyOnline = (this.state.showOnline)? Object.keys(this.state.currentlyOnline).map(element => <div>{element.slice(0,8)}</div>) : null;
@@ -410,6 +385,7 @@ class ActiveGUI extends React.Component {
         
         <MagicMenu closeMagicModal={this.closeMagicModal} setAcquiringTarget={this.setAcquiringTarget} getTarget={this.getTarget} thisPlayer={this.props.thisPlayer} activeEntity={this.state.activeEntity} logNext={this.logNext}/>
         <InitiativeCheck closeModal={this.closeModal} adventurerList={this.state.culledList} updateUI={this.updateUI} initiativeList={this.state.initiativeList}/>
+        
         <div class="item1" id="item1override">
           <p id="currentlyOnline" onClick={this.currentlyOnlineHandler}>Currently Online: {currentlyOnlineToggle}{currentlyOnline} </p>
           <p id='loggedInPlayer' onClick={this.props.openAdventurerProfileModal}>Logged in as:
@@ -421,6 +397,7 @@ class ActiveGUI extends React.Component {
           <h1>Turn: {this.state.activeEntity}</h1>
           <h3>{}</h3>
         </div>
+
         <div class="item2">
           Enemy:
           <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.enemyList} activeEntity={this.state.activeEntity}/>
@@ -432,18 +409,20 @@ class ActiveGUI extends React.Component {
         </div>  
 
         <div class="item6">
-          {/* <input type="text" name="chatBox" className='chatbox' onKeyPress={this.handleKeyPress} onChange={this.handleChange} value={this.state.chatBox}></input> */}
           <ChatInput thisPlayer={this.props.thisPlayer}/>
         </div>
+
         <div class="item4"> 
           Party:
           <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.culledList} activeEntity={this.state.activeEntity}/> 
         </div>
+
         <div class="item5">
           <div id="footer">
             <CombatMenu attack={this.attack} openMagicModal={this.openMagicModal} closeMagicModal={this.closeMagicModal} acquiringTarget={this.state.acquiringTarget} />
           </div>
         </div>
+
       </div>
     </div>
     );
