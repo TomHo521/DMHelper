@@ -1585,7 +1585,7 @@ a:hover span:nth-child(4) {
   /* background-color: rgba(179, 18, 18, 0.4); */
   
   color: white;
-  justify-content: space-between;
+  justify-content: left;
   padding-top: 3px; 
   border-radius: 10px;
   width: 97%;
@@ -1599,6 +1599,7 @@ a:hover span:nth-child(4) {
   align-items: center;
   justify-content: left;
   border-bottom: 1px solid white;
+  margin-right: 3px;
   
   /* padding-left: 40px;
   padding-right: 40px; */

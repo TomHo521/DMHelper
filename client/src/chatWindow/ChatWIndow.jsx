@@ -1,6 +1,7 @@
 import React from 'react';
 import TabBar from './tabBar';
-import CombatLogEntry from '../CombatLogEntry';
+import CombatTab from './CombatTab';
+import StatusLogTab from './StatusLogTab';
 
 class ChatWindow extends React.Component {
 
@@ -9,7 +10,7 @@ class ChatWindow extends React.Component {
 
     this.state = {
       showTabBar: false,
-      activeChat: 'tb3',
+      activeChat: 'combatLog',
     }
 
     this.tabHandler = this.tabHandler.bind(this);
@@ -27,12 +28,23 @@ class ChatWindow extends React.Component {
   }
 
   render () {
+
+    var frontTab; 
     let currentChat = (!(this.state.activeChat in this.props.privateMessage))? null : this.props.privateMessage[this.state.activeChat].log.map(element =>  
       <div name={element.name} className="tabContent">
         {element.speaker +': ' + element.msg}
       </div>);
 
-    let tabBar = (!this.state.showTabBar)? null : <TabBar tabHandler={this.tabHandler}/>
+    if (currentChat) {
+      frontTab = currentChat;
+    } else if (this.state.activeChat === 'statusLog') {
+      frontTab = <StatusLogTab statusLog={this.props.statusLog}/>
+    }
+    else { //presumably === 'combatLog'
+      frontTab = <CombatTab combatLog={this.props.combatLog}/>;
+    }
+  
+    let tabBar = (!this.state.showTabBar)? null : <TabBar tabHandler={this.tabHandler} privateMessage={this.props.privateMessage}/>
 
     return (
       <div>
@@ -41,16 +53,8 @@ class ChatWindow extends React.Component {
           <div className="tabBar-plus" onClick={this.toggleTabBar}>
             {(this.state.showTabBar)? '--' : '+'}
           </div>
-
         </div>
-
-        <div id="tc1" className="tabContent">
-          {this.props.combatLog.map( (combatLogEntry, index) => {
-              return (
-                <CombatLogEntry key={index} message={combatLogEntry.msg}/>)          
-            })}
-        </div>
-        {currentChat}
+        {frontTab}
       </div>
     )
   }

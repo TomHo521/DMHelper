@@ -7,6 +7,7 @@ import MagicMenu from './Menus/magicmenu';
 import InitiativeCheck from './InitiativeCheck';
 import ContextMenu from './Menus/contextmenu';
 import ChatWindow from './chatWindow/ChatWIndow';
+import ChatInput from './displays/ChatInput';
 
 
 //master component which wraps all components with CSS grid
@@ -47,24 +48,24 @@ class ActiveGUI extends React.Component {
       activeEntity: 'Combat not ready yet',
       thisPlayerObj: {},
       combatLog : [{msg: 'Combat Log:'}],
-      statusLog: [{msg: 'Activity Log:'}],
+      statusLog: [{msg: 'Status Log'}],
       // activeChat: 'tb3',
       privateMessage: {
-                'tb3': {
+                'Lia/Midir/Perg': {
                   participants: {
                     'Midir': 'socket id of Midir',
                     'Lia:' : 'socket id of Lia',
                     'Perg' : 'socket id of Perg'
                   },
-                  name: 'tb2',
+                  name: 'Lia/Midir/Perg',
                   log: [{speaker: 'title', msg: 'Lia and Midir Conversation'}, {speaker: 'Lia', msg: 'blah blah blah'}, {speaker: 'Midir', msg: 'beh de beh'}]
                 },
-                'tb4':{
+                'Cassian/Midir':{
                   participants: {
                   'Midir': 'socket id of Midir',
                   'Cassian:' : 'socket id of Lia',
                   },
-                  name: 'tb3',
+                  name: 'Cassian/Midir',
                   log: [{speaker: 'title', msg: 'Midir and Cassian Conversation'}, {speaker: 'Cassian', msg: 'blah blah blah'}, {speaker: 'Midir', msg: 'beh de beh'}]
                 },
       },
@@ -87,8 +88,6 @@ class ActiveGUI extends React.Component {
     let modal = document.getElementById("initWindow");
     modal.style.display = "none";
   }
-
-
 
   openMagicModal = () => {
     let modal = document.getElementById("magicWindow");
@@ -233,8 +232,6 @@ class ActiveGUI extends React.Component {
     //comparing AC
     let attackRoll = this.roll('1d20').total;
     let pB = this.proficiencyBonus(activeP.level);
-
-
 
     let dexMod = this.modifiers(activeP.stats.dex);
     let ac = this.state.enemyList[target].armor_class[1];
@@ -435,7 +432,8 @@ class ActiveGUI extends React.Component {
         </div>  
 
         <div class="item6">
-          <input type="text" name="chatBox" className='chatbox' onKeyPress={this.handleKeyPress} onChange={this.handleChange} value={this.state.chatBox}></input>
+          {/* <input type="text" name="chatBox" className='chatbox' onKeyPress={this.handleKeyPress} onChange={this.handleChange} value={this.state.chatBox}></input> */}
+          <ChatInput thisPlayer={this.props.thisPlayer}/>
         </div>
         <div class="item4"> 
           Party:

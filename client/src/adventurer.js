@@ -3,7 +3,9 @@ export class Adventurer {
 
   constructor() {
 
-  
+  //should have all the player state information, which could be instantiated
+  //from an object?
+
   }
 
   proficiencyBonus = (level) => {

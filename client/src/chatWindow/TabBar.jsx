@@ -3,23 +3,21 @@ import React from 'react';
 
 function TabBar(props) {
 
+  let pmBar = Object.keys(props.privateMessage).map((objKey, index) => 
+      <div name={objKey} className="tabLevel" onClick={props.tabHandler} key={index}>
+        {props.privateMessage[objKey].name}
+      </div>
+  );
+
   return (
   <div className="tabBar">
-    <div name="tb1" className="tabLevel" onClick={props.tabHandler}>
-    Combat Window
+    <div name="combatLog" className="tabLevel" onClick={props.tabHandler}>
+    Combat Log
     </div>
-    <div name="tb2" className="tabLevel" onClick={props.tabHandler}>
-      Lia/Perg
+    <div name="statusLog" className="tabLevel" onClick={props.tabHandler}>
+      Status Log
     </div>
-    <div name="tb3" className="tabLevel" onClick={props.tabHandler}>
-      Cassian-Po
-    </div>
-    <div name="tb4" className="tabLevel" onClick={props.tabHandler}>
-      Midir-Zovinar-Lia
-    </div>
-    <div name="tb5" className="tabLevel" onClick={props.tabHandler}>
-      tab 5
-    </div>
+    {pmBar}
   </div>
 );
 }
