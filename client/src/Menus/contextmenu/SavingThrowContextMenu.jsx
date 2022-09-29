@@ -178,7 +178,12 @@ class SavingThrowContextMenu extends React.Component {
 
     message += ` mod: ${modifierBonus} + pb ${pb} for a total of ${roll + modifierBonus + pb}`;
 
-    this.props.logNext(message);
+    let obj = {
+      speaker: 'status',
+      msg: message,
+    };
+
+    this.props.sendChat(obj);
     this.props.closeMenu();
   }
 

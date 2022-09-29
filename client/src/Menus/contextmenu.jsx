@@ -76,9 +76,9 @@ class ContextMenu extends React.Component {
           left: xPos,
         }}>
 
-          <DiceRollContextMenu thisPlayer={this.props.thisPlayer} closeMenu={this.closeMenu} logNext={this.props.logNext}/>
-          <SkillCheckContextMenu  thisPlayer={this.props.thisPlayer} thisPlayerObj={this.props.thisPlayerObj} closeMenu={this.closeMenu} logNext={this.props.logNext}/>
-          <SavingThrowContextMenu thisPlayer={this.props.thisPlayer} thisPlayerObj={this.props.thisPlayerObj} closeMenu={this.closeMenu} logNext={this.props.logNext}/>
+          <DiceRollContextMenu thisPlayer={this.props.thisPlayer} closeMenu={this.closeMenu} logNext={this.props.logNext} sendChat={this.props.sendChat} />
+          <SkillCheckContextMenu  thisPlayer={this.props.thisPlayer} thisPlayerObj={this.props.thisPlayerObj} closeMenu={this.closeMenu} sendChat={this.props.sendChat} logNext={this.props.logNext}/>
+          <SavingThrowContextMenu thisPlayer={this.props.thisPlayer} thisPlayerObj={this.props.thisPlayerObj} closeMenu={this.closeMenu} sendChat={this.props.sendChat} logNext={this.props.logNext}/>
         </div>
       </Draggable>
       )

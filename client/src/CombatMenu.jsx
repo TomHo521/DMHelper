@@ -4,7 +4,7 @@ import BonusActionMenu from './Menus/bonusAction';
 
 
 
-class Combat extends React.Component {
+class CombatMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -52,4 +52,4 @@ class Combat extends React.Component {
   }
 }
 
-export default Combat;
+export default CombatMenu;

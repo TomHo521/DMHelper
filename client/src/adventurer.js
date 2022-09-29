@@ -1,33 +1,11 @@
 
-export class DMMath {
+export class Adventurer {
 
-  constructor(enemy, adventurers) {
+  constructor() {
 
-    this.enemyObj = enemy;
-    this.adventurersObj = adventurers;
-
-    this.enemyList = [];
-    this.adventurerList = [];
-
-  }
-
-  getIndexOf = (name, array) => {
-    for (var i = 0; i < array.length; i++) {
-      if (array[i].name === name) {
-        return i;
-      }
-    }
-    return -1;
-  }
   
-  generateIndex = (list) => {
-    let indexObj = {}
-    for (var i = 0; i < list.length; i++) {
-      indexObj[list[i].name] = i;
-    }
-    return indexObj;
   }
-  
+
   proficiencyBonus = (level) => {
     return Math.floor((2 + (level - 1))/4);
   }

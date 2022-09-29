@@ -1,12 +1,12 @@
 import React from 'react';
 import PartyList from './partylist';
-import Combat from './combat.jsx';
+import CombatMenu from './CombatMenu';
 import adventurerList from '../../test/players.js';
 import enemyList from '../../test/enemies.js';
-import CombatLogEntry from './combatlog';
 import MagicMenu from './Menus/magicmenu';
 import InitiativeCheck from './InitiativeCheck';
 import ContextMenu from './Menus/contextmenu';
+import ChatWindow from './chatWindow/ChatWIndow';
 
 
 //master component which wraps all components with CSS grid
@@ -36,8 +36,8 @@ class ActiveGUI extends React.Component {
     this.setAcquiringTarget = this.setAcquiringTarget.bind(this);
     this.sendMagicAttack = this.sendMagicAttack.bind(this);
     this.updateState = this.updateState.bind(this);
-    this.tabHandler = this.tabHandler.bind(this);
-    this.toggleTabBar = this.toggleTabBar.bind(this);
+   
+    this.sendChat = this.sendChat.bind(this);
     
 
     this.state = {
@@ -48,7 +48,7 @@ class ActiveGUI extends React.Component {
       thisPlayerObj: {},
       combatLog : [{msg: 'Combat Log:'}],
       statusLog: [{msg: 'Activity Log:'}],
-      activeChat: 'tb3',
+      // activeChat: 'tb3',
       privateMessage: {
                 'tb3': {
                   participants: {
@@ -74,7 +74,6 @@ class ActiveGUI extends React.Component {
       currentlyOnline: {},
       showOnline: true,
       culledList: [],
-      showTabBar: false,
       initiativeList: {'Midir':45, 'Lia':0, 'Zovinar':0, 'Po':0, 'Cassian':0, 'Pergilius von Waxilium':0,}
     };
   }
@@ -89,9 +88,7 @@ class ActiveGUI extends React.Component {
     modal.style.display = "none";
   }
 
-  toggleTabBar = () => {
-    this.setState({showTabBar: !this.state.showTabBar});
-  }
+
 
   openMagicModal = () => {
     let modal = document.getElementById("magicWindow");
@@ -144,6 +141,10 @@ class ActiveGUI extends React.Component {
       culledList: (stateObj.culledList)? stateObj.culledList: this.state.culledList,
       initiativeList: (stateObj.initiativeList)? stateObj.initiativeList: this.state.initiativeList
     });
+  }
+
+  sendChat = (obj) => {
+    socket.emit('chat', obj);
   }
 
   componentDidMount () {
@@ -400,60 +401,14 @@ class ActiveGUI extends React.Component {
     };
   }
 
-  tabHandler = (e) => {
-    let tabClicked = e.target.getAttribute('name');
-    this.setState({activeChat: tabClicked});
-  }
 
   render () {
     let currentlyOnline = (this.state.showOnline)? Object.keys(this.state.currentlyOnline).map(element => <div>{element.slice(0,8)}</div>) : null;
     let currentlyOnlineToggle = (this.state.showOnline)? <span onClick={this.currentlyOnlineHandler}> - </span> : <span onClick={this.currentlyOnlineHandler}> + </span>;
     
-    // chatTab.length should always equal one.
-    // let chatTab = Object.keys(this.state.privateMessage).filter(index => 
-    //   this.state.privateMessage[index].name === this.state.activeChat
-      // console.log(`name ${element.name}, activeChat: ${this.state.activeChat}, log: ${element.log}`)
-    // );
-
-    //my mistake, thought filter was returning the first element, when it was returning an 
-    //array of one element, where the one element is the object in question
-
-    // let currentChat = null;
-
-    // if (chatTab.length > 0) {
-    //   currentChat = chatTab[0].log.map(element =>  
-    //   <div name={element.name} className="tabContent">
-    //     {element.speaker +': ' + element.msg}
-    //   </div>
-    //   );
-    // }
-    let currentChat = (!(this.state.activeChat in this.state.privateMessage))? null : this.state.privateMessage[this.state.activeChat].log.map(element =>  
-        <div name={element.name} className="tabContent">
-          {element.speaker +': ' + element.msg}
-        </div>);
-
-    let tabBar = (!this.state.showTabBar)? null :
-    <div className="tabBar">
-      <div name="tb1" className="tabLevel" onClick={this.tabHandler}>
-      Combat Window
-      </div>
-      <div name="tb2" className="tabLevel" onClick={this.tabHandler}>
-        Midir/Perg
-      </div>
-      <div name="tb3" className="tabLevel" onClick={this.tabHandler}>
-        Midir/Cassian
-      </div>
-      <div name="tb4" className="tabLevel" onClick={this.tabHandler}>
-        Midir-Zovinar-Lia
-      </div>
-      <div name="tb5" className="tabLevel" onClick={this.tabHandler}>
-        tab 5
-      </div>
-    </div>;
-
     return (
       <div>
-        <ContextMenu thisPlayer={this.props.thisPlayer} thisPlayerObj={this.props.thisPlayerObj} logNext={this.logNext}/>
+        <ContextMenu thisPlayer={this.props.thisPlayer} thisPlayerObj={this.props.thisPlayerObj} logNext={this.logNext} sendChat={this.sendChat}/>
       <div class="grid-container">
         
         <MagicMenu closeMagicModal={this.closeMagicModal} setAcquiringTarget={this.setAcquiringTarget} getTarget={this.getTarget} thisPlayer={this.props.thisPlayer} activeEntity={this.state.activeEntity} logNext={this.logNext}/>
@@ -475,30 +430,9 @@ class ActiveGUI extends React.Component {
           <button onClick={this.openModal}>Roll Initiative</button>
         </div>
 
-
         <div class="item3" id="chatWindow">
-          <div className="tabBar-container">
-            {tabBar}
-            <div className="tabBar-plus" onClick={this.toggleTabBar}>
-              {(this.state.showTabBar)? '--' : '+'}
-            </div>
-
-          </div>
-
-          <div id="tc1" className="tabContent">
-            {this.state.combatLog.map( (combatLogEntry, index) => {
-                return (
-                  <CombatLogEntry key={index} message={combatLogEntry.msg}/>)          
-              })}
-          </div>
-          {currentChat}
-          
-
-      
+          <ChatWindow combatLog={this.state.combatLog} statusLog={this.state.statusLog} privateMessage={this.state.privateMessage}/>
         </div>  
-
-
-
 
         <div class="item6">
           <input type="text" name="chatBox" className='chatbox' onKeyPress={this.handleKeyPress} onChange={this.handleChange} value={this.state.chatBox}></input>
@@ -509,7 +443,7 @@ class ActiveGUI extends React.Component {
         </div>
         <div class="item5">
           <div id="footer">
-            <Combat attack={this.attack} openMagicModal={this.openMagicModal} closeMagicModal={this.closeMagicModal} acquiringTarget={this.state.acquiringTarget} />
+            <CombatMenu attack={this.attack} openMagicModal={this.openMagicModal} closeMagicModal={this.closeMagicModal} acquiringTarget={this.state.acquiringTarget} />
           </div>
         </div>
       </div>

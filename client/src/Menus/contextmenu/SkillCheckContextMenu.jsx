@@ -214,7 +214,18 @@ class SkillCheckContextMenu extends React.Component {
 
     message += ` mod: ${modifierBonus} + pb ${pb} for a total of ${roll + modifierBonus + pb}`;
 
-    this.props.logNext(message);
+    //this.props.logNext(message);
+    // socket.emit('chat', {
+    //   speaker: 'status',
+    //   msg: message,
+    // });
+    let obj = {
+      speaker: 'status',
+      msg: message,
+    };
+
+    this.props.sendChat(obj);
+
     this.props.closeMenu();
   }
 

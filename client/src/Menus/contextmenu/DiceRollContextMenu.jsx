@@ -1,4 +1,5 @@
 import React from 'react';
+import { roll as importRoll } from '../../../../server/DMMath';
 
 class DiceRollContextMenu extends React.Component {
   constructor(props) {
@@ -37,8 +38,15 @@ class DiceRollContextMenu extends React.Component {
 
   diceSelect = (e) => {
     let dice = e.target.getAttribute('name')
-    let message = this.props.thisPlayer + ` rolls (${dice}): ` + this.roll(dice).total;
-    this.props.logNext(message);
+    // let message = this.props.thisPlayer + ` rolls (${dice}): ` + this.roll(dice).total;
+    let message = this.props.thisPlayer + ` rolls (${dice}): ` + importRoll(dice).total;
+    
+    let obj = {
+      speaker: 'status',
+      msg: message,
+    };
+
+    this.props.sendChat(obj);
     this.props.closeMenu();
   }
 

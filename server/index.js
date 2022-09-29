@@ -204,18 +204,6 @@ io.on('connection', (socket) => {
     });
         
     socket.on('chat', (message) => {
-      //check for private message
-      // let sender = '';
-      // let delimterBegins = message.indexOf(':');
-      // console.log('message: ', message);
-
-      // if (delimterBegins === -1) {
-      //   io.emit('chat', message );
-      // } 
-      // else {
-      //   sender = message.substring(0, delimterBegins + 2);
-      //   message = message.slice(delimterBegins+2);
-   
         if (message.msg.substring(0,3) === '/w ') {
           let pmDestinations = message.msg.split(" ");
           let counter = 1;
@@ -223,24 +211,20 @@ io.on('connection', (socket) => {
           while ((pmDestinations[counter] in masterTurnList.currentlyOnline) && (counter < pmDestinations.length)) {
             counter++;
           }
-
           let pmMessage = {
               sender: masterTurnList.socketList[socket.id],
               roomID: 'tb3',
-              chatObj: sender + '(pm): ' + pmDestinations.slice(counter).join(' '),
+              chatObj: message.speaker + '(pm): ' + pmDestinations.slice(counter).join(' '),
             };
-
           for (var k = 1; k < counter; k++) {
             if (pmDestinations[k] in masterTurnList.currentlyOnline) {
               io.to(masterTurnList.currentlyOnline[pmDestinations[k]]).emit('pm', pmMessage);
             }
           }
-          console.log('final pmMessage formatted: ', pmMessage.chatObj);
           io.to(socket.id).emit('pm', pmMessage);        
         } else {
           io.emit('chat',message);
         }     
-     // }
     });
 
     socket.on('disconnect', (msg) => {
