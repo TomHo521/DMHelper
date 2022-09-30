@@ -1618,8 +1618,27 @@ a:hover span:nth-child(4) {
   overflow: hidden;
 
   /* box-shadow: 3px 3px 5px 0px rgba(175, 165, 151); */
-  
 }
+.tabLevelSelected {
+  position: relative;
+  top: -13px; 
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  margin-right: 3px;
+  width: 18%;
+  padding-left: 2px;
+  border-radius: 3px;
+  font-family: "Bellefair", serif;
+  text-transform: uppercase;
+  font-size: 14px;
+  border-bottom: 1px solid white;
+  border-right: 1px solid white;
+  overflow: hidden;
+  background-color: #16af7a;
+  color: white;
+}
+
 .tabLevel:hover {
   background-color: rgba(245, 222, 179, .7);
 }
@@ -1646,4 +1665,24 @@ a:hover span:nth-child(4) {
   background-color: wheat;
   border: 1px solid orange;
   border-radius: 2px;
+}
+
+.tabContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; 
+  width: 100%;
+}
+
+.tabLeftSide {
+
+}
+
+.tabRightSide {
+  text-transform: lowercase;
+  position: relative;
+  top: -1px;
+  color: white;
+  background-color: red;
+  border-radius: 1px;
 }

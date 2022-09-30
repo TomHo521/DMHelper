@@ -10,10 +10,10 @@ class ChatWindow extends React.Component {
 
     this.state = {
       showTabBar: false,
-      activeChat: 'combatLog',
+      //activeChat: 'combatLog',
     }
 
-    this.tabHandler = this.tabHandler.bind(this);
+    //this.tabHandler = this.tabHandler.bind(this);
     this.toggleTabBar = this.toggleTabBar.bind(this);
   }
 
@@ -21,30 +21,24 @@ class ChatWindow extends React.Component {
     this.setState({showTabBar: !this.state.showTabBar});
   }
 
-  tabHandler = (e) => {
-    let tabClicked = e.target.getAttribute('name');
-    this.setState({activeChat: tabClicked});
-    console.log('tab clicked: ', e.target.getAttribute('name'));
-  }
-
   render () {
 
     var frontTab; 
-    let currentChat = (!(this.state.activeChat in this.props.privateMessage))? null : this.props.privateMessage[this.state.activeChat].log.map(element =>  
+    let currentChat = (!(this.props.activeChat in this.props.privateMessage))? null : this.props.privateMessage[this.props.activeChat].log.map(element =>  
       <div name={element.name} className="tabContent">
-        {element.speaker +': ' + element.msg}
+        {element.speaker + '(pm): ' + element.msg}
       </div>);
 
     if (currentChat) {
       frontTab = currentChat;
-    } else if (this.state.activeChat === 'statusLog') {
+    } else if (this.props.activeChat === 'statusLog') {
       frontTab = <StatusLogTab statusLog={this.props.statusLog}/>
     }
     else { //presumably === 'combatLog'
       frontTab = <CombatTab combatLog={this.props.combatLog}/>;
     }
   
-    let tabBar = (!this.state.showTabBar)? null : <TabBar tabHandler={this.tabHandler} privateMessage={this.props.privateMessage}/>
+    let tabBar = (!this.state.showTabBar)? null : <TabBar activeChat={this.props.activeChat} tabHandler={this.props.setActiveChat} privateMessage={this.props.privateMessage} closeTab={this.props.closeTab} deleteTab={this.props.deleteTab}/>
 
     return (
       <div>

@@ -23,7 +23,7 @@ var masterTurnList = {
 
 var chatRoomStore = {
 
-}
+};
 
 var initiativeList = {};
 var checkList = {};
@@ -204,27 +204,55 @@ io.on('connection', (socket) => {
     });
         
     socket.on('chat', (message) => {
-        if (message.msg.substring(0,3) === '/w ') {
-          let pmDestinations = message.msg.split(" ");
-          let counter = 1;
-          //determine where the recipient list ends and where the message begins.
-          while ((pmDestinations[counter] in masterTurnList.currentlyOnline) && (counter < pmDestinations.length)) {
-            counter++;
+
+      if (message.type === 'pm') {
+        message.sender = masterTurnList.socketList[socket.id];
+
+        if (!(message.roomID in chatRoomStore)) {
+          chatRoomStore[message.roomID] = message.recipients;
+        }
+
+        Object.keys(chatRoomStore[message.roomID]).forEach(ele => {
+          if (ele in masterTurnList.currentlyOnline) {
+            io.to(masterTurnList.currentlyOnline[ele]).emit('pm', message);
           }
-          let pmMessage = {
-              sender: masterTurnList.socketList[socket.id],
-              roomID: 'tb3',
-              chatObj: message.speaker + '(pm): ' + pmDestinations.slice(counter).join(' '),
-            };
-          for (var k = 1; k < counter; k++) {
-            if (pmDestinations[k] in masterTurnList.currentlyOnline) {
-              io.to(masterTurnList.currentlyOnline[pmDestinations[k]]).emit('pm', pmMessage);
-            }
-          }
-          io.to(socket.id).emit('pm', pmMessage);        
-        } else {
-          io.emit('chat',message);
-        }     
+        })
+
+        // for (ele in message.recipients) {
+        //   if (ele in masterTurnList.currentlyOnline) {
+        //     io.to(masterTurnList.currentlyOnline[ele]).emit('pm', message);
+        //   } 
+        // }
+        //we also message back the sender
+        // no need to send back to sender, sender is now part of recipient list.
+        // io.to(socket.id).emit('pm', message);        
+      } else {
+        io.emit('chat', message);
+      }
+
+      
+
+        // if (message.msg.substring(0,3) === '/w ') {
+        //   let pmDestinations = message.msg.split(" ");
+        //   let counter = 1;
+        //   //determine where the recipient list ends and where the message begins.
+        //   while ((pmDestinations[counter] in masterTurnList.currentlyOnline) && (counter < pmDestinations.length)) {
+        //     counter++;
+        //   }
+        //   let pmMessage = {
+        //       sender: masterTurnList.socketList[socket.id],
+        //       roomID: 'tb3',
+        //       chatObj: message.speaker + '(pm): ' + pmDestinations.slice(counter).join(' '),
+        //     };
+        //   for (var k = 1; k < counter; k++) {
+        //     if (pmDestinations[k] in masterTurnList.currentlyOnline) {
+        //       io.to(masterTurnList.currentlyOnline[pmDestinations[k]]).emit('pm', pmMessage);
+        //     }
+        //   }
+        //   io.to(socket.id).emit('pm', pmMessage);        
+        // } else {
+          // io.emit('chat',message);
+        //}     
     });
 
     socket.on('disconnect', (msg) => {

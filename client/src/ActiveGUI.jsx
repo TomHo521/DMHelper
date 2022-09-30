@@ -37,8 +37,10 @@ class ActiveGUI extends React.Component {
     this.updateState = this.updateState.bind(this);
    
     this.sendChat = this.sendChat.bind(this);
+    this.closeTab = this.closeTab.bind(this);
+    this.deleteTab = this.deleteTab.bind(this);
+    this.setActiveChat = this.setActiveChat.bind(this);
     
-
     this.state = {
       adventurerList : adventurerList,
       enemyList : enemyList,
@@ -50,21 +52,23 @@ class ActiveGUI extends React.Component {
       // activeChat: 'tb3',
       privateMessage: {
                 'Lia/Midir/Perg': {
-                  participants: {
+                  recipients: {
                     'Midir': 'socket id of Midir',
                     'Lia:' : 'socket id of Lia',
                     'Perg' : 'socket id of Perg'
                   },
                   name: 'Lia/Midir/Perg',
-                  log: [{speaker: 'title', msg: 'Lia and Midir Conversation'}, {speaker: 'Lia', msg: 'blah blah blah'}, {speaker: 'Midir', msg: 'beh de beh'}]
+                  log: [{speaker: 'title', msg: 'Lia and Midir Conversation'}, {speaker: 'Lia', msg: 'blah blah blah'}, {speaker: 'Midir', msg: 'beh de beh'}],
+                  visible: true,
                 },
                 'Cassian/Midir':{
-                  participants: {
+                  recipients: {
                   'Midir': 'socket id of Midir',
                   'Cassian:' : 'socket id of Lia',
                   },
                   name: 'Cassian/Midir',
-                  log: [{speaker: 'title', msg: 'Midir and Cassian Conversation'}, {speaker: 'Cassian', msg: 'blah blah blah'}, {speaker: 'Midir', msg: 'beh de beh'}]
+                  log: [{speaker: 'title', msg: 'Midir and Cassian Conversation'}, {speaker: 'Cassian', msg: 'blah blah blah'}, {speaker: 'Midir', msg: 'beh de beh'}],
+                  visible: true,
                 },
       },
       turnList: [],
@@ -73,6 +77,7 @@ class ActiveGUI extends React.Component {
       currentlyOnline: {},
       showOnline: true,
       culledList: [],
+      activeChat: 'combatLog',
       initiativeList: {'Midir':45, 'Lia':0, 'Zovinar':0, 'Po':0, 'Cassian':0, 'Pergilius von Waxilium':0,}
     };
   }
@@ -192,12 +197,20 @@ class ActiveGUI extends React.Component {
     });
 
     socket.on('pm', (msg) => {
-      this.logNext(msg.chatObj);
-      
+
+      // we are no longer providing chatObj
+      msg.chatObj = {
+        speaker: msg.speaker,
+        msg: msg.msg,
+      };
+     
+      console.log('pre second whisper check ', msg.roomID);
       if (msg.roomID in this.state.privateMessage) {
+        console.log('post second whisper check ', msg.roomID);
+        console.log(Object.keys(this.state.privateMessage));
         // let newObj = this.state.privateMessage[msg.roomID];
         // newObj.log.push(msg.chatObj);
-        let newLogObj = this.state.privateMessage[msg.roomID];
+        let newLogObj = this.state.privateMessage[msg.roomID].log;
         newLogObj.push(msg.chatObj);
 
         this.setState(prevState => ({
@@ -212,15 +225,46 @@ class ActiveGUI extends React.Component {
 
       } else {
 
+        //create new message log, with the embedded message as the first.
+        let newLog = [{speaker: msg.speaker, msg: msg.msg}];
+        //we augment the message obj with the log.  
+        msg.log = newLog;
+        msg.visible = true;
+
         this.setState(prevState => ({
           privateMessage: {
             ...prevState.privateMessage,
-            [msg.roomID]: msg.chatObj,
+            [msg.roomID]: msg,
           }
         })); 
       }
     })
   }
+
+  deleteTab = (roomID) => {
+    if (roomID in this.state.privateMessage) {
+      let privateMessage = this.state.privateMessage;
+      delete privateMessage[roomID];
+      this.setState({privateMessage: privateMessage});
+    }
+  }
+
+  closeTab = (roomID) => {
+    console.log('closeTab from activeGUI: ', roomID);
+    console.log('this.state.privateMessage[roomID]: ',this.state.privateMessage[roomID]);
+
+    this.setState(prevState => ({
+      privateMessage: {
+        ...prevState.privateMessage,
+        [roomID]:{
+          ...prevState.privateMessage[roomID],
+          visible: false,
+        }
+      }
+    }));
+  }
+
+
 
   sendAttack = (target) => {
     let activeP = this.state.thisPlayerObj;
@@ -374,6 +418,12 @@ class ActiveGUI extends React.Component {
     this.setState({acquiringTarget: objective});
   }
 
+  setActiveChat = (e) => {  
+    let tabClicked = e.target.getAttribute('name');
+    this.setState({activeChat: tabClicked});
+    console.log('tab clicked: ', e.target.getAttribute('name'));
+  }
+
   render () {
     let currentlyOnline = (this.state.showOnline)? Object.keys(this.state.currentlyOnline).map(element => <div>{element.slice(0,8)}</div>) : null;
     let currentlyOnlineToggle = (this.state.showOnline)? <span onClick={this.currentlyOnlineHandler}> - </span> : <span onClick={this.currentlyOnlineHandler}> + </span>;
@@ -405,11 +455,10 @@ class ActiveGUI extends React.Component {
         </div>
 
         <div class="item3" id="chatWindow">
-          <ChatWindow combatLog={this.state.combatLog} statusLog={this.state.statusLog} privateMessage={this.state.privateMessage}/>
+          <ChatWindow combatLog={this.state.combatLog} statusLog={this.state.statusLog} privateMessage={this.state.privateMessage} closeTab={this.closeTab} deleteTab={this.deleteTab} setActiveChat={this.setActiveChat} activeChat={this.state.activeChat}/>
         </div>  
-
         <div class="item6">
-          <ChatInput thisPlayer={this.props.thisPlayer}/>
+          <ChatInput thisPlayer={this.props.thisPlayer} currentlyOnline={this.state.currentlyOnline} activeChat={this.state.activeChat}/>
         </div>
 
         <div class="item4"> 
