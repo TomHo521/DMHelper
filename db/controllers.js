@@ -1,9 +1,24 @@
 const pool = require('./models.js');
 var format = require('pg-format');
 
+
+//get all adventurers
+
+const getAllAdventurers = function() {
+  let sql = format('SELECT * FROM %I ', "Adventurer");
+
+  return pool.query(sql)
+    .then(res => {
+      return JSON.stringify(res.rows, null, 2);
+    })
+    .catch(err => {
+      return err;
+    });
+};
+
 // database interaction to get all the users in the users table.
 const getUsers = function() {
-  let sql = format('SELECT * FROM %I ', "BOC_Users");
+  let sql = format('SELECT * FROM %I ', "Adventurer");
 
   return pool.query(sql)
     .then(res => {
@@ -151,6 +166,7 @@ const removeOrder = function (obj_param) {
 
 module.exports = {
   getUsers,
+  getAllAdventurers,
   // getAllSessions,  DEPRECATED
   // getUserSession,  DEPRECATED
   createNewSession,

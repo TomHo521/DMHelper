@@ -1,5 +1,88 @@
 
+DROP DATABASE IF EXISTS "DMHelper";
 
+CREATE DATABASE "DMHelper";
+\c "DMHelper";
+
+CREATE TABLE "Adventurer" (
+	id serial primary key,
+	title varchar(255),
+	lvl smallint,
+	race varchar(50),
+	class varchar(25),
+	currenthp smallint,
+	maxhp smallint,
+	height smallint,
+	mass smallint,
+	weapon varchar(100),
+	armor varchar(100),
+	ac smallint,
+	speed smallint,
+	xp integer,
+	currentmp smallint,
+	maxmp smallint,
+	x smallint,
+	y smallint,
+	z smallint,
+	strength smallint,
+	constitution smallint,
+	charisma smallint,
+	dexterity smallint,
+	wisdom smallint,
+	intellect smallint,
+	equipment varchar(255),
+	inventory varchar(255),
+	class_selections varchar(255),
+	gold integer);
+
+
+CREATE TABLE "Adventurer-invariant-stat" (
+id SERIAL PRIMARY KEY,
+player_name varchar(255),
+current_hp smallint,
+max_hp smallint,
+ss varchar(25),
+weapon varchar(255),
+armor_class varchar(255),
+speed smallint,
+tagline varchar(255),
+lvl smallint,
+class varchar(25),
+race varchar(25),
+height varchar(25),
+player_weight varchar(25),
+gold integer,
+xp integer,
+player_location varchar(255),
+spell_modifier varchar(15),
+class_traits text,
+equipped varchar(255)
+);
+
+
+CREATE TABLE "Adventurer-stat" (
+	id SERIAL PRIMARY KEY,
+	adventurer_id INTEGER,
+	strength SMALLINT,
+	constitution SMALLINT,
+	charisma SMALLINT,
+	dexterity SMALLINT,
+	wisdom SMALLINT,
+	intellect SMALLINT
+);
+
+CREATE TABLE "Adventurer-longstat" (
+	id SERIAL PRIMARY KEY,
+	adventurer_id INTEGER,
+	inventory TEXT,
+	saving_throw TEXT,
+	skills TEXT,
+	attack varchar(255),
+	weapons_prof varchar(255),
+	armor_prof varchar(255),
+	rest_level smallint,
+	position varchar(27)
+);
 
 /* new SQL statements */
 
@@ -93,75 +176,42 @@ CREATE INDEX idx_Questions_product_id ON "Questions" (product_id);
 
 -- USE DATABASE "DMHelper";
 
-CREATE TABLE Adventurer (
-id SERIAL,
-title varchar(255),
-lvl smallint,
-race varchar(50),
-class varchar(25),
-currenthp smallint,
-maxhp smallint,
-height integer,
-mass integer,
-weapon varchar(255),
-armor varchar(255),
-ac smallint,
-speed smallint,
-xp integer,
-currentmp integer,
-maxmp integer,
-x smallint,
-y smallint,
-z smallint,
-strength smallint,
-constitution smallint,
-charisma smallint,
-dexterity smallint,
-wisdom smallint,
-intellect smallint,
-equipment varchar(255),
-inventory varchar(255),
-class_selections varchar(255),
-gold integer,
-primary key(id));
 
-
-
-INSERT INTO Adventurer (title, lvl, race, class, currenthp, maxhp, height, 
+INSERT INTO "Adventurer" (title, lvl, race, class, currenthp, maxhp, height, 
 mass, weapon, armor, ac, speed, xp, currentmp, maxmp, x, y, z, strength, 
 constitution, charisma, dexterity, wisdom, intellect, equipment, inventory, 
 class_selections, gold) VALUES ('Midir', 3, 'human', 'warlock', 45, 55, 68, 160,
 'demon blade 1d6', 'cloth armor', 15, 30, 454, 2, 4, 0, 0, 0, 15, 15, 15, 15, 15,
 15, 'explorer pack', '5 potions', 'none yet', 5); 
 
-INSERT INTO Adventurer (title, lvl, race, class, currenthp, maxhp, height, mass, weapon, armor, ac, speed, xp, currentmp, maxmp, x, y, z, strength, constitution, charisma, dexterity, wisdom, intellect, equipment, 
+INSERT INTO "Adventurer" (title, lvl, race, class, currenthp, maxhp, height, mass, weapon, armor, ac, speed, xp, currentmp, maxmp, x, y, z, strength, constitution, charisma, dexterity, wisdom, intellect, equipment, 
 inventory, class_selections, gold) 
 VALUES('Zovinar', 3, 'human', 'fighter', 45, 55, 68, 160, 'longsword 1d8', 
 'chain mail', 15, 30, 454, 2, 4, 0, 0, 0, 15, 15, 15, 15, 15, 15, 
 'dungeoneer pack', '5 potions', 'none yet', 5); 
 
-INSERT INTO Adventurer (title, lvl, race, class, currenthp, maxhp, height, mass,
+INSERT INTO "Adventurer" (title, lvl, race, class, currenthp, maxhp, height, mass,
  weapon, armor, ac, speed, xp, currentmp, maxmp, x, y, z, strength, constitution,
 charisma, dexterity, wisdom, intellect, equipment, inventory, class_selections, 
 gold) VALUES ('Pergilius Von Waxilium', 3, 'human', 'bard', 45, 55, 68, 160, 
 'flute of questionable decency 1d7', 'leather armor', 15, 30, 454, 2, 4, 0, 0, 
 0, 15, 15, 15, 15, 15, 15, 'health pack', '5 potions', 'none yet', 5); 
 
-INSERT INTO Adventurer (title, lvl, race, class, currenthp, maxhp, height, mass,
+INSERT INTO "Adventurer" (title, lvl, race, class, currenthp, maxhp, height, mass,
  weapon, armor, ac, speed, xp, currentmp, maxmp, x, y, z, strength, constitution,
 charisma, dexterity, wisdom, intellect, equipment, inventory, class_selections,
  gold) VALUES ('Po', 3, 'human', 'bard', 45, 55, 68, 160, 'fists of fury 1d6', 
  'leather armor', 15, 30, 454, 2, 4, 0, 0, 0, 15, 15, 15, 15, 15, 15, 
  'dungeoneer pack', '5 potions', 'none yet', 5); 
 
-INSERT INTO Adventurer (title, lvl, race, class, currenthp, maxhp, height, mass,
+INSERT INTO "Adventurer" (title, lvl, race, class, currenthp, maxhp, height, mass,
  weapon, armor, ac, speed, xp, currentmp, maxmp, x, y, z, strength, constitution,
 charisma, dexterity, wisdom, intellect, equipment, inventory, class_selections, 
 gold) VALUES ('Cassian', 3, 'elf', 'rogue',  45, 55, 68, 160, 
 'hand crossbow 1d6', 'leather armor', 15, 30, 454, 2, 4, 0, 0, 0, 15, 15, 15, 
 15, 15, 15, 'bag of tricks', '5 potions', 'none yet', 5); 
 
-INSERT INTO Adventurer (title, lvl, race, class, currenthp, maxhp, height, mass,
+INSERT INTO "Adventurer" (title, lvl, race, class, currenthp, maxhp, height, mass,
  weapon, armor, ac, speed, xp, currentmp, maxmp, x, y, z, strength, constitution,
   charisma, dexterity, wisdom, intellect, equipment, inventory, class_selections,
 	 gold) VALUES ('Lia', 3, 'human', 'fighter',  45, 55, 68, 160, 'longsword 1d8',
