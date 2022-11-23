@@ -505,7 +505,7 @@ tbody::after {
 }
 
 .flex-container > div {
-  background-color: #dbbf8b;
+  
   padding: 5px;
   width: 100px;
   margin: 12px;
@@ -1419,11 +1419,28 @@ a:hover span:nth-child(4) {
   box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);
   border-radius: 5px;
   border: 1px solid rgb(25, 5, 5);
-
+  background-color: #dbbf8b;
+  color:rgb(0, 0, 132);
 }
 
+.initRollAbsent {
+  box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);
+  border-radius: 5px;
+  border: 1px solid rgb(25, 5, 5);
+  background-color: rgb(40, 39, 39);
+  color:rgb(226, 0, 0);
+  display:flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  
+
+  /* color: yellow; */
+}
+
+
+
 .nameColor {
-  color:rgb(0, 0, 132);
+  /* color:rgb(0, 0, 132); */
 }
 
 .position-container {
@@ -1686,3 +1703,4 @@ a:hover span:nth-child(4) {
   background-color: red;
   border-radius: 1px;
 }
+

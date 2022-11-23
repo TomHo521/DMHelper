@@ -1,5 +1,6 @@
 import React from 'react';
 import SinglePlayerInitiative from './singleplayerinitiative.jsx';
+import SinglePlayerOffline from './SinglePlayerOffline.jsx';
 
 class InitiativeCheck extends React.Component {
   constructor(props) {
@@ -17,6 +18,8 @@ class InitiativeCheck extends React.Component {
     socket.on('rollReceived', (message) => {
       this.props.updateUI();
     });
+
+    
   }
 
   rollInitAndSend = (e) => {
@@ -30,8 +33,20 @@ class InitiativeCheck extends React.Component {
     let doneTag = (this.state.show)? <div class="alignCenterHeader">all players accounted for!</div> : null;
   
     let renderList = Object.keys(this.props.initiativeList).sort().map(element => 
-      <SinglePlayerInitiative player={{name: element, roll: this.props.initiativeList[element]}} rollInitAndSend={this.rollInitAndSend}/>
+      {
+        if (element in this.props.currentlyOnline) {
+          return <SinglePlayerInitiative player={{name: element, roll: this.props.initiativeList[element]}} rollInitAndSend={this.rollInitAndSend}/>
+        } 
+        return <SinglePlayerOffline player={{name: element}}/>
+        
+      
+      }
     );
+
+    // let renderList = Object.keys(this.props.culledList).sort().map(element => 
+    //   <SinglePlayerInitiative player={{name: element, roll: this.props.culledList[element]}} rollInitAndSend={this.rollInitAndSend}/>
+    // );
+    console.log('currentlyonline from init: ', Object.keys(this.props.currentlyOnline));
 
     return (
       <div className="modal" id="initWindow">

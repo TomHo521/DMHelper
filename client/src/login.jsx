@@ -34,8 +34,18 @@ class Login extends React.Component {
           <div className='loginHeader'>DM Helper</div><br></br>
           <div className='loginHeader'> ver 1.0</div><br></br>
           
-              <label>Login:</label>
-              <input className="field_class"  name="thisPlayerField" placeholder="Login" autofocus value={this.state.thisPlayer} onChange={this.handleChange}></input> 
+              <label>Login:
+              <input className="field_class" list="players" name="thisPlayerField" placeholder="Login" autofocus value={this.state.thisPlayer} onChange={this.handleChange}></input> 
+              </label>
+              <datalist id="players">
+                <option value="Po"></option>
+                <option value="Lia"></option>
+                <option value="Midir"></option>
+                <option value="Cassian"></option>
+                <option value="Zovinar"></option>
+                <option value="Pergilius Von Waxilium"></option>
+              </datalist>
+
               <label>Password:</label>
               <input id="pass" className="field_class" name="password" placeholder="Password" value={this.state.password} onChange={this.handleChange}></input>
 

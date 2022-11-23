@@ -4,7 +4,7 @@ import CombatMenu from './CombatMenu';
 import adventurerList from '../../test/players.js';
 import enemyList from '../../test/enemies.js';
 import MagicMenu from './Menus/magicmenu';
-import InitiativeCheck from './InitiativeCheck';
+import InitiativeCheck from './Menus/RollInitiative/InitiativeCheck';
 import ContextMenu from './Menus/contextmenu';
 import ChatWindow from './chatWindow/ChatWIndow';
 import ChatInput from './displays/ChatInput';
@@ -425,6 +425,7 @@ class ActiveGUI extends React.Component {
   }
 
   render () {
+   
     let currentlyOnline = (this.state.showOnline)? Object.keys(this.state.currentlyOnline).map(element => <div>{element.slice(0,8)}</div>) : null;
     let currentlyOnlineToggle = (this.state.showOnline)? <span onClick={this.currentlyOnlineHandler}> - </span> : <span onClick={this.currentlyOnlineHandler}> + </span>;
     
@@ -434,9 +435,10 @@ class ActiveGUI extends React.Component {
       <div class="grid-container">
         
         <MagicMenu closeMagicModal={this.closeMagicModal} setAcquiringTarget={this.setAcquiringTarget} getTarget={this.getTarget} thisPlayer={this.props.thisPlayer} activeEntity={this.state.activeEntity} logNext={this.logNext}/>
-        <InitiativeCheck closeModal={this.closeModal} adventurerList={this.state.culledList} updateUI={this.updateUI} initiativeList={this.state.initiativeList}/>
+        <InitiativeCheck closeModal={this.closeModal} adventurerList={this.state.culledList} currentlyOnline={this.state.currentlyOnline} culledList={this.state.culledList} updateUI={this.updateUI} initiativeList={this.state.initiativeList}/>
         
         <div class="item1" id="item1override">
+          <p></p>
           <p id="currentlyOnline" onClick={this.currentlyOnlineHandler}>Currently Online: {currentlyOnlineToggle}{currentlyOnline} </p>
           <p id='loggedInPlayer' onClick={this.props.openAdventurerProfileModal}>Logged in as:
            <br></br> {this.props.thisPlayer}
@@ -452,6 +454,9 @@ class ActiveGUI extends React.Component {
           Enemy:
           <PartyList acquiringTarget={this.state.acquiringTarget} getTarget={this.getTarget} adventurerList={this.state.enemyList} activeEntity={this.state.activeEntity}/>
           <button onClick={this.openModal}>Roll Initiative</button>
+          <div>
+          <button onClick={this.props.openAdventurerEditorModal}>Adventurer Editor</button>
+          </div>
         </div>
 
         <div class="item3" id="chatWindow">

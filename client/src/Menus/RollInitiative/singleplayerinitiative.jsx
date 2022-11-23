@@ -20,8 +20,9 @@ class SinglePlayerInitiative extends React.Component {
     
     let firstName = this.props.player.name.substring(0, 9);
     let roll = (this.props.player.roll)? this.props.player.roll : 0;
+  
     return (
-      <div className="initRollTile">
+      <div className='initRollTile'>
          <div className="nameColor">{firstName} </div>
          <div id="initRoll">{roll}</div>
          <div className="initRoll-button" name={this.props.player.name} onClick={this.props.rollInitAndSend}>Roll Initiative</div>

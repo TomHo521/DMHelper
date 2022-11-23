@@ -2,6 +2,7 @@ node_modules
 FECDeploy.pem
 DNDkey.pem
 SDC_Redis.pem
+DMDeploy.pem
 .env
 ./test/magic.js
 ./test/fighter.js

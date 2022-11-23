@@ -4,12 +4,13 @@ DROP DATABASE IF EXISTS "DMHelper";
 CREATE DATABASE "DMHelper";
 \c "DMHelper";
 
+
 CREATE TABLE "Adventurer" (
-	id serial primary key,
+	adventurer_id SERIAL PRIMARY KEY,
 	title varchar(255),
-	lvl smallint,
+	lvl SMALLINT,
 	race varchar(50),
-	class varchar(25),
+	class varchar(50),
 	currenthp smallint,
 	maxhp smallint,
 	height smallint,
@@ -19,8 +20,8 @@ CREATE TABLE "Adventurer" (
 	ac smallint,
 	speed smallint,
 	xp integer,
-	currentmp smallint,
-	maxmp smallint,
+	currentmp integer,
+	maxmp integer,
 	x smallint,
 	y smallint,
 	z smallint,
@@ -33,34 +34,49 @@ CREATE TABLE "Adventurer" (
 	equipment varchar(255),
 	inventory varchar(255),
 	class_selections varchar(255),
-	gold integer);
+	gold integer
+	);
 
 
-CREATE TABLE "Adventurer-invariant-stat" (
-id SERIAL PRIMARY KEY,
-player_name varchar(255),
-current_hp smallint,
-max_hp smallint,
-ss varchar(25),
-weapon varchar(255),
-armor_class varchar(255),
-speed smallint,
-tagline varchar(255),
-lvl smallint,
-class varchar(25),
-race varchar(25),
-height varchar(25),
-player_weight varchar(25),
-gold integer,
-xp integer,
-player_location varchar(255),
-spell_modifier varchar(15),
-class_traits text,
-equipped varchar(255)
-);
+
+CREATE TABLE "Adventurer-v2" (
+	adventurer_id serial primary key,
+	title varchar(255),
+	tagline varchar(255),
+	lvl smallint,
+	race varchar(50),
+	class varchar(25),
+	currenthp smallint,
+	maxhp smallint,
+	currentss varchar(10),
+	maxss varchar(10),
+	height smallint,
+	mass smallint,
+
+	speed smallint,
+	gold integer
+	xp integer,
+	located varchar(25),
+
+/* future changes: further elaboration at class table */
+	class_id integer,
+
+/* future changes: further elaboration at equipped table */
+	weapon varchar(100),
+	armor varchar(100),
+	ac smallint,
+
+/* further elaboration at stat table */
+	strength smallint,
+	constitution smallint,
+	charisma smallint,
+	dexterity smallint,
+	wisdom smallint,
+	intellect smallint,
+	);
 
 
-CREATE TABLE "Adventurer-stat" (
+CREATE TABLE "stats" (
 	id SERIAL PRIMARY KEY,
 	adventurer_id INTEGER,
 	strength SMALLINT,
@@ -68,21 +84,119 @@ CREATE TABLE "Adventurer-stat" (
 	charisma SMALLINT,
 	dexterity SMALLINT,
 	wisdom SMALLINT,
-	intellect SMALLINT
+	intellect SMALLINT,
 );
 
-CREATE TABLE "Adventurer-longstat" (
+CREATE TABLE "equipped" (
 	id SERIAL PRIMARY KEY,
 	adventurer_id INTEGER,
-	inventory TEXT,
-	saving_throw TEXT,
-	skills TEXT,
-	attack varchar(255),
-	weapons_prof varchar(255),
-	armor_prof varchar(255),
-	rest_level smallint,
-	position varchar(27)
+	weapon varchar(100),
+	weaponStat varchar(5),
+	armor varchar(100),
+	armorStat varchar(5),
 );
+
+CREATE TABLE "inventory" (
+	id SERIAL PRIMARY KEY,
+	adventurer_id INTEGER,
+	item varchar(255),
+	item_id INTEGER,
+);
+
+CREATE TABLE "saving-throw" (
+	id SERIAL PRIMARY KEY,
+	adventurer_id INTEGER,
+	strength SMALLINT,
+	constitution SMALLINT,
+	charisma SMALLINT,
+	dexterity SMALLINT,
+	wisdom SMALLINT,
+	intellect SMALLINT,
+);
+
+CREATE TABLE "skills" (
+	skills_id SERIAL PRIMARY KEY,
+	adventurer_id INTEGER,
+	stat_class varchar(10),
+	stat_name varchar(25),
+	proficiency_class SMALLINT,
+);
+
+CREATE TABLE "master_item_table" (
+	item_id SERIAL PRIMARY KEY,
+	item_description varchar(255),
+)
+
+CREATE TABLE "master_weapon_table" (
+	weapon_id SERIAL PRIMARY KEY,
+	weapon_description varchar(255),
+	weapon_dmg_main varchar(5),
+	weapon_dmg_secondary varchar(5),
+	weapon_effect_main varchar(10),
+	weapon_effect_secondary varchar(10),
+	weapon_global_effect varchar(10),
+	weapon_sell_price integer,
+	weapon_don_cost varchar(25),
+	weapon_doff_cost varchar(25),
+	weapon_handedness varchar(25),
+)
+
+CREATE TABLE "master_armor_table" (
+	armor_id SERIAL PRIMARY KEY,
+	armor_description varchar(255),
+	armor_ac integer,
+	armor_effect_main varchar(10),
+	armor_effect_secondary varchar(10),
+	armor_global_effect varchar(10),
+	armor_sell_price integer,
+	armor_don_cost varchar(25),
+	armor_doff_cost varchar(25),
+	armor_body_type varchar(25),
+)
+
+CREATE TABLE "master_spell_table" (
+	spell_id SERIAL PRIMARY KEY,
+	spell_description varchar(255),
+	spell_dmg_main varchar(5),
+	spell_dmg_secondary varchar(5),
+	spell_effect_main varchar(10),
+	spell_effect_secondary varchar(10),
+	spell_global_effect varchar(10),
+	spell_somatic_cost varchar(25),
+	spell_verbal_cost varchar(25),
+	spell_material_cost varchar(25),
+	spell_casting_cost varchar(25),
+)
+
+/* something like this for each class */
+/* each adventurer later augmented with list of spellIds */
+
+CREATE TABLE "Bard" (
+	spell_id SERIAL PRIMARY KEY,
+	spell_name varchar(100),
+	lvl_obtain smallint,
+	effect varchar(250),
+);
+
+
+CREATE TABLE "party-id" (
+	party_id SERIAL PRIMARY KEY,
+	adventurer_id INTEGER,
+)
+
+
+CREATE TABLE "chat-log" (
+	chatmsg_id SERIAL PRIMARY KEY,
+	party_id INTEGER,
+	msg varchar(255),
+	speaker varchar(50),
+	speaker_id INTEGER,
+	recipient varchar(255),
+	time_said timestamp, 
+)
+
+
+
 
 /* new SQL statements */
 

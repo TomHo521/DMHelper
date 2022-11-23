@@ -1,19 +1,18 @@
 var player1 = {
-  name : 'Pergilius von Waxilium',
+  name : 'Pergilius Von Waxilium',
   hp : [45, 55],
   ss : [[2,2], [0, 1]],
   weapon : ['spear','1d8'],
   armor_class: ['chain mail', 15],
+  speed: 30,
   tagline: "Here to kick ass and check gum...and I'm all outta gum!",
   level: 3,
   class: 'bard',
   race: 'human',
   height: '5ft8',
   weight: '160lbs',
-  gold: 5,
+  gold: 15,
   xp: 454,
-  restlevel: 0,
-  position: [0, 0, 0],
   location: {
     Waxilium: 'Dread Dragonhide Saloon',
   },
@@ -37,16 +36,20 @@ var player1 = {
     wis: 15,
     con: 15,
   },
+  equipped: {
+    weapon: 'spear',
+    weaponStat: '1d6',
+    armor: 'chain mail',
+    armorStat: '15',
+  },
   inventory : {
     'sandwich' : 1,
     'rapier': 1,
   },
   st: {
     str: {
-
     },
     con: {
-
     },
     dex: {
       proficiency: 'bard class',
@@ -99,8 +102,9 @@ var player1 = {
   },
   armorProf: {
     'light armor': 14,
-
   },
+  restlevel: 0,
+  position: [0, 0, 0],
 }
 
 
@@ -110,16 +114,15 @@ var player2 = {
   ss : [],
   weapon : ['fists of fury','1d6'],
   armor_class: ['leather', 15],
+  speed: 30,
   tagline: "Nothing can stand before my Fists of Fury!",
   level: 3,
   class: 'monk',
   race: 'human',
   height: '5ft10',
   weight: '250lbs',
-  gold: 5,
+  gold: 6,
   xp: 454,
-  restlevel: 0,
-  position: [0, 0, 0],
   location: {
     Waxilium: 'Dread Dragonhide Saloon',
   },
@@ -136,15 +139,15 @@ var player2 = {
     wis: 15,
     con: 15,
   },
+  equipped: {
+  },
   inventory : {
     'jug of fire wine' : 1,
   },
   st: {
     str: {
-
     },
     con: {
-
     },
     dex: {
       proficiency: 'bard class',
@@ -197,16 +200,18 @@ var player2 = {
   },
   armorProf: {
     'light armor': 14,
-
   },
+  restlevel: 0,
+  position: [0, 0, 0],
 }
 
 var player3 = {
   name : 'Lia',
   hp : [45, 55],
-  ss : [],
+  ss : [[1,1]],
   weapon : ['Longsword','1d8'],
   armor_class: ['leather', 15],
+  speed:30,
   tagline: "Cut it outttttt!!!",
   level: 3,
   class: 'fighter',
@@ -215,8 +220,6 @@ var player3 = {
   weight: '130lbs',
   gold: 5,
   xp: 454,
-  restlevel: 0,
-  position: [0, 0, 0],
   location: {
     Waxilium: 'Dread Dragonhide Saloon',
   },
@@ -232,6 +235,9 @@ var player3 = {
     dex: 15,
     wis: 15,
     con: 15,
+  },
+  equipped: {
+
   },
   inventory : {
     'celestial locket' : 1,
@@ -294,8 +300,9 @@ var player3 = {
   },
   armorProf: {
     'light armor': 14,
-
   },
+  restlevel: 0,
+  position: [0, 0, 0],
 }
 
 var player4 = {
@@ -304,6 +311,7 @@ var player4 = {
   ss : [],
   weapon : ['Knifes','1d6'],
   armor_class: ['leather', 15],
+  speed: 30,
   tagline: "that kid was stronger than he looked!",
   level: 3,
   class: 'rogue',
@@ -312,8 +320,6 @@ var player4 = {
   weight: '160lbs',
   gold: 5,
   xp: 454,
-  restlevel: 0,
-  position: [0, 0, 0],
   location: {
     Waxilium: 'Dread Dragonhide Saloon',
   },
@@ -330,15 +336,16 @@ var player4 = {
     wis: 15,
     con: 15,
   },
+  equipped: {
+
+  },
   inventory : {
     'bag of tricks' : 1,
   },
   st: {
     str: {
-
     },
     con: {
-
     },
     dex: {
       proficiency: 'bard class',
@@ -394,6 +401,8 @@ var player4 = {
     'light armor': 14,
 
   },
+  restlevel: 0,
+  position: [0, 0, 0],
 }
 
 var player5 = {
@@ -402,6 +411,7 @@ var player5 = {
   ss : [],
   weapon : ['rapier','1d8'],
   armor_class: ['leather', 15],
+  speed: 30,
   tagline: "let me handle this one guys!",
   level: 3,
   class: 'fighter',
@@ -410,8 +420,6 @@ var player5 = {
   weight: '160lbs',
   gold: 5,
   xp: 454,
-  restlevel: 0,
-  position: [0, 0, 0],
   location: {
     Waxilium: 'Dread Dragonhide Saloon',
   },
@@ -428,15 +436,15 @@ var player5 = {
     wis: 15,
     con: 15,
   },
+  equipped: {
+  },
   inventory : {
     'comically large scabbard' : 1,
   },
   st: {
     str: {
-
     },
     con: {
-
     },
     dex: {
       proficiency: 'bard class',
@@ -489,8 +497,9 @@ var player5 = {
   },
   armorProf: {
     'light armor': 14,
-
   },
+  restlevel: 0,
+  position: [0, 0, 0],
 }
 
 var player6 = {
@@ -499,6 +508,7 @@ var player6 = {
   ss : [],
   weapon : ['rapier','1d8'],
   armor_class: ['leather', 15],
+  speed: 30,
   tagline: "I go fishing!",
   level: 3,
   class: 'warlock',
@@ -507,8 +517,6 @@ var player6 = {
   weight: '160lbs',
   gold: 5,
   xp: 454,
-  restlevel: 0,
-  position: [0, 0, 0],
   location: {
     Waxilium: 'Dread Dragonhide Saloon',
   },
@@ -525,15 +533,15 @@ var player6 = {
     wis: 15,
     con: 15,
   },
+  equipped: {
+  },
   inventory : {
     'a few earrings' : 1,
   },
   st: {
     str: {
-
     },
     con: {
-
     },
     dex: {
       proficiency: 'bard class',
@@ -586,8 +594,9 @@ var player6 = {
   },
   armorProf: {
     'light armor': 14,
-
   },
+  restlevel: 0,
+  position: [0, 0, 0],
 }
 
 

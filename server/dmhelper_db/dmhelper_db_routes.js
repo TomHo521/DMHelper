@@ -29,58 +29,23 @@ router.get('/testmenu_1', (req, res) => {
 
 // FOR INTERNAL USAGE ONLY
 
-router.get('/getUsers', (req, res) => {
-  db.getUsers()
-    .then(result => {
-      res.header('Content-Type', 'application/json');
-      res.status(200).send(result);
-    })
-    .catch(err => {
-      res.status(400).send(err);
-    });
+router.get('/getAllAdventurers', (req, res) => {
+
+  db.getAllAdventurers()
+  .then(result => {
+    res.header('Content-Type', 'application/json');
+    res.status(200).send(result);
+  })
+  .catch(err => {
+    res.status(400).send(err);
+  });
+
 });
 
-router.get('/getAllSessions', (req, res) => {
-  db.getAllSessions()
-    .then(result => {
-      res.header('Content-Type', 'application/json');
-      res.status(200).send(result);
-    })
-    .catch(err => {
-      res.status(400).send(err);
-    });
-});
 
-router.get('/getUserSession', (req, res) => {
-  db.getUserSession({ host_id: 1 })
-    .then(result => {
-      res.header('Content-Type', 'application/json');
-      res.status(200).send(result);
-    })
-    .catch(err => {
-      res.status(400).send(err);
-    });
-});
 
-// FOR FRONT END USAGE
 
-router.get('/getSession2', (req, res) => {
 
-  // TO DO:  CREATE an index from "BOC_User-Session-jt"
-  // we want to get all the users for a particular session
-  // then we want to get all the orders for a particular session.
-  // however the order session information contains the relevant users as well.
-
-  // select JOIN session_id on the join table
-  // JOIN session and users
-
-  // sort
-  // format
-  // return data
-
-  // res.header('Content-Type', 'application/json');
-  // res.status(200).send(JSON.stringify(stuff, null, 2));
-});
 
 // login route to test
 router.get('/login', (req, res) => {
@@ -148,23 +113,6 @@ router.get('/createNewSession', (req, res) => {
     });
 });
 
-// updates the restaurant for a particular session
-router.put('/updateRestaurant', (req, res) => {
-  let obj_params = {
-    session_id: req.query.session_id,
-    restaurant_name: req.query.restaurant_name,
-    restaurant_id_api: req.query.restaurant_id_api,
-  };
-
-  db.updateRestaurant(obj_params)
-    .then(result => {
-      res.header('Content-Type', 'application/json');
-      res.status(200).send(result);
-    })
-    .catch(err => {
-      res.status(400).send(err);
-    });
-});
 
 // updates the restaurant for a particular session
 router.get('/createNewUser', (req, res) => {
@@ -287,25 +235,6 @@ router.put('/updateOrder', (req, res) => {
     });
 });
 
-// removes an order
-router.post('/removeOrder', (req, res) => {
-  let obj_params = {
-    order_id: req.query.order_id,
-  };
 
-  db.removeOrder(obj_params)
-    .then(result => {
-      res.header('Content-Type', 'application/json');
-      res.status(200).send(result);
-    })
-    .catch(err => {
-      res.status(400).send(err);
-    });
-});
-
-// STRETCH GOAL: changes the current session Host
-router.put('/changeHost', (req, res) => {
-  // TO DO
-});
 
 module.exports = router;

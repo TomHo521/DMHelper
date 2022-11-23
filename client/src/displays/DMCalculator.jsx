@@ -16,8 +16,6 @@ class DMCalculator extends React.Component {
   }
 
   
-
-
   modifiers = (stat) => {
      return Math.floor((stat - 10)/2);
   }

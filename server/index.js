@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const PORT = 3000;
+require("dotenv").config();
 const server = require('http').createServer(app);
 const { Server } = require('socket.io');
 const db = require('./dmhelper_db/dmhelper_db_routes');
@@ -26,7 +27,6 @@ var chatRoomStore = {
 };
 
 var initiativeList = {};
-var checkList = {};
 
 const io = new Server(server);
 
@@ -39,13 +39,6 @@ var getIndexOf = (name, array) => {
   return -1;
 }
 
-var generateIndex = (list) => {
-  let indexObj = {}
-  for (var i = 0; i < list.length; i++) {
-    indexObj[list[i].name] = i;
-  }
-  return indexObj;
-}
 
 var proficiencyBonus = (level) => {
   return Math.floor((2 + (level - 1))/4);
@@ -106,11 +99,21 @@ var initAndSort = (initiativeList) => {
   enemyList.sort((a,b) => b.initiative - a.initiative);
 }
 
+var hasEveryoneRolled = (initiativeList) => {
 
-var checkEnemiesDead = () => {
-  let enemiesStillAlive = masterTurnList.enemyList.filter(element => element.hp[0] > 0);
-  return (enemiesStillAlive.length > 0);
+  var checklist = true;
+  //initiativeList is an object initialized with all party members to false
+  //the false flag prevents additional re-rolls
+  //here we use it against the list of those currentlyOnline.
+  //when all party members currently online have rolled, return true;
+  console.log('online list: ', masterTurnList.currentlyOnline);
+  for (var player in masterTurnList.currentlyOnline) {
+    checklist = checklist && initiativeList[player];
+  }
+
+  return checklist;
 }
+
 
 
 var enemyAttack = (activeEnemy) => {
@@ -158,17 +161,14 @@ var enemyTurnLoop = (message) => {
 io.on('connection', (socket) => {
     console.log(`a user connected on ${PORT}`);
 
-    if (Object.keys(checkList).length === 0) {
-      adventurerList.forEach(element => checkList[element.name] = true);
-    }
-
     if (Object.keys(initiativeList).length === 0) {
       adventurerList.forEach(element => initiativeList[element.name] = false);
     }
 
+
       
     socket.on('initRoll', (message) => {
-      delete checkList[message.name];
+      console.log('initRoll called! ', initiativeList[message.name]);
 
       if (initiativeList[message.name] === false) {
         initiativeList[message.name] = message.roll;
@@ -177,7 +177,7 @@ io.on('connection', (socket) => {
       }
 
       // upon init Roll Done...
-      if (Object.keys(checkList).length === 0) {
+      if (hasEveryoneRolled(initiativeList)) {
         initAndSort(initiativeList);
 
         masterTurnList.inCombat = true;
@@ -402,6 +402,7 @@ app.get('/local', function (req, res) {
   res.send('Hello World');
 });
 
+app.use('/dmhelper', db);
 
 server.listen(PORT, () => {
     console.log(directory);

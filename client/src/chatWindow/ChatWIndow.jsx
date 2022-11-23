@@ -15,10 +15,23 @@ class ChatWindow extends React.Component {
 
     //this.tabHandler = this.tabHandler.bind(this);
     this.toggleTabBar = this.toggleTabBar.bind(this);
+    this.scrollToBottom = this.scrollToBottom.bind(this);
   }
 
   toggleTabBar = () => {
     this.setState({showTabBar: !this.state.showTabBar});
+  }
+
+  scrollToBottom = () => {
+    this.messagesEnd.scrollIntoView({behavor: "smooth"});
+  }
+
+  componentDidMount() {
+    this.scrollToBottom();
+  }
+
+  componentDidUpdate() {
+    this.scrollToBottom();
   }
 
   render () {
@@ -40,6 +53,7 @@ class ChatWindow extends React.Component {
   
     let tabBar = (!this.state.showTabBar)? null : <TabBar activeChat={this.props.activeChat} tabHandler={this.props.setActiveChat} privateMessage={this.props.privateMessage} closeTab={this.props.closeTab} deleteTab={this.props.deleteTab}/>
 
+
     return (
       <div>
         <div className="tabBar-container">
@@ -49,6 +63,7 @@ class ChatWindow extends React.Component {
           </div>
         </div>
         {frontTab}
+        <div style={{float: "left", clear:"both"}} ref={(el) => {this.messagesEnd = el;}}></div>
       </div>
     )
   }
