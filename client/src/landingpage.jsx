@@ -5,7 +5,7 @@ import adventurerList from '../../test/players.js';
 import enemyList from '../../test/enemies.js';
 //import MagicMenu from './Menus/magicmenu';
 import AdventurerProfile from './displays/adventurerProfile';
-import AdventurerEditor from './displays/adventurerEditor';
+import AdventurerEditor from './adventurerEditor/adventurerEditor'
 import DMCalculator from './displays/DMCalculator';
 import ContextMenu from './Menus/contextmenu';
 

@@ -1,6 +1,10 @@
 import React from 'react';
 var format = require('pg-format');
 import AdventurerEditorUnit from './adventurerEditorUnit';
+import ChecklistFieldSet from './ChecklistFieldSet';
+import weaponList from '../../../test/weapons';
+import armorList from '../../../test/armor';
+import abilityChecks from '../../../test/abilitychecks';
 
 
 class AdventurerEditor extends React.Component {
@@ -8,8 +12,13 @@ class AdventurerEditor extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      testArray : [
+        {name: 'item 1', checked: true},
+        {name: 'item 2', checked: false},
+        {name: 'item 3', checked: true},
+      ]
     };
- 
+
     this.generateSQL = this.generateSQL.bind(this);
     this.changeHandler = this.changeHandler.bind(this);
     this.submitHandler = this.submitHandler.bind(this);
@@ -190,6 +199,12 @@ class AdventurerEditor extends React.Component {
               <div className='leftAlign-profile'>
                 Armor Proficiencies
                 {armorProfList}
+              </div>
+            </div> 
+
+            <div className='row-container-profile'>
+              <div className='leftAlign-profile'>
+                <ChecklistFieldSet input={this.state.testArray}/>
               </div>
             </div> 
 

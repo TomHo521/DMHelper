@@ -551,31 +551,52 @@ tbody::after {
   font-size: 22px;
 } 
 
+#loginMessage {
+  position: absolute;
+  top: 25px;
+  left: 50px;
+  font-family: Consolas;
+  font-size: medium;
+}
+
 #loggedInPlayer {
   position: absolute;
-  top: 20px;
+  top: 45px;
   left: 50px;
   color:rgb(255, 255, 255, 1);
   font-family: Consolas;
   font-size: medium;
 }
+#loggedInPlayer:hover {
+  background-color: rgb(255, 255, 255);
+  color: rgb(110, 64, 0);
+}
 
 #currentlyOnline {
   position: absolute;
-  top: 10px;
+  top: 25px;
   right: 150px;
   color:rgb(255, 255, 255, 1);
   font-family: Consolas;
   font-size: 12px;
 }
+#currentlyOnline:hover {
+  background-color: white;
+  color: black;
+}
 
 #DMCalcLink {
   position: absolute;
-  top: 60px;
+  top: 65px;
   left: 50px;
   color:rgb(255, 255, 255, 1);
   font-family: Consolas;
   font-size: medium;
+}
+
+#DMCalcLink:hover {
+  background-color: white;
+  color: black;
 }
 
 

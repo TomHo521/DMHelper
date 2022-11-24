@@ -440,9 +440,8 @@ class ActiveGUI extends React.Component {
         <div class="item1" id="item1override">
           <p></p>
           <p id="currentlyOnline" onClick={this.currentlyOnlineHandler}>Currently Online: {currentlyOnlineToggle}{currentlyOnline} </p>
-          <p id='loggedInPlayer' onClick={this.props.openAdventurerProfileModal}>Logged in as:
-           <br></br> {this.props.thisPlayer}
-          </p>
+          <p id="loginMessage">Logged in as:</p>
+          <p id='loggedInPlayer' onClick={this.props.openAdventurerProfileModal}> {this.props.thisPlayer}</p>
           <p id="DMCalcLink" onClick={this.props.openDMCalcModal}>
             DM calc
           </p>
