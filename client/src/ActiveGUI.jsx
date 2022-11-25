@@ -135,15 +135,15 @@ class ActiveGUI extends React.Component {
     socket.emit('getStatus', {thisPlayer: this.props.thisPlayer});
   }
 
-  updateState = (stateObj) => {
+  updateState = (msg) => {
     this.setState({
-      enemyList: (stateObj.enemyList)? stateObj.enemyList: this.state.enemyList,
-      adventurerList: (stateObj.adventurerList)? stateObj.adventurerList: this.state.adventurerList,
-      activeEntity: (stateObj.activeEntity) ? stateObj.activeEntity : this.state.activeEntity,
-      currentlyOnline: (stateObj.currentlyOnline) ? stateObj.currentlyOnline: this.state.currentlyOnline,
-      culledList: (stateObj.culledList)? stateObj.culledList: this.state.culledList,
-      initiativeList: (stateObj.initiativeList)? stateObj.initiativeList: this.state.initiativeList,
-      inCombat: (stateObj.inCombat)? stateObj.inCombat: this.state.inCombat,
+      enemyList: (msg.enemyList)? msg.enemyList: this.state.enemyList,
+      adventurerList: (msg.adventurerList)? msg.adventurerList: this.state.adventurerList,
+      activeEntity: (msg.activeEntity) ? msg.activeEntity : this.state.activeEntity,
+      currentlyOnline: (msg.currentlyOnline) ? msg.currentlyOnline: this.state.currentlyOnline,
+      culledList: (msg.culledList)? msg.culledList: this.state.culledList,
+      initiativeList: (msg.initiativeList)? msg.initiativeList: this.state.initiativeList,
+      inCombat: (msg.inCombat)? msg.inCombat: this.state.inCombat,
     });
   }
 
@@ -160,7 +160,11 @@ class ActiveGUI extends React.Component {
       msg: `${this.props.thisPlayer} has come online`,
     });
 
-    socket.on('getStatus', msg => {
+    socket.on('pushState', msg => {
+      this.updateState(msg);
+    });
+
+    socket.on('getStatus-reply', msg => {
       if (msg.thisPlayerObj.name === this.props.thisPlayer) {
         this.setState({
           thisPlayerObj: msg.thisPlayerObj
@@ -197,6 +201,12 @@ class ActiveGUI extends React.Component {
       this.logNext(msg.msg);
       this.updateState(msg);
     });
+
+    socket.on('endCombat', (msg) => {
+      this.endCombat();
+      this.logNext('The battle has ended');
+      this.updateState(msg);
+    })
 
     socket.on('pm', (msg) => {
 
@@ -403,13 +413,22 @@ class ActiveGUI extends React.Component {
 
   attack = () => {
     // need to acquire target
-    if (this.props.thisPlayer === this.state.activeEntity) {
+    if ((this.props.thisPlayer === this.state.activeEntity) && this.state.inCombat) {
       // attack was clicked AND it is this players turn.
       this.logNext(`${this.props.thisPlayer} is selecting their target`);
       this.setState({ acquiringTarget: true });
     } else {
       this.logNext('Please wait your turn');
     }
+  }
+
+  endCombat = () => {
+    //we normally set acquiringTarget false after we send attack
+    this.setState({
+      acquiringTarget: false,
+      activeEntity: 'Out Of Combat',
+    });
+    //if we call updateUI, we run the risk of reassigning the activeEntity
   }
 
   currentlyOnlineHandler = (e) => {

@@ -45,27 +45,20 @@ var getIndexOf = (name, array) => {
 }
 
 
-
-
-
 var incrementTurn = () => {
-  // if (masterTurnList.currentTurn === (masterTurnList.turnList.length - 1)) {
-  //   masterTurnList.currentTurn = 0;
-  // } else {
-  //   masterTurnList.currentTurn++;
-  // }
-  //cull the turnList first.
-  // has anyone been taken out?
 
-  //cull the list?
-  //where is the culling being done?
+    // if the number of allies dead is equal to number online, lose.
+    let allEnemiesDead = masterTurnList.enemyList.every(e => e.hp[0] <= 0);
+    let allAdventurersDead = masterTurnList.onlineAdventurerList.every(e => e.hp[0] <= 0);
+
+    if (allAdventurersDead || allEnemiesDead) {
+      endCombat(!allAdventurersDead);
+    }
 
   if (masterTurnList.currentTurn === (masterTurnList.turnList.length - 1)) {
     masterTurnList.currentTurn = 0;
   } else {
     masterTurnList.currentTurn++;
-
-    
   }
 }
 
@@ -170,7 +163,60 @@ var enemyTurnLoop = (message) => {
 //therefore it takes a message parameter
 var masterCombatLoop = (message) => {
   enemyTurnLoop(message);
+}
 
+//function to set the state to end combat.  
+//change the game state , broadcast changes.
+
+var endCombat = (adventurersVictorious) => {
+  
+  masterTurnList.inCombat = false;
+  masterTurnList.activeEntity = 'out of combat';
+
+  //check if we  need the bottom two..  
+  masterTurnList.currentTurn = 0;
+  masterTurnList.turn = '';
+  masterTurnList.turnList = [{name: 'Please Roll Initiative'}];
+
+  //restore the initiativeList back to false
+  Object.keys(initiativeList).forEach(e => initiativeList[e] = false);
+
+  if (adventurersVictorious) {
+    // for now we add a static 1 gold and 50 xp bump;
+    masterTurnList.onlineAdventurerList.forEach(e => {
+      e.xp += 50;
+      e.gold +=1;
+    });
+  } else {
+    masterTurnList.turnList = [{name: 'GAME OVER'}];
+  }
+
+  broadcastState();
+}
+
+//pushes the game state to all users;
+var broadcastState = () => {
+  
+  let message = {};
+
+  message.enemyList = masterTurnList.enemyList,
+  message.adventurerList = masterTurnList.adventurerList,
+  message.activeEntity = (masterTurnList.inCombat)? masterTurnList.turnList[masterTurnList.currentTurn].name : 'out of combat';
+  message.currentlyOnline = masterTurnList.currentlyOnline;
+  
+  //culled adventurerList
+  let culledList = [];
+  masterTurnList.adventurerList.forEach((e) => {
+    if (masterTurnList.currentlyOnline[e.name]) {
+      culledList.push(e);
+    } 
+  });
+
+  message.culledList = culledList;
+  message.initiativeList = initiativeList;
+  message.inCombat = masterTurnList.inCombat;
+
+  io.emit('pushState', message);
 }
 
 
@@ -219,7 +265,7 @@ io.on('connection', (socket) => {
 
       io.emit('rollReceived', message);
       
-      io.emit('rollInitative', message );
+      //io.emit('rollInitative', message );
     });
         
     socket.on('chat', (message) => {
@@ -308,12 +354,12 @@ io.on('connection', (socket) => {
       masterTurnList.currentlyOnline[message.thisPlayer] = socket.id;
       Object.keys(masterTurnList.currentlyOnline).forEach(e => console.log(`${e}: ${masterTurnList.currentlyOnline[e]}`));
 
-      let thisPlayerObj = getIndexOf(message.thisPlayer, masterTurnList.adventurerList);
+      let thisPlayer = getIndexOf(message.thisPlayer, masterTurnList.adventurerList);
  
       message.enemyList = masterTurnList.enemyList,
       message.adventurerList = masterTurnList.adventurerList,
-      message.thisPlayerObj = masterTurnList.adventurerList[thisPlayerObj],
-      message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name,
+      message.thisPlayerObj = masterTurnList.adventurerList[thisPlayer],
+      message.activeEntity = (masterTurnList.inCombat)? masterTurnList.turnList[masterTurnList.currentTurn].name : 'out of combat';
       message.currentlyOnline = masterTurnList.currentlyOnline;
       message.inCombat = masterTurnList.inCombat;
 
@@ -330,7 +376,7 @@ io.on('connection', (socket) => {
 
       message.initiativeList = initiativeList;
 
-      io.emit('getStatus', message );
+      io.emit('getStatus-reply', message );
     })
 
     socket.on('attack', (message) => { 
