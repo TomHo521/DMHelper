@@ -45,6 +45,7 @@ class ActiveGUI extends React.Component {
       adventurerList : adventurerList,
       enemyList : enemyList,
       turn: 0,
+      inCombat: false,
       activeEntity: 'Combat not ready yet',
       thisPlayerObj: {},
       combatLog : [{msg: 'Combat Log:'}],
@@ -141,7 +142,8 @@ class ActiveGUI extends React.Component {
       activeEntity: (stateObj.activeEntity) ? stateObj.activeEntity : this.state.activeEntity,
       currentlyOnline: (stateObj.currentlyOnline) ? stateObj.currentlyOnline: this.state.currentlyOnline,
       culledList: (stateObj.culledList)? stateObj.culledList: this.state.culledList,
-      initiativeList: (stateObj.initiativeList)? stateObj.initiativeList: this.state.initiativeList
+      initiativeList: (stateObj.initiativeList)? stateObj.initiativeList: this.state.initiativeList,
+      inCombat: (stateObj.inCombat)? stateObj.inCombat: this.state.inCombat,
     });
   }
 
@@ -169,7 +171,7 @@ class ActiveGUI extends React.Component {
     })
 
     socket.on('initRollDone' , msg => {
-      let turnCounter = msg.currentTurn
+      let turnCounter = msg.currentTurn;
       this.updateUI();
       this.logNext(`All Players have completed their rolls: turn: ${turnCounter}`)      
       this.logNext(`now ${this.adventurerList[turnCounter].name}'s turn`);
@@ -426,6 +428,7 @@ class ActiveGUI extends React.Component {
 
   render () {
    
+    let bannerMessage = (this.state.inCombat) ? `Turn: ${this.state.activeEntity}` : 'Please Roll Initiative';
     let currentlyOnline = (this.state.showOnline)? Object.keys(this.state.currentlyOnline).map(element => <div>{element.slice(0,8)}</div>) : null;
     let currentlyOnlineToggle = (this.state.showOnline)? <span onClick={this.currentlyOnlineHandler}> - </span> : <span onClick={this.currentlyOnlineHandler}> + </span>;
     
@@ -445,7 +448,7 @@ class ActiveGUI extends React.Component {
           <p id="DMCalcLink" onClick={this.props.openDMCalcModal}>
             DM calc
           </p>
-          <h1>Turn: {this.state.activeEntity}</h1>
+          <h1>{bannerMessage}</h1>
           <h3>{}</h3>
         </div>
 
