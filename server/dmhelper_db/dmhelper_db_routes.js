@@ -7,6 +7,15 @@ const db = require('../../db/controllers.js');
 // const testSession = require('./getSession');
 
 
+// USER = 'Tom1'
+// # HOST = '3.134.27.165'
+// HOST = 'localhost'
+// DATABASE_NAME = 'DMHelper'
+// PASSWORD = 'password'
+// # PORT = '6003'
+// PORT = '5432'
+
+
 router.get('/getSession', (req, res) => {
   res.header('Content-Type', 'application/json');
   res.status(200).send(JSON.stringify(testSession, null, 2));

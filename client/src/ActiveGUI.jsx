@@ -46,7 +46,8 @@ class ActiveGUI extends React.Component {
       enemyList : enemyList,
       turn: 0,
       inCombat: false,
-      activeEntity: 'Combat not ready yet',
+      bannerMessage: 'Please Roll Initiative',
+      activeEntity: 'No current Active Entity',
       thisPlayerObj: {},
       combatLog : [{msg: 'Combat Log:'}],
       statusLog: [{msg: 'Status Log'}],
@@ -144,6 +145,7 @@ class ActiveGUI extends React.Component {
       culledList: (msg.culledList)? msg.culledList: this.state.culledList,
       initiativeList: (msg.initiativeList)? msg.initiativeList: this.state.initiativeList,
       inCombat: (msg.inCombat)? msg.inCombat: this.state.inCombat,
+      bannerMessage: (msg.bannerMessage) ? msg.bannerMessage: this.state.bannerMessage,
     });
   }
 
@@ -162,6 +164,14 @@ class ActiveGUI extends React.Component {
 
     socket.on('pushState', msg => {
       this.updateState(msg);
+    });
+
+    socket.on('pushBannerMessage', msg => {
+      this.setState({bannerMessage: msg});
+    });
+
+    socket.on('pushChatMessage', msg => {
+      this.logNext(msg);
     });
 
     socket.on('getStatus-reply', msg => {
@@ -361,6 +371,8 @@ class ActiveGUI extends React.Component {
       } else {
         dmgRoll = this.roll(activeP.weapon[1]).total + spellMod;
       }
+
+      dmgRoll = 25;
       
       nextMessage += `${activeName}'s spell attack hits! ${critical}  Roll: ${attackRoll} +${pB}pb ${modMessage} vs enemy AC:${ac}, ${dmgRoll} damage dealt!`;
     } else {
@@ -426,7 +438,8 @@ class ActiveGUI extends React.Component {
     //we normally set acquiringTarget false after we send attack
     this.setState({
       acquiringTarget: false,
-      activeEntity: 'Out Of Combat',
+      activeEntity: 'no activeentity-endcombat:CS',
+      bannerMessage: 'Combat Finished: endcombat:CS',
     });
     //if we call updateUI, we run the risk of reassigning the activeEntity
   }
@@ -447,7 +460,6 @@ class ActiveGUI extends React.Component {
 
   render () {
    
-    let bannerMessage = (this.state.inCombat) ? `Turn: ${this.state.activeEntity}` : 'Please Roll Initiative';
     let currentlyOnline = (this.state.showOnline)? Object.keys(this.state.currentlyOnline).map(element => <div>{element.slice(0,8)}</div>) : null;
     let currentlyOnlineToggle = (this.state.showOnline)? <span onClick={this.currentlyOnlineHandler}> - </span> : <span onClick={this.currentlyOnlineHandler}> + </span>;
     
@@ -467,7 +479,7 @@ class ActiveGUI extends React.Component {
           <p id="DMCalcLink" onClick={this.props.openDMCalcModal}>
             DM calc
           </p>
-          <h1>{bannerMessage}</h1>
+          <h1>{this.state.bannerMessage}</h1>
           <h3>{}</h3>
         </div>
 

@@ -6,6 +6,7 @@ require("dotenv").config();
 const server = require('http').createServer(app);
 const { Server } = require('socket.io');
 const db = require('./dmhelper_db/dmhelper_db_routes');
+const dm = require('./DMMath');
 
 var adventurerList = require('../test/players');
 var enemyList = require('../test/enemies');
@@ -16,13 +17,13 @@ var masterTurnList = {
   currentTurn: 0,
   turn: '',
   turnList: [{name: 'Please Roll Initiative'}],
-  adventurerList: adventurerList,
-  enemyList: enemyList,
-  onlineAdventurerList: [],
-  deadList: {
-
-  },
-  currentlyOnline: {},
+  adventurerList: adventurerList,  //the total partylist, logged in or not.  We should 
+                        //not be directly using this for anything after initialization
+  enemyList: enemyList,      // the list of active enemies.  
+  onlineAdventurerList: [],  // active Player states.
+  deadAdventurerList: {},    // currently wounded adventurers
+  deadEnemyList:{},          // currently dead enemies.
+  currentlyOnline: {},       // currently logged in users
   socketList:{},
 };
 
@@ -43,49 +44,44 @@ var getIndexOf = (name, array) => {
   return -1;
 }
 
+//check for the end of combat.  If combat should end, it ends it.
+var shouldCombatEnd = () => {
+  // if the number of allies dead is equal to number online, lose.
+  let allEnemiesDead = masterTurnList.enemyList.every(e => e.hp[0] <= 0);
+  let allAdventurersDead = masterTurnList.onlineAdventurerList.every(e => e.hp[0] <= 0);
 
-var proficiencyBonus = (level) => {
-  return Math.floor((2 + (level - 1))/4);
-}
-
-var modifiers = (stat) => {
-  return Math.floor((stat - 10)/2);
-}
-
-var roll = (dice) => {
-  let index = dice.indexOf('d'); 
-  let qty = parseInt(dice.substring(0, index));
-  let diceType = parseInt(dice.substring(index+1));
-
-  var rolls = [];
-  var total = 0;
-
-  for (var i = 0; i < qty; i++) {
-    let single = Math.floor(Math.random() * diceType) + 1;
-    total += single;
-    rolls.push(single);
+  if (allAdventurersDead || allEnemiesDead) {
+    endCombat(!allAdventurersDead);
+    return true;
   }
-  
-  return {
-    total: total,
-    rolls: rolls,
-  }
+
+  return false;
 }
 
+var skipEntity = (obj) => {
+  //add other conditions here later.
+  return (obj.hp[0] <= 0);
+}
 
 var incrementTurn = () => {
-  // if (masterTurnList.currentTurn === (masterTurnList.turnList.length - 1)) {
-  //   masterTurnList.currentTurn = 0;
-  // } else {
-  //   masterTurnList.currentTurn++;
-  // }
-  
 
-  if (masterTurnList.currentTurn === (masterTurnList.turnList.length - 1)) {
-    masterTurnList.currentTurn = 0;
+  let {currentTurn, turnList} = masterTurnList;
+
+  if (currentTurn === (turnList.length - 1)) {
+    currentTurn = 0;
   } else {
-    masterTurnList.currentTurn++;
+    currentTurn++;
   }
+
+  while (skipEntity(turnList[currentTurn])) {
+    if (currentTurn === (turnList.length - 1)) {
+      currentTurn = 0;
+    } else {
+      currentTurn++;
+    }
+  }
+
+  masterTurnList.currentTurn = currentTurn;
 }
 
 var printList = (list) => {
@@ -135,6 +131,7 @@ var hasEveryoneRolled = (initiativeList) => {
 
 
 
+
 var enemyAttack = (activeEnemy) => {
     //enemy should select a target. 
     let enemyTarget = Math.floor(Math.random() * masterTurnList.onlineAdventurerList.length);
@@ -145,18 +142,25 @@ var enemyAttack = (activeEnemy) => {
     msgLog.push(`${activeEnemy.name} attacks ${targetPlayer.name} `);
 
     //compute the data!
-    let attackRoll = roll('1d20').total;
-    let pB = proficiencyBonus(activeEnemy.level);
-    let dexMod = modifiers(activeEnemy.stats.dex);
+    let attackRoll = dm.roll('1d20').total;
+    let pB = dm.proficiencyBonus(activeEnemy.level);
+    let dexMod = dm.modifiers(activeEnemy.stats.dex);
     let ac = targetPlayer.armor_class[1];
     let dmgRoll = 0; 
     //let hit = false;
 
     if ((attackRoll + pB + dexMod) >= ac) {
-      dmgRoll = roll(activeEnemy.weapon[1]).total;
+      dmgRoll = dm.roll(activeEnemy.weapon[1]).total;
       msgLog.push(`Attack hits!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs player AC:${ac}.  ${dmgRoll} damage dealt to ${targetPlayer.name}`);
       //hit = true;
-      masterTurnList.onlineAdventurerList[enemyTarget].hp[0] -= dmgRoll; 
+      if (masterTurnList.onlineAdventurerList[enemyTarget].hp[0] - dmgRoll > 0) {
+        masterTurnList.onlineAdventurerList[enemyTarget].hp[0] -= dmgRoll;
+      } else {
+        masterTurnList.onlineAdventurerList[enemyTarget].hp[0] = 0;
+        //if hp falls to zero, add them to the deadAdventurerList
+        masterTurnList.deadAdventurerList[targetPlayer] = {status: 'dead', attacker: activeEnemy.name};
+      }
+
     } else {
       msgLog.push(`${activeEnemy.name}'s attack misses!   Roll: ${attackRoll} +${pB}pb +${dexMod}dex Mod vs enemy AC:${ac}  ${dmgRoll} damage dealt`);
     }
@@ -174,6 +178,71 @@ var enemyTurnLoop = (message) => {
     }
     incrementTurn();
   }  
+}
+
+//the master combat loop which handles enemy attacks, broadcasts,
+//dead status, filtering, which loops until the next input is pending.
+//therefore it takes a message parameter
+var masterCombatLoop = (message) => {
+  enemyTurnLoop(message);
+}
+
+//function to set the state to end combat.  
+//change the game state , broadcast changes.
+
+var endCombat = (adventurersVictorious) => {
+  
+  masterTurnList.inCombat = false;
+  masterTurnList.activeEntity = 'no activeEntity-endcombat:SS';
+
+  //check if we  need the bottom two..  
+  masterTurnList.currentTurn = 0;
+  masterTurnList.turn = '';
+  masterTurnList.turnList = [{name: 'Please Roll Initiative'}];
+
+  //restore the initiativeList back to false
+  Object.keys(initiativeList).forEach(e => initiativeList[e] = false);
+
+  if (adventurersVictorious) {
+    // for now we add a static 1 gold and 50 xp bump;
+    masterTurnList.onlineAdventurerList.forEach(e => {
+      e.xp += 50;
+      e.gold +=1;
+    });
+  } else {
+    masterTurnList.turnList = [{name: 'GAME OVER'}];
+  }
+
+  broadcastState('Combat Over: endCombat-ss');
+}
+
+//pushes the game state to all users;
+var broadcastState = () => {
+  
+  let message = {};
+
+  message.enemyList = masterTurnList.enemyList,
+  message.adventurerList = masterTurnList.adventurerList,
+  message.activeEntity = (masterTurnList.inCombat)? masterTurnList.turnList[masterTurnList.currentTurn].name : 'no activeEntity-broadcast:SS';
+  message.currentlyOnline = masterTurnList.currentlyOnline;
+  
+  //culled adventurerList
+  let culledList = [];
+  masterTurnList.adventurerList.forEach((e) => {
+    if (masterTurnList.currentlyOnline[e.name]) {
+      culledList.push(e);
+    } 
+  });
+
+  message.culledList = culledList;
+  message.initiativeList = initiativeList;
+  message.inCombat = masterTurnList.inCombat;
+
+  io.emit('pushState', message);
+}
+
+var broadcastMessage = (msg, type = 'banner') => {
+  (type === 'banner') ? io.emit('pushBannerMessage', msg) : io.emit('pushChatMessage', msg);
 }
 
 
@@ -209,7 +278,7 @@ io.on('connection', (socket) => {
 
         printList(masterTurnList.turnList);
         //masterTurnList.turn = masterTurnList.turnList[masterTurnlist.currentTurn].name;
-        enemyTurnLoop(message);
+        masterCombatLoop(message);
 
         //pass the global turn object to each of the logged in members
         masterTurnList.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
@@ -222,7 +291,7 @@ io.on('connection', (socket) => {
 
       io.emit('rollReceived', message);
       
-      io.emit('rollInitative', message );
+      //io.emit('rollInitative', message );
     });
         
     socket.on('chat', (message) => {
@@ -304,9 +373,6 @@ io.on('connection', (socket) => {
 
     });
 
-
-
-
     socket.on('getStatus', (message) => {
 
       masterTurnList.socketList[socket.id] = message.thisPlayer;
@@ -314,15 +380,18 @@ io.on('connection', (socket) => {
       masterTurnList.currentlyOnline[message.thisPlayer] = socket.id;
       Object.keys(masterTurnList.currentlyOnline).forEach(e => console.log(`${e}: ${masterTurnList.currentlyOnline[e]}`));
 
-      let thisPlayerObj = getIndexOf(message.thisPlayer, masterTurnList.adventurerList);
+      let thisPlayer = getIndexOf(message.thisPlayer, masterTurnList.adventurerList);
  
       message.enemyList = masterTurnList.enemyList,
       message.adventurerList = masterTurnList.adventurerList,
-      message.thisPlayerObj = masterTurnList.adventurerList[thisPlayerObj],
+      message.thisPlayerObj = masterTurnList.adventurerList[thisPlayer],
       message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name,
       message.currentlyOnline = masterTurnList.currentlyOnline;
+      message.inCombat = masterTurnList.inCombat;
 
-      
+      if (masterTurnList.inCombat) {
+        message.bannerMessage = `Turn: ${message.activeEntity}`;
+      }
 
       //culled adventurerList
       let culledList = [];
@@ -337,7 +406,7 @@ io.on('connection', (socket) => {
 
       message.initiativeList = initiativeList;
 
-      io.emit('getStatus', message );
+      io.emit('getStatus-reply', message );
     })
 
     socket.on('attack', (message) => { 
@@ -353,8 +422,8 @@ io.on('connection', (socket) => {
       
         //update dmg.  may have to update spell slots later
         masterTurnList.enemyList[e_i].hp[0] -= message.dmg;
-        message.mTL = masterTurnList;
 
+        message.mTL = masterTurnList;
         incrementTurn();
         message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
         message.enemyList =  masterTurnList.enemyList;
@@ -391,14 +460,19 @@ io.on('connection', (socket) => {
         message.mTL = masterTurnList;
         message.enemyList = masterTurnList.enemyList;
         
-        incrementTurn();
-        message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
-
-        if (masterTurnList.inCombat) {
-          io.emit('attack-reply', message);
+        if (!shouldCombatEnd()) {
+          incrementTurn();
+          message.activeEntity = masterTurnList.turnList[masterTurnList.currentTurn].name;
+  
+          if (masterTurnList.inCombat) {
+            io.emit('attack-reply', message);
+          }
+          
+          enemyTurnLoop(message);
+        } else {
+          broadcastMessage('Combat over');
         }
-        
-        enemyTurnLoop(message);
+
 
       }
     });
